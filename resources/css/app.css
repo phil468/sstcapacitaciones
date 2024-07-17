@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
+[x-cloak] {
+    display: none;
+}
+
+.opacity-75 {
+    background-color: rgb(255 255 255 / 75%);
+}
