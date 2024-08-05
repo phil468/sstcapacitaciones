@@ -11,22 +11,24 @@ class Preguntas extends Component
     use WithPagination;
 
 	protected $paginationTheme = 'bootstrap';
-    public $selected_id, $keyWord, $seccion_id, $evaluacion_id, $qid, $pregunta, $tipo, $opciones, $numero_orden;
+    public $selected_id, $keyWord, $seccion_id, $evaluacion_id, $qid, $pregunta, $tipo_de_pregunta_id, $opciones, $numero_orden;
     public $updateMode = false;
+    public $capacitacion_id;
+
+    public function mount($capacitacion_id = null) {
+        $this->capacitacion_id = $capacitacion_id;
+    }
 
     public function render()
     {
-		$keyWord = '%'.$this->keyWord .'%';
+		// $keyWord = '%'.$this->keyWord .'%';
+        $preguntas = Pregunta::latest()
+                        ->when($this->capacitacion_id, function ($query) {
+                            return $query->where('capacitacion_id', $this->capacitacion_id);
+                        })
+                        ->paginate(5);
         return view('livewire.preguntas.view', [
-            'preguntas' => Pregunta::latest()
-						->orWhere('seccion_id', 'LIKE', $keyWord)
-						->orWhere('evaluacion_id', 'LIKE', $keyWord)
-						->orWhere('qid', 'LIKE', $keyWord)
-						->orWhere('pregunta', 'LIKE', $keyWord)
-						->orWhere('tipo', 'LIKE', $keyWord)
-						->orWhere('opciones', 'LIKE', $keyWord)
-						->orWhere('numero_orden', 'LIKE', $keyWord)
-						->paginate(10),
+            'preguntas' => $preguntas
         ]);
     }
 	
@@ -42,7 +44,7 @@ class Preguntas extends Component
 		$this->evaluacion_id = null;
 		$this->qid = null;
 		$this->pregunta = null;
-		$this->tipo = null;
+		$this->tipo_de_pregunta_id = null;
 		$this->opciones = null;
 		$this->numero_orden = null;
     }
@@ -58,7 +60,7 @@ class Preguntas extends Component
 			'evaluacion_id' => $this-> evaluacion_id,
 			'qid' => $this-> qid,
 			'pregunta' => $this-> pregunta,
-			'tipo' => $this-> tipo,
+			'tipo_de_pregunta_id' => $this-> tipo_de_pregunta_id,
 			'opciones' => $this-> opciones,
 			'numero_orden' => $this-> numero_orden
         ]);
@@ -77,7 +79,7 @@ class Preguntas extends Component
 		$this->evaluacion_id = $record-> evaluacion_id;
 		$this->qid = $record-> qid;
 		$this->pregunta = $record-> pregunta;
-		$this->tipo = $record-> tipo;
+		$this->tipo_de_pregunta_id = $record-> tipo_de_pregunta_id;
 		$this->opciones = $record-> opciones;
 		$this->numero_orden = $record-> numero_orden;
 		
@@ -97,7 +99,7 @@ class Preguntas extends Component
 			'evaluacion_id' => $this-> evaluacion_id,
 			'qid' => $this-> qid,
 			'pregunta' => $this-> pregunta,
-			'tipo' => $this-> tipo,
+			'tipo_de_pregunta_id' => $this-> tipo_de_pregunta_id,
 			'opciones' => $this-> opciones,
 			'numero_orden' => $this-> numero_orden
             ]);

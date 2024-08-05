@@ -23,10 +23,10 @@ use GuzzleHttp\Client;
 |
 */
 
-// Route::get('/', function () {
-//     // return redirect('entregas');
-//     view('dash.index');
-// });
+Route::get('/', function () {
+    return redirect('mis-capacitaciones');
+    // view('dash.index');
+});
 
 //Ruta HOME:
 // Route::get('/connect', [App\Http\Controllers\HomeController::class,'redirectToAzure']);
@@ -37,7 +37,7 @@ Route::get('/auth/redirect', function () {
     //     'api://e5a37484-1e31-499f-94af-fd254c7422d4/Contacts.Read',
     //     'api://e5a37484-1e31-499f-94af-fd254c7422d4/User.ReadBasic.All'
     //     ]) // Solicita el ámbito específico
-    ->redirect('/home');
+    ->redirect('/mis-capacitaciones');
 });
  
 Route::get('/auth/callback', function () {
@@ -67,7 +67,7 @@ Route::get('/auth/callback', function () {
     // dd($response->json());
 
     // Redirige al usuario a la página de inicio o a donde quieras
-    return redirect('/home');
+    return redirect('/mis-capacitaciones');
     //return redirect(route('dash.index'));
 
 });
@@ -83,7 +83,7 @@ Route::get('/logout', function () {
     // return redirect($azureLogoutUrl);
 })->name('logout');
 
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('dash.index');
+// Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('dash.index');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('dash.index');
 Route::get('/personal/importar/{numero}', [App\Http\Controllers\PersonalController::class,'actualizarPersonalNisira'])->name('personal.actualizar');
 Route::get('/personal/actualizarEstadoParaTodos', [App\Http\Controllers\PersonalController::class,'actualizarEstadoParaTodos'])->name('personal.actualizarEstadoParaTodos');
@@ -105,9 +105,15 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::view('/personal','livewire.personals.index')->name('personal')->middleware(['can:ver-personal']);
     Route::view('/areas','livewire.areas.index')->name('areas')->middleware(['can:ver-area']);
     Route::view('/capacitaciones','livewire.capacitaciones.index')->name('capacitaciones')->middleware(['can:ver-capacitacion']);
-    Route::get('/capacitaciones/{capacitacion_id}', function ($capacitacion_id) {
-        return view('livewire.capacitacion-has-personals.index')->with('capacitacion_id', $capacitacion_id);
-    })->name('capacitaciones.personal')->middleware(['can:ver-capacitacion']);
+    Route::get('/capacitaciones/{id}', function ($id) {
+        return view('livewire.capacitaciones.index')->with('id', $id);
+    })->name('capacitaciones.show')->middleware(['can:ver-capacitacion']);
+
+    Route::view('/mis-capacitaciones','livewire.mis-capacitaciones.index')->name('mis-capacitaciones')->middleware(['can:ver-mis-capacitaciones']);
+
+    // Route::get('/capacitaciones/{capacitacion_id}', function ($capacitacion_id) {
+    //     return view('livewire.capacitacion-has-personals.index')->with('capacitacion_id', $capacitacion_id);
+    // })->name('capacitaciones.personal')->middleware(['can:ver-capacitacion']);
     Route::get('/capacitaciones/{capacitacion_id}/asistencia', function ($capacitacion_id) {
         return view('livewire.asistenciums.index')->with('capacitacion_id', $capacitacion_id);
     })->name('capacitaciones.asistencia')->middleware(['can:ver-capacitacion']);

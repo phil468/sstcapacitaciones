@@ -3,7 +3,7 @@
     <div class="modal-dialog" role="document">
        <div class="rounded-2xl modal-content">
             <div class="text-white modal-header bg-vanguard rounded-t-2xl">                <h5 class="modal-title" id="updateModalLabel">Actualizar Pregunta</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
                     <span wire:click.prevent="cancel()" aria-hidden="true">×</span>
                 </button>
             </div>
@@ -27,8 +27,8 @@
                 <input wire:model="pregunta" type="text" class="form-control" id="pregunta" placeholder="Pregunta">@error('pregunta') <span class="error text-danger">{{ $message }}</span> @enderror
             </div>
             <div class="form-group">
-                <label for="tipo">Tipo</label>
-                <input wire:model="tipo" type="text" class="form-control" id="tipo" placeholder="Tipo">@error('tipo') <span class="error text-danger">{{ $message }}</span> @enderror
+                <label for="tipo_de_pregunta_id">Tipo</label>
+                <input wire:model="tipo_de_pregunta_id" type="text" class="form-control" id="tipo_de_pregunta_id" placeholder="Tipo">@error('tipo_de_pregunta_id') <span class="error text-danger">{{ $message }}</span> @enderror
             </div>
             <div class="form-group">
                 <label for="opciones">Opciones</label>

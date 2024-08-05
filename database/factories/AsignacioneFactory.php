@@ -14,19 +14,15 @@ class AsignacioneFactory extends Factory
     {
         return [
 			'personal_id' => $this->faker->name,
-			'empresa_id' => $this->faker->name,
-			'gerencia_id' => $this->faker->name,
-			'sede_id' => $this->faker->name,
-			'area_id' => $this->faker->name,
-			'cargo_id' => $this->faker->name,
-			'fecha' => $this->faker->name,
-			'responsable_id' => $this->faker->name,
-			'responsable_area_id' => $this->faker->name,
-			'responsable_cargo_id' => $this->faker->name,
+			'capacitacion_id' => $this->faker->name,
+			'fecha_inicio' => $this->faker->name,
+			'fecha_fin' => $this->faker->name,
+			'intentos_de_evaluacion' => $this->faker->name,
+			'realizado' => $this->faker->name,
+			'finalizado' => $this->faker->name,
 			'created_by' => $this->faker->name,
 			'updated_by' => $this->faker->name,
 			'deleted_by' => $this->faker->name,
-			'pdf' => $this->faker->name,
         ];
     }
 }

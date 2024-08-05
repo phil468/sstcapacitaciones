@@ -41,6 +41,11 @@ class Opciones extends Component
 		$this->optionid = null;
     }
 
+
+	public function create() 
+	{
+	}
+    
     public function store()
     {
         $this->validate([

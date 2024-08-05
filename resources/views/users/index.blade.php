@@ -13,12 +13,11 @@
         <div class="card rounded-xl">
           <div class="text-white card-header bg-vanguard rounded-t-xl">
             <div class="float-left">
-
               <h3 class="h4">Usuarios</h3>
             </div>
             
             @can('crear-user')            
-              <a class="float-right mt-1 mr-1 btn btn-default" href="{{ route('users.create') }}">Nuevo</a>
+              <a class="float-right mt-1 mr-1 btn btn-default rounded-xl" href="{{ route('users.create') }}">Nuevo</a>
             @endcan
             
           </div>

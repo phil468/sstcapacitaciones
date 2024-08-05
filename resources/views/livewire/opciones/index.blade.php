@@ -1,10 +1,26 @@
-@extends('layouts.app')
+@extends('adminlte::page')
+
+@section('title', 'Opcione')
+
+@section('content_header')
+    <h1></h1>
+@stop
+
 @section('content')
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-md-12">
-            @livewire('opciones')
-        </div>     
-    </div>   
-</div>
-@endsection
+
+@livewire('opciones')
+
+@stop
+
+@section('css')
+    {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
+@stop
+
+@section('js')
+    <script type="text/javascript">
+        // window.livewire.on('dataReturned', () => {
+        //     location.hash = "#busqueda";
+        //     location.hash = "#resultados";
+        // });
+    </script>
+@stop

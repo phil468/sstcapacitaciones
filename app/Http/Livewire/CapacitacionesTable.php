@@ -14,6 +14,7 @@ use App\Models\Personal;
 use App\Models\Sede;
 use App\Models\TipoDeCapacitacione;
 use Illuminate\Support\Facades\Storage;
+use Mediconesystems\LivewireDatatables\BooleanColumn;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\DateColumn;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
@@ -51,6 +52,12 @@ class CapacitacionesTable extends LivewireDatatable
     public function columns()
     {
         return [
+            Column::callback('id', function ($id) {
+                return view('livewire.capacitaciones.table-actions', ['id' => $id]);
+            })->unsortable()
+            ->label('Acciones')
+            ->excludeFromExport(),
+
             NumberColumn::name('id')
                 ->filterable()
                 ->label('ID')
@@ -58,19 +65,6 @@ class CapacitacionesTable extends LivewireDatatable
                 ->searchable()
                 ->hideable()
                 ->sortBy('id'),
-                
-            Column::callback('id', function ($id) {
-                return view('livewire.capacitaciones.table-actions', ['id' => $id]);
-            })->unsortable()
-            ->label('Acciones')
-            ->excludeFromExport(),
-
-            // Column::name('tipo_de_capacitaciones.name')
-            //     ->filterable($this->tipo_de_capacitaciones)
-            //     ->searchable()
-            //     ->sortBy('tipo_de_capacitaciones.name')
-            //     ->hideable()
-            //     ->label('Tipo de capacitación'),
             
             Column::name('temas.name')
                 ->filterable()
@@ -78,6 +72,46 @@ class CapacitacionesTable extends LivewireDatatable
                 ->sortBy('temas.name')
                 ->hideable()
                 ->label('Tema'),
+            
+            NumberColumn::callback('id', function ($id) {
+                return Capacitacione::find($id)->sesiones->count();
+            },[],'Sesiones')
+                ->label('Sesiones')
+                ->filterable()
+                ->searchable()
+                ->hideable()
+                ->sortBy('id')
+                ->alignCenter(),
+
+            BooleanColumn::callback(['id', 'activo'], function ($id, $activo) {
+                    return view('livewire.custom-boolean', ['modelId' => $id, 'field' => 'activo', 'value' => $activo]);
+                })
+                ->label('Activo')
+                ->filterable()
+                ->searchable()
+                ->hideable()
+                ->alignCenter(),
+            
+            BooleanColumn::callback(['id', 'es_onboarding'], function ($id, $es_onboarding) {
+                    return view('livewire.custom-boolean', ['modelId' => $id, 'field' => 'es_onboarding', 'value' => $es_onboarding]);
+                })
+                ->label('Onboarding')
+                ->filterable()
+                ->searchable()
+                ->hideable()
+                ->alignCenter(),
+
+            DateColumn::name('created_at')->label('Fecha de creacion')->format('d/m/Y h:i:s a')->searchable()->filterable()->defaultSort('asc'),
+            DateColumn::name('updated_at')->label('Fecha de Modificación')->format('d/m/Y h:i:s a')->searchable()->filterable()->defaultSort('asc'),
+            DateColumn::name('deleted_at')->label('Fecha de eliminación')->format('d/m/Y h:i:s a')->searchable()->filterable()->defaultSort('asc'),
+            
+            // Column::name('tipo_de_capacitaciones.name')
+            //     ->filterable($this->tipo_de_capacitaciones)
+            //     ->searchable()
+            //     ->sortBy('tipo_de_capacitaciones.name')
+            //     ->hideable()
+            //     ->label('Tipo de capacitación'),
+
             // campo para ->withCount('sesiones')
             // NumberColumn::name('sesiones_count')
             //     ->label('Sesiones')
@@ -194,15 +228,6 @@ class CapacitacionesTable extends LivewireDatatable
             //     ->sortBy('cantidad_de_sesiones')
             //     ->alignCenter(),
 
-            NumberColumn::callback('id', function ($id) {
-                return Capacitacione::find($id)->sesiones->count();
-            },[],'Sesiones')
-                ->label('Sesiones')
-                ->filterable()
-                ->searchable()
-                ->hideable()
-                ->sortBy('id')
-                ->alignCenter(),
 
             // Column::callback('id,cantidad_de_sesiones', function ($id) {
             //         $capacitacion = Capacitacione::find($id);
@@ -328,6 +353,14 @@ class CapacitacionesTable extends LivewireDatatable
             $record->timestamps = true;
             $record->delete();
         }
+    }
+
+    public function updateBooleanField($modelId, $field, $newValue)
+    {
+        $model = Capacitacione::find($modelId); // Asegúrate de reemplazar `Model` con el nombre de tu modelo real
+        $model->$field = $newValue;
+        $model->save();
+        $this->emit('fieldUpdated', $modelId . '.' . $field, $newValue);
     }
 
 }

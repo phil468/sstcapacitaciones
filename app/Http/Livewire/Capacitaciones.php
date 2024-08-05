@@ -53,7 +53,8 @@ class Capacitaciones extends Component
 	$cantidad_de_sesiones,
 	$expositor_externo,
 	$nombre_expositor_externo,
-	$tema_id_add;
+	$tema_id_add,
+	$capacitacion;
 	
     public $updateMode = false;
 	
@@ -217,13 +218,18 @@ class Capacitaciones extends Component
 	// 	$this->emit('agregar_tema');
 	// }
 
-	public function mount() {		
+	public function mount($id = null) {		
 		$this->estado_realizado = Status::where('name', '=', 'realizado')->first()->id ?? null;
 		if ($this->estado_realizado == null) {
 			session()->flash('message-danger', 'No se encuentra definido el estado "realizado"
 			. Por favor revisar el nombre de los estados');
 			$this->emit('alert-danger');
 		}
+		
+		if ($id != null) {
+			$this->capacitacion = Capacitacione::findOrFail($id);
+		}
+
 	}
 
 		public function render()

@@ -27,10 +27,10 @@ class Sesione extends Model
     //    return $this->hasMany(Asistencia::class,'sesion_id','id');
     // }
 
-    public function asistencia_count()
-    {
-        return $this->hasMany(Asistencia::class,'sesion_id','id')->count();
-    }
+    // public function asistencia_count()
+    // {
+    //     return $this->hasMany(Asistencia::class,'sesion_id','id')->count();
+    // }
 
     public function personal()
     {

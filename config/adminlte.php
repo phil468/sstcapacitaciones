@@ -264,18 +264,18 @@ return [
         ['header' => 'CAPACITACIONES', 'can'  => ['ver-capacitacion']],
 
         [
-            'text' => 'CAPACITACIONES',
-            'url'  => 'capacitaciones',
+            'text' => 'Mis Capacitaciones',
+            'url'  => 'mis-capacitaciones',
             'icon' => 'fas fa-sign-in-alt',
-            'can'  => 'ver-capacitacion',
+            'can'  => 'ver-mis-capacitaciones',
         ],
         
-        [
-            'text' => 'Asistencias',
-            'url'  => 'asistencias',
-            'icon' => 'fas fa-sign-in-alt',
-            'can'  => 'ver-capacitacion',
-        ],
+        // [
+        //     'text' => 'Asistencias',
+        //     'url'  => 'asistencias',
+        //     'icon' => 'fas fa-sign-in-alt',
+        //     'can'  => 'ver-capacitacion',
+        // ],
         // ['header' => 'Evaluaciones', 'can'  => ['ver-evaluaciones-de-desempeno']],
 
         // [
@@ -481,10 +481,17 @@ return [
 
     
         [
-            'text' => 'Ajustes de evaluaciones', 'can'  => ['ver-user','ver-rol'],
+            'text' => 'Ajustes de Capacitaciones', 'can'  => ['ver-user','ver-rol'],
             'classes' => 'rounded-xl',
             'icon' => 'fas fa-cogs',
             'submenu' =>[
+                [
+                    'text' => 'Capacitaciones',
+                    'url'  => 'capacitaciones',
+                    'icon' => 'fas fa-sign-in-alt',
+                    'can'  => 'ver-capacitacion',
+                    'active' => ['regex:@^capacitaciones/[0-9]+/edit$@','capacitaciones/create','regex:@^capacitaciones/[0-9]+@']
+                ],
                 [
                     'text' => 'Evaluaciones',
                     'url'  => 'evaluaciones',
@@ -501,13 +508,13 @@ return [
                 //     'classes' => 'rounded-xl',
                 // ],
                 
-                [
-                    'text' => 'Secciones',
-                    'url'  => 'secciones',
-                    'icon' => 'fas fa-cog fa-xs',
-                    'can'  => 'ver-modalidad',
-                    'classes' => 'rounded-xl',
-                ],
+                // [
+                //     'text' => 'Secciones',
+                //     'url'  => 'secciones',
+                //     'icon' => 'fas fa-cog fa-xs',
+                //     'can'  => 'ver-modalidad',
+                //     'classes' => 'rounded-xl',
+                // ],
 
                 [
                     'text' => 'Preguntas',
@@ -625,12 +632,12 @@ return [
             ],
         ],
         'Sweetalert2' => [
-            'active' => false,
+            'active' => true,
             'files' => [
                 [
                     'type' => 'js',
                     'asset' => false,
-                    'location' => '//cdn.jsdelivr.net/npm/sweetalert2@8',
+                    'location' => 'https://cdn.jsdelivr.net/npm/sweetalert2@11',
                 ],
             ],
         ],

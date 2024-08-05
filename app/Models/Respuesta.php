@@ -17,13 +17,23 @@ class Respuesta extends Model
 
     protected $table = 'respuestas';
 
-    protected $fillable = ['pregunta_id','opcion_id','valor_numerico','valor_texto','evaluado_id'];
+    protected $fillable = [
+            'pregunta_id',
+            'opcion_id',
+            'valor_numerico',
+            'valor_texto',
+            'evaluado_id',
+            'personal_id',
+            'prueba_id',
+            'capacitacion_id',
+            'opcion_correcta_id'
+        ];
 	
-    protected $casts = [
-        'evaluado_id' => 'encrypted',
-        'pregunta_id' => 'encrypted',
-        'valor_numerico' => 'encrypted',
-    ];
+    // protected $casts = [
+    //     'evaluado_id' => 'encrypted',
+    //     'pregunta_id' => 'encrypted',
+    //     'valor_numerico' => 'encrypted',
+    // ];
 
     public function pregunta()
     {

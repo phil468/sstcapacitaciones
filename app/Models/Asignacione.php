@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Asignacione extends Model
@@ -16,90 +15,36 @@ class Asignacione extends Model
 
     protected $table = 'asignaciones';
 
-    protected $fillable = [
-            'personal_id',
-            'empresa_id',
-            'gerencia_id',
-            'sede_id',
-            'area_id',
-            'cargo_id',
-            'fecha',
-            'responsable_id',
-            'responsable_area_id',
-            'responsable_cargo_id',
-            'created_by',
-            'updated_by',
-            'deleted_by',
-            'pdf'
-        ];
-    
-        public function personal()
-        {
-            return $this->hasOne('App\Models\Personal', 'id', 'personal_id');
-        }
+    protected $fillable = ['personal_id','capacitacion_id','fecha_inicio','fecha_fin','intentos_de_evaluacion','realizado','finalizado','created_by','updated_by','deleted_by','estado_de_asignacion_id'];
 	
-        public function empresa()
-        {
-            return $this->hasOne('App\Models\Empresa', 'id', 'empresa_id');
-        }
-        
-        public function gerencia()
-        {
-            return $this->hasOne('App\Models\Gerencia', 'id', 'gerencia_id');
-        }
+    public function personal()
+    {
+        return $this->belongsTo(Personal::class,'personal_id','id');
+    }
 
-        public function sede()
-        {
-            return $this->hasOne('App\Models\Sede', 'id', 'sede_id');
-        }
-        
-        public function area()
-        {
-            return $this->hasOne('App\Models\Area', 'id', 'area_id');
-        }
-        
-        public function cargo()
-        {
-            return $this->hasOne('App\Models\Cargo', 'id', 'cargo_id');
-        }
-        
-        public function responsable()
-        {
-            return $this->hasOne('App\Models\Personal', 'id', 'responsable_id');
-        }
-        
-        public function responsable_area()
-        {
-            return $this->hasOne('App\Models\Area', 'id', 'responsable_area_id');
-        }
-        
-        public function responsable_cargo()
-        {
-            return $this->hasOne('App\Models\Cargo', 'id', 'responsable_cargo_id');
-        }
+    public function capacitacion()
+    {
+        return $this->belongsTo(Capacitacione::class,'capacitacion_id','id');
+    }
 
-        public function activos()
-        {
-            return $this->belongsToMany(
-                Activo::class,
-                'asignacion_has_activos',
-                'asignacion_id',
-                'activo_id'
-            );
-        }
-        
-        public function activos_asignados(): HasMany
-        {
-            return $this->hasMany(AsignacionHasActivo::class,'asignacion_id','id');
-        }    
+    public function creado_por()
+    {
+        return $this->belongsTo(Personal::class,'created_by','id');
+    }
 
-        public function activos_id()
-        {
-            $ids = [];
-            foreach ($this->activos as $activo) {
-                array_push($ids, $activo->id);
-            }     
+    public function actualizado_por()
+    {
+        return $this->belongsTo(Personal::class,'updated_by','id');
+    }
 
-            return $ids;
-        }
+    public function eliminado_por()
+    {
+        return $this->belongsTo(Personal::class,'deleted_by','id');
+    }
+
+    public function estado_de_asignacion()
+    {
+        return $this->belongsTo(EstadoDeAsignacion::class,'estado_de_asignacion_id','id');
+    }
+
 }

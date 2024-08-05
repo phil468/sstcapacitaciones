@@ -15,21 +15,36 @@ class Pregunta extends Model
 
     protected $table = 'preguntas';
 
-    protected $fillable = ['seccion_id','evaluacion_id','qid','pregunta','tipo','opciones','numero_orden'];
-
-    public function evaluacion()
-    {
-        return $this->belongsTo(Evaluacione::class,'evaluacion_id','id');
-    }
-
-    public function seccion()
-    {
-        return $this->belongsTo(Seccione::class,'seccion_id','id');
-    }
+    protected $fillable = [
+        'pregunta',
+        'tipo_de_pregunta_id',
+        'numero_orden',
+        'capacitacion_id',
+        ];
 
     public function respuestas()
     {
         return $this->hasMany(Respuesta::class,'pregunta_id','id');
+    }
+
+    public function capacitacion()
+    {
+        return $this->belongsTo(Capacitacione::class,'capacitacion_id','id');
+    }
+
+    public function tipo_de_pregunta()
+    {
+        return $this->belongsTo(TipoDePregunta::class,'tipo_de_pregunta_id','id');
+    }
+
+    public function opciones()
+    {
+        return $this->hasMany(Opcione::class,'pregunta_id','id');
+    }
+
+    public function solucion()
+    {
+        return $this->hasOne(Solucione::class,'pregunta_id','id');
     }
 
     

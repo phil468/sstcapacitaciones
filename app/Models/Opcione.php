@@ -17,4 +17,14 @@ class Opcione extends Model
 
     protected $fillable = ['pregunta_id','opcion','valor','optionid'];
 	
+    public function pregunta()
+    {
+        return $this->belongsTo(Pregunta::class,'pregunta_id','id');
+    }
+
+    public function respuestas()
+    {
+        return $this->hasMany(Respuesta::class,'opcion_id','id');
+    }
+
 }

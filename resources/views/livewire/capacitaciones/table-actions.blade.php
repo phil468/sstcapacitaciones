@@ -16,7 +16,8 @@
         </a> --}}
         
         {{--BOTON VER--}}
-        <a title="Ver" class="btn btn-primary" data-toggle="modal" data-target="#showModal" wire:click="show({{$id}})"><i class="fa fa-eye"></i></a>
+        <a title="Ver" class="btn btn-primary" href="{{ route('capacitaciones.show', ['id' => $id]) }}"><i class="fa fa-eye"></i></a>
+        {{-- <a title="Ver" class="btn btn-primary" data-toggle="modal" data-target="#showModal" wire:click="show({{$id}})"><i class="fa fa-eye"></i></a> --}}
 
         <a title="Eliminar" class="btn btn-danger" onclick="confirm('¿Confirma eliminar {{$id}} ? \n ¡Los datos eliminados no pueden ser recuperados!')
         ||event.stopImmediatePropagation()" wire:click="destroy({{$id}})"><i class="fa fa-trash"></i></a>

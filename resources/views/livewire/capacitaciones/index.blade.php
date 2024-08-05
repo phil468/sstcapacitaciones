@@ -8,7 +8,20 @@
 
 @section('content')
 
-@livewire('capacitaciones')
+@livewire('capacitaciones',['id' => $id ?? null])
+
+@if (isset($id))
+    @php
+        // verificar si capacitaciuon exite con el id
+        $capacitacion = App\Models\Capacitacione::find($id);
+    @endphp 
+        @if ($capacitacion)
+            @livewire('sesiones',['capacitacion_id' => $id])
+            @livewire('preguntas', ['capacitacion_id' => $id])
+            @livewire('asignaciones', ['capacitacion_id' => $id])
+        @endif
+@endif
+
 
 @stop
 

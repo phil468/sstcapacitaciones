@@ -16,25 +16,31 @@ class Capacitacione extends Model
     protected $table = 'capacitaciones';
 
     protected $fillable = ['empresa_id',
-    'capacitaciones_tipo_id',
-    'tema_id',
-    'sede_id',
-    'fecha_capacitacion',
-    'hora_inicio',
-    'hora_fin',
-    'expositor_id',
-    'cargo_expositor_id',
-    'registrador_id',
-    'cargo_registrador_id',
-    'fecha_registro',
-    'activo',
-    'status_id',
-    'modalidad_id',
-    'cantidad_de_sesiones',
-    'expositor_externo',
-    'nombre_expositor_externo',
-    'synced'
+        'capacitaciones_tipo_id',
+        'tema_id',
+        'sede_id',
+        'fecha_capacitacion',
+        'hora_inicio',
+        'hora_fin',
+        'expositor_id',
+        'cargo_expositor_id',
+        'registrador_id',
+        'cargo_registrador_id',
+        'fecha_registro',
+        'activo',
+        'status_id',
+        'modalidad_id',
+        'cantidad_de_sesiones',
+        'expositor_externo',
+        'nombre_expositor_externo',
+        'synced',
+        //nuevo campo
+        'es_onboarding',
+        'cantidad_de_preguntas_a_mostrar',
     ];
+
+    // dates
+    // protected $dates = ['fecha_capacitacion','fecha_registro'];
 	    
     public function empresa()
     {
@@ -119,6 +125,12 @@ class Capacitacione extends Model
     {
         return $this->hasMany(Sesione::class,'capacitacion_id','id');
     }
+
+    public function preguntas()
+    {
+        return $this->hasMany(Pregunta::class,'capacitacion_id','id');
+    }
+
 }
 
 

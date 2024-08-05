@@ -13,6 +13,10 @@ class Sesiones extends Component
 	protected $paginationTheme = 'bootstrap';
     public $selected_id, $keyWord, $capacitacion_id, $numero_de_sesion, $fecha, $hora_inicio, $hora_fin, $urlVideo;
     public $updateMode = false;
+    
+    public function mount($capacitacion_id = null) {
+        $this->capacitacion_id = $capacitacion_id;
+    }
 
     public function render()
     {
@@ -24,6 +28,9 @@ class Sesiones extends Component
 						->orWhere('fecha', 'LIKE', $keyWord)
 						->orWhere('hora_inicio', 'LIKE', $keyWord)
 						->orWhere('hora_fin', 'LIKE', $keyWord)
+                        ->when($this->capacitacion_id, function ($query) {
+                            return $query->where('capacitacion_id', $this->capacitacion_id);
+                        })
 						->paginate(10),
         ]);
     }

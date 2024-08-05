@@ -312,12 +312,12 @@
                                 </div>
                             @endif
                 
-                    @else
-                    <div class="alert alert-default" role="alert">
-                        No tiene objetivos pendientes de ingresar.
-                    </div>
-                    @endif
-                @endisset
+                        @else
+                            <div class="alert alert-default" role="alert">
+                                No tiene objetivos pendientes de ingresar.
+                            </div>
+                        @endif
+                    @endisset
                 </div>
 
                 <div wire:loading wire:target="changeView">

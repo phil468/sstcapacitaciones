@@ -1,9 +1,11 @@
-<div {{ $attributes->merge(['class' => $makeAlertClass()]) }}>
+<div {{ $attributes->merge(['class' => $makeAlertClass()]) }} class='rounded-2xl' >
 
     {{-- Dismiss button --}}
     @isset($dismissable)
-        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-            &times;
+        <button type="button" class="text-light close" data-dismiss="alert" aria-hidden="true">
+            {{-- <div class="text-light"> --}}
+                &times;                
+            {{-- </div> --}}
         </button>
     @endisset
 
