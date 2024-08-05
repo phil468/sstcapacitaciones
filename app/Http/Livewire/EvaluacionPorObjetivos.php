@@ -6,7 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Respuesta;
 
-class Objetivos extends Component
+class EvaluacionPorObjetivos extends Component
 {
     use WithPagination;
 

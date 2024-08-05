@@ -19,7 +19,7 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 use function PHPUnit\Framework\isNull;
 
-class ActivosV2Import implements ToCollection, WithHeadingRow
+class ActivosImportV2 implements ToCollection, WithHeadingRow
 {
     /**
     * @param array $row
