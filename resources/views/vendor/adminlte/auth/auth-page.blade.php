@@ -15,13 +15,38 @@
 <style>
     body {
         
-        background-image: url('{{asset('img/evaluacion/login-10s.mp4')}}');
+        position: relative;
+        /* background-image: url('{{asset('img/evaluacion/login-10s.mp4')}}'); */
+        background-image: url('{{asset('img/evaluacion/image.png')}}');
         /* url('/img/evaluacion/login-10s.mp4'); */
         background-size: cover;
         background-repeat: no-repeat;
         /* background-color: #568ca5!important; */
     }
 
+
+    body::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        filter: blur(2px); Ajusta el valor del desenfoque según sea necesario
+        z-index: -1;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Ajusta el color y la opacidad según sea necesario */
+        z-index: 0;
+    }
+    
     video {
     position: fixed;
     right: 0;
@@ -41,9 +66,10 @@
 
 @section('body')
 
-    <div class="video-background" style="background-image: url('https://carontestudio.com/img/contacto.jpg');">
+    <div class="overlay"></div>
+    {{-- <div class="video-background" style="background-image: url('https://carontestudio.com/img/contacto.jpg');">
         <video class="video-background-content" src="{{url('img/evaluacion/login-10s.mp4')}}" autoplay="true" muted="true" loop="true"></video>
-    </div>
+    </div> --}}
 
     <div class="body-bg d-flex h-100 w-100 justify-content-center ">
         <div class="{{ $auth_type ?? 'login' }}-box ">
