@@ -61,7 +61,7 @@
                             </a>
                         </div> --}}
             <div class="text-center">
-                <h2 class="text-white h1">EVALUACIÓN <br> DE DESEMPEÑO</h2>            
+                <h2 class="text-white h1">CAPACITACIONES <br> SST</h2>            
             </div>
 
             {{-- Card Box --}}
