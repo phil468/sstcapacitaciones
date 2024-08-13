@@ -1,9 +1,9 @@
 <!-- Modal -->
-<div wire:ignore.self class="modal fade" id="updateModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+<div wire:ignore.self class="modal fade" id="updateSesionModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
        <div class="rounded-2xl modal-content">
             <div class="text-white modal-header bg-vanguard rounded-t-2xl">                <h5 class="modal-title" id="updateModalLabel">Actualizar Sesione</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
                     <span wire:click.prevent="cancel()" aria-hidden="true">×</span>
                 </button>
             </div>
@@ -11,14 +11,46 @@
                 <form>
 					<input type="hidden" wire:model="selected_id">
             <div class="form-group">
-                <label for="capacitacion_id">Capacitacion Id</label>
-                <input wire:model="capacitacion_id" type="text" class="form-control" id="capacitacion_id" placeholder="Capacitacion Id">@error('capacitacion_id') <span class="error text-danger">{{ $message }}</span> @enderror
+                <label for="capacitacion_id">Capacitacion</label>
+                @isset($capacitacion)
+                    <input type="text" class="form-control" name="capacitacion" id="capacitacion" value="{{ $capacitacion->tema->name }}" disabled >
+                @else
+                    <input wire:model="capacitacion_id" type="text" class="form-control" id="capacitacion_id" placeholder="Capacitacion Id">@error('capacitacion_id') <span class="error text-danger">{{ $message }}</span> @enderror                   
+                @endisset
             </div>
             <div class="form-group">
                 <label for="numero_de_sesion">Numero De Sesion</label>
-                <input wire:model="numero_de_sesion" type="text" class="form-control" id="numero_de_sesion" placeholder="Numero De Sesion">@error('numero_de_sesion') <span class="error text-danger">{{ $message }}</span> @enderror
+                <input wire:model.defer="numero_de_sesion" type="text" class="form-control" id="numero_de_sesion" placeholder="Numero De Sesion">@error('numero_de_sesion') <span class="error text-danger">{{ $message }}</span> @enderror
             </div>
+            {{--camp name--}}
+
             <div class="form-group">
+                <label for="name">Nombre</label>
+                <input wire:model.defer="name" type="text" class="form-control" id="name" placeholder="Nombre">@error('name') <span class="error text-danger">{{ $message }}</span> @enderror
+            </div>
+            
+            
+            <div class="form-group">
+                <label for="video" class="col-md-2 control-label">Video</label>
+                {{--aquí se va a subir el archivo--}}
+                <input type="file" name="video" id="video" wire:model="video" class="form-control">
+                @error($video)
+                    <span class="error text-danger">{{ $message }}</span>
+                @enderror 
+            </div>
+            @if ($video)
+                <div class="form-group
+                @if ($errors->has('video')) has-error @endif">
+                    <label for="video" class="col-md-2 control-label">Video</label>
+                    <video width="320" height="240" controls>
+                        <source src="{{ Storage::url('adm/'.$video) }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            @endif
+            
+            
+            {{-- <div class="form-group">
                 <label for="fecha">Fecha</label>
                 <input wire:model="fecha" type="text" class="form-control" id="fecha" placeholder="Fecha">@error('fecha') <span class="error text-danger">{{ $message }}</span> @enderror
             </div>
@@ -29,13 +61,21 @@
             <div class="form-group">
                 <label for="hora_fin">Hora Fin</label>
                 <input wire:model="hora_fin" type="text" class="form-control" id="hora_fin" placeholder="Hora Fin">@error('hora_fin') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
+            </div> --}}
 
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" wire:click.prevent="cancel()" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" wire:click.prevent="update()" class="btn btn-primary">Guardar</button>
+                <button type="button" wire:click.prevent="cancel()" class="btn btn-secondary"
+                    data-dismiss="modal">Cerrar</button>
+
+                @if ($this->selected_id == 0)
+                    <button type="button" wire:click.prevent="store()"
+                        class="btn btn-primary close-modal">Guardar</button>
+                @else
+                    <button type="button" wire:click.prevent="update()" class="btn btn-primary"
+                        @if (!$this->updateMode) disabled @endif>Guardar</button>
+                @endif
             </div>
        </div>
     </div>

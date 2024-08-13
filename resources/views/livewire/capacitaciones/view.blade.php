@@ -8,7 +8,7 @@
 					<div class="text-white card-header bg-vanguard rounded-t-xl">
 						<div style="display: flex; justify-content: space-between; align-items: center;">
 							<div class="float-left">
-								<h5 class="h5">Lista Capacitaciones </h4>
+								<h5 class="h5">Lista Capacitaciones </h5>
 							</div>
 							{{--<div wire:poll.1s>
 								<code><h5>{{ now()->format('H:i:s') }}</h5></code>
@@ -22,7 +22,9 @@
 								<input wire:model='keyWord' type="text" class="form-control" name="search" id="search" placeholder="Buscar">
 							</div> --}}
 							@can('crear-capacitacion')
-								<div class="ml-1 btn btn-md btn-default rounded-xl" wire:click="edit(0)" data-toggle="modal"
+								<div class="ml-1 btn btn-md btn-default rounded-xl" 
+									wire:click="edit(0)" 
+									data-toggle="modal"
 									title="Nueva Capacitación"
 									data-target="#updateModal">
 									<i class="fa fa-plus"></i>

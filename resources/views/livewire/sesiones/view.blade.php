@@ -6,7 +6,7 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
-							<h5 class="h5">Sesiones </h4>
+							<h5 class="h5">Sesiones </h5>
 						</div>
 						{{--<div wire:poll.1s>
 							<code><h5>{{ now()->format('H:i:s') }}</h5></code>
@@ -18,7 +18,12 @@
 							<input wire:model='keyWord' type="text" class="form-control" name="search" id="search" placeholder="Buscar">
 						</div> --}}
 						@can('crear-sesion')
-						<div class="btn btn-default rounded-xl" data-toggle="modal" data-target="#createDataModal" title="Nueva Sesión">
+						<div 
+						class="btn btn-default rounded-xl" 
+						wire:click="edit(0)" 
+						data-toggle="modal" 
+						data-target="#updateSesionModal" 
+						title="Nueva Sesión">
 						<i class="fa fa-plus"></i>
 						</div>
 						@endcan
@@ -26,9 +31,9 @@
 				</div>
 				
 				<div class="card-body">
-						@can('crear-sesion')
+						{{-- @can('crear-sesion')
 							@include('livewire.sesiones.create')
-						@endcan
+						@endcan --}}
 						@can('editar-sesion')
 							@include('livewire.sesiones.update')
 						@endcan
@@ -62,11 +67,19 @@
 								<td>{{ $row->name }}</td>
 
 								<td>
-									<a href="{{ route('download', $row->video) }}" class="btn btn-link">
+									@if($row->video)
+										<a wire:click='download({{$row->id}})' 
+											{{-- href="{{ asset('storage/' . $row->video) }}" download  --}}
+											class="btn btn-link">
+											<i class="fa fa-download"></i> Descargar
+										</a>
+									@endif
+									
+									{{-- <a href="{{ route('download', $row->video) }}" class="btn btn-link">
 										<i class="fa fa-download"></i> Descargar										
-									</a>
+									</a> --}}
 									{{--ver--}}
-									<button wire:click="showVideo('{{$row->video}}')" class="btn btn-link" data-toggle="modal" data-target="#videoModal">
+									<button wire:click="showVideo('{{$row->id}}')" class="btn btn-link" data-toggle="modal" data-target="#videoModal">
 										<i class="fa fa-eye"></i> Ver
 									</button>
 
@@ -81,7 +94,7 @@
 									<td width="90">
 										<div class="btn-group">
 											@can('editar-sesion')
-											<a data-toggle="modal" data-target="#updateModal" class="btn btn-vanguard rounded-xl" wire:click="edit({{$row->id}})">
+											<a data-toggle="modal" data-target="#updateSesionModal" class="btn btn-vanguard rounded-xl" wire:click="edit({{$row->id}})">
 												<i class="fa fa-edit"></i>
 											</a>
 											@endcan
