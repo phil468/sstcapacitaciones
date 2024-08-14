@@ -115,7 +115,7 @@ class Sesiones extends Component
 
         // Manejar la carga del archivo
         if ($this->video) {
-            $videoPath = $this->video->store('video_sesiones', 'public');
+            $videoPath = $this->video->store('video_sesiones', 'adm');
             $video = $videoPath;
         }
 
@@ -150,6 +150,8 @@ class Sesiones extends Component
     {
         $record = Sesione::find($id);
         // dd(Storage::url('adm/'.$record->video));
+        $url = Storage::disk('adm')->url($record->video);
+        dd($url);
         $this->urlVideo = Storage::url($record->video);
     }
 

@@ -97,12 +97,14 @@ class MisCapacitaciones extends Component
     public function evaluacion($bool)
     {
         if ($bool) {
+            // dd($bool);
             if(!empty($this->asignacion)) {
                 $preguntas = $this->asignacion->capacitacion->preguntas()->inRandomOrder()->limit(5)->get();
                 $this->preguntasAleatorias = $preguntas;
                 $this->viewEvaluation = true;
             }
         } else {
+            // dd($bool);
             $this->viewEvaluation = false;
         }
     }

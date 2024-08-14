@@ -492,13 +492,13 @@ return [
                     'can'  => 'ver-capacitacion',
                     'active' => ['regex:@^capacitaciones/[0-9]+/edit$@','capacitaciones/create','regex:@^capacitaciones/[0-9]+@']
                 ],
-                [
-                    'text' => 'Evaluaciones',
-                    'url'  => 'evaluaciones',
-                    'icon' => 'fas fa-cog fa-xs',
-                    'can'  => 'ver-modalidad',
-                    'classes' => 'rounded-xl',
-                ],
+                // [
+                //     'text' => 'Evaluaciones',
+                //     'url'  => 'evaluaciones',
+                //     'icon' => 'fas fa-cog fa-xs',
+                //     'can'  => 'ver-modalidad',¿
+                //     'classes' => 'rounded-xl',
+                // ],
                 
                 // [
                 //     'text' => 'Evaluadores',

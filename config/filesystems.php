@@ -42,6 +42,13 @@ return [
             'visibility' => 'public',
         ],
 
+        'adm' => [
+            'driver' => 'local',
+            'root' => storage_path('app/adm'),
+            'url' => env('APP_URL').'/adm',
+            'visibility' => 'public',
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

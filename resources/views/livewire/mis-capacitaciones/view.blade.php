@@ -112,7 +112,7 @@
                                         <div class="mr-2 rounded-xl btn btn-lg btn-vanguard" wire:click="enviarEvaluacion()">
                                             <i class="fas fa-check"></i> Enviar
                                         </div>
-                                        <div class="rounded-xl btn btn-sm btn-default" wire:click="evaluacion({{false}})">
+                                        <div class="rounded-xl btn btn-sm btn-default" wire:click="evaluacion(0)">
                                             <i class="fas fa-arrow-left"></i> Volver
                                         </div>
                                     </div>
