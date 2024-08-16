@@ -35,6 +35,13 @@ return [
             'root' => storage_path('app'),
         ],
 
+        'video_sesiones' => [
+            'driver' => 'local',
+            'root' => storage_path('app/video_sesiones'),
+            'url' => env('APP_URL').'/video_sesiones',
+            'visibility' => 'public',
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/adm'),
@@ -42,12 +49,12 @@ return [
             'visibility' => 'public',
         ],
 
-        'adm' => [
-            'driver' => 'local',
-            'root' => storage_path('app/adm'),
-            'url' => env('APP_URL').'/adm',
-            'visibility' => 'public',
-        ],
+        // 'public' => [
+        //     'driver' => 'local',
+        //     'root' => storage_path('app/adm'),
+        //     'url' => env('APP_URL').'/storage',
+        //     'visibility' => 'public',
+        // ],
 
         's3' => [
             'driver' => 's3',
@@ -84,7 +91,8 @@ return [
     */
 
     'links' => [
-        public_path('storage') => storage_path('app/public'),
+        public_path('storage') => storage_path('app/adm'),
+        public_path('video_sesiones') => storage_path('app/video_sesiones'),
     ],
 
 ];

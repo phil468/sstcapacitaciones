@@ -200,7 +200,14 @@
                     @endif
                 @endif
             @else
-                <div class="card rounded-xl">
+            
+                <div class="card rounded-xl 
+                {{-- @if ($asignacion_id)
+                d-none
+                @else
+                d-block
+                @endif --}}
+                ">
                     <div class="text-white card-header bg-vanguard rounded-t-xl">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div class="float-left">
@@ -377,6 +384,7 @@
                         <x-loading-indicator />
                     </div>
                 </div>
+                
             @endif
             
         </div>

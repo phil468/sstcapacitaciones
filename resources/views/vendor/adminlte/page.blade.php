@@ -74,6 +74,8 @@
             $('#updatePlanesConfiguracionModal').modal('hide');
             $('#importEncargadosPlanesDataModal').modal('hide');
             $('#updateEncargadosPlanesModal').modal('hide');
+            $('#updateSesionModal').modal('hide');
+            
         });
         
         window.livewire.on('opencreatePlanDataModal', () => {

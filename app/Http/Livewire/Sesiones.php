@@ -89,6 +89,7 @@ class Sesiones extends Component
 
     public function edit($id)
     {
+        // dd(public_path('storage'));
         $this->resetValidation();
         $this->resetInput();
         
@@ -110,12 +111,13 @@ class Sesiones extends Component
     public function update()
     {
         $this->validate([
-		'capacitacion_id' => 'required',
+            'capacitacion_id' => 'required',
+            // 'video' => 'required|mimes:mp4,mov,ogg,qt|max:20000', // 20MB
         ]);
 
         // Manejar la carga del archivo
         if ($this->video) {
-            $videoPath = $this->video->store('video_sesiones', 'adm');
+            $videoPath = $this->video->store(null,'video_sesiones');
             $video = $videoPath;
         }
 
@@ -127,7 +129,7 @@ class Sesiones extends Component
                 'fecha' => $this-> fecha,
                 'hora_inicio' => $this-> hora_inicio,
                 'hora_fin' => $this-> hora_fin,
-                'video' => $video??null,
+                'video' => $videoPath ?? $record->video, // Mantener el video existente si no se carga uno nuevo
                 'name' => $this-> name
             ]);
 
@@ -149,10 +151,16 @@ class Sesiones extends Component
     public function showVideo($id)
     {
         $record = Sesione::find($id);
-        // dd(Storage::url('adm/'.$record->video));
-        $url = Storage::disk('adm')->url($record->video);
-        dd($url);
-        $this->urlVideo = Storage::url($record->video);
+        if ($record && $record->video) {
+            // subir a la carpeta de los assets
+
+            $url = Storage::disk('video_sesiones')->url($record->video);
+            $this->urlVideo = $url;
+            // dd($url);
+        } else {
+            // Manejar el caso en que no se encuentra el registro o el video
+            $this->urlVideo = null;
+        }
     }
 
     public function download($id)

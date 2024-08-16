@@ -9,7 +9,11 @@
           </button>
         </div>
         <div class="modal-body">
-          <iframe width="100%" height="400" src="{{$urlVideo}}" frameborder="0" allowfullscreen></iframe>
+          {{-- <iframe width="100%" height="400" src="{{$urlVideo}}" frameborder="0" allowfullscreen></iframe> --}}
+          <video  width="100%" height="400" allowfullscreen controls>
+              <source src="{{ $urlVideo }}" type="video/mp4">
+              Your browser does not support the video tag.
+          </video>
         </div>
       </div>
     </div>
