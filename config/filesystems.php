@@ -46,7 +46,7 @@ return [
             'driver' => 'local',
             'root' => storage_path('app/adm'),
             'url' => env('APP_URL').'/storage',
-            'visibility' => 'public',
+            'visibility' => 'public', // public
         ],
 
         // 'public' => [
