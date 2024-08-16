@@ -73,16 +73,15 @@
 											class="btn btn-link">
 											<i class="fa fa-download"></i> Descargar
 										</a>
+										<a class="btn btn-link" data-toggle="modal" data-target="#videoModal" wire:click="showVideo({{$row->id}})">
+											<i class="fa fa-eye"></i> Ver
+										</a>
 									@endif
 									
 									{{-- <a href="{{ route('download', $row->video) }}" class="btn btn-link">
 										<i class="fa fa-download"></i> Descargar										
 									</a> --}}
 									{{--ver--}}
-									<button wire:click="showVideo('{{$row->id}}')" class="btn btn-link" data-toggle="modal" data-target="#videoModal">
-										<i class="fa fa-eye"></i> Ver
-									</button>
-
 								</td>
 								
 
@@ -94,12 +93,12 @@
 									<td width="90">
 										<div class="btn-group">
 											@can('editar-sesion')
-											<a data-toggle="modal" data-target="#updateSesionModal" class="btn btn-vanguard rounded-xl" wire:click="edit({{$row->id}})">
+											<a data-toggle="modal" data-target="#updateSesionModal" class="btn btn-outline-vanguard rounded-xl" wire:click="edit({{$row->id}})">
 												<i class="fa fa-edit"></i>
 											</a>
 											@endcan
 											@can('borrar-sesion')							 
-											<a class="btn btn-danger rounded-xl" onclick="confirm('Confirma borrar Sesione : {{$row->name}}? \nSesiones borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> 
+											<a class="btn btn-outline-danger rounded-xl" onclick="confirm('Confirma borrar Sesione : {{$row->name}}? \nSesiones borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> 
 												<i class="fa fa-trash"></i>
 											</a> 
 											@endcan  

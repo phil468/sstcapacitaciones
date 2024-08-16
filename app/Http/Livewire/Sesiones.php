@@ -30,7 +30,7 @@ class Sesiones extends Component
     {
 		$keyWord = '%'.$this->keyWord .'%';
         return view('livewire.sesiones.view', [
-            'sesiones' => Sesione::latest()
+            'sesiones' => Sesione::orderBy('numero_de_sesion')
 						->orWhere('capacitacion_id', 'LIKE', $keyWord)
 						->orWhere('numero_de_sesion', 'LIKE', $keyWord)
 						->orWhere('fecha', 'LIKE', $keyWord)
@@ -105,6 +105,7 @@ class Sesiones extends Component
             $this->name = $record-> name;
         }
 		
+        // dd($this->video);
         $this->updateMode = true;
     }
 
@@ -112,12 +113,13 @@ class Sesiones extends Component
     {
         $this->validate([
             'capacitacion_id' => 'required',
-            // 'video' => 'required|mimes:mp4,mov,ogg,qt|max:20000', // 20MB
+            'video' => 'required|mimes:mp4,mov,ogg,qt,video/mp4|max:20000', // 20MB
         ]);
 
         // Manejar la carga del archivo
         if ($this->video) {
             $videoPath = $this->video->store(null,'video_sesiones');
+            // dd($this->video->getMimeType());
             $video = $videoPath;
         }
 
@@ -150,17 +152,17 @@ class Sesiones extends Component
 
     public function showVideo($id)
     {
-        $record = Sesione::find($id);
-        if ($record && $record->video) {
-            // subir a la carpeta de los assets
+        $this->resetValidation();
+        $this->resetInput();
 
-            $url = Storage::disk('video_sesiones')->url($record->video);
-            $this->urlVideo = $url;
-            // dd($url);
+		if ($id != 0) {
+            $record = Sesione::findOrFail($id);
+            $this->video = $record-> video;
         } else {
-            // Manejar el caso en que no se encuentra el registro o el video
-            $this->urlVideo = null;
+            $this->video = null;
         }
+
+        $this->updateMode = true;
     }
 
     public function download($id)

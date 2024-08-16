@@ -31,23 +31,19 @@
             
             
             <div class="form-group">
-                <label for="video" class="col-md-2 control-label">Video</label>
+                <label for="video">Video * máx.(20 MB): </label>
                 {{--aquí se va a subir el archivo--}}
                 <input type="file" name="video" id="video" wire:model="video" class="form-control">
-                @error($video)
+                @error('video')
                     <span class="error text-danger">{{ $message }}</span>
                 @enderror 
+                @if ($video)
+                        <video width="100%" height="240" controls>
+                            <source src="{{ Storage::disk('video_sesiones')->url($video) }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                @endif
             </div>
-            @if ($video)
-                <div class="form-group
-                @if ($errors->has('video')) has-error @endif">
-                    <label for="video" class="col-md-2 control-label">Video</label>
-                    <video width="320" height="240" controls>
-                        <source src="{{ Storage::url('adm/'.$video) }}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-            @endif
             
             
             {{-- <div class="form-group">

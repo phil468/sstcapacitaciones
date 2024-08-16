@@ -25,3 +25,10 @@ resources/views/emails/verification-code/verification.blade.php
 app/Http/Controllers/VerificationController.php
 config/livewire.php
 adm/livewire-tmp/9ajKhi4ZhEqNjv9XLXVwxq2S4MNyAh-metab2pvcy54bHN4-.xlsx
+public/video_sesiones/Aw55rn4MFCywOXLFH4VJo1TKl2evG1cq6Qz7MbL8.mp4
+public/video_sesiones/ehnG582BvLdhJZ27F1bGDH9Ip1XRgxGtsft1ut2R.mp4
+public/video_sesiones/hyZMQOdGlXe9QxfsI0mVTC0L1gZ7pL3snDDO0UI0.mp4
+public/video_sesiones/jda7Elidhq5qwryf0t8LA9aiDCKsdGJqEJDUTtuM.mp4
+public/video_sesiones/NvDctoU0uD95t7jA8mmSCIeOOKmMMzIpQPfALYEQ.mp4
+public/video_sesiones/QnIf24LwHKMw0wWpws1Jg8EyFCHBCvjFVZ5PMy2G.mp4
+public/video_sesiones/wPhWfp1ukdhbyxafA96GmTk5xIwVGc7kIbsO4MMV.mp4
