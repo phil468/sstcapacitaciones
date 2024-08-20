@@ -3,11 +3,14 @@
 namespace App\Http\Livewire;
 
 use App\Models\Asignacione;
+use App\Models\Capacitacione;
 use App\Models\CapacitacionHasPersonal;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\EvaluadorHasEvaluado;
+use App\Models\SesionAccessLog;
 use App\Models\Sesione;
+use Carbon\Carbon;
 
 class MisCapacitaciones extends Component
 {
@@ -19,15 +22,17 @@ class MisCapacitaciones extends Component
     public $misCapacitaciones;
     public $capacitacion_id=0;
     public $capacitacion;
+    public $sesiones;
     public $sesion;
     public $sesion_id;
-    public $asignacion = null;
+    public $asignacion;
     public $asignacion_id=0;
     public $vistaAlternativa = false;
     public $preguntasAleatorias = [];
     public $viewEvaluation = false;
     public $viewAsignacion = false;
     public $viewSesion = false;
+    public $allSessionsCompleted = false;
 
     protected $queryString = [
         'asignacion_id' => ['as' => 'a', 'except'=>0],
@@ -48,23 +53,44 @@ class MisCapacitaciones extends Component
     
     public function render()
     {
-        return view('livewire.mis-capacitaciones.view');
+        if ($this->asignacion_id) {
+            $this->asignacion($this->asignacion_id);
+        }
+
+        return view('livewire.mis-capacitaciones.view', [
+            'misCapacitaciones' => $this->misCapacitaciones
+        ]);
     }
 
     public function asignacion($id)
     {
-        // Depuración inicial
-        // dd('hola');
-        
         try {
             if ($id == 0) {
                 $this->asignacion_id = 0;
                 $this->asignacion = null;
             } else {
                 $this->asignacion = $this->misCapacitaciones->find($id);
-                
+
                 if ($this->asignacion) {
                     $this->asignacion_id = $this->asignacion->id;
+                    $this->capacitacion_id = $this->asignacion->capacitacion_id;
+
+                    foreach ($this->asignacion->capacitacion->sesiones as $sesion) {
+                        $sesion->accessed = SesionAccessLog::where('capacitacion_id', $this->capacitacion_id)
+                            ->where('personal_id', auth()->user()->personal_id)
+                            ->where('sesion_id', $sesion->id)
+                            ->exists();
+                    }
+
+                    // Verificar si todas las sesiones han sido completadas
+                    $totalSesiones = $this->asignacion->capacitacion->sesiones()->count();
+                    $sesionesCompletadas = SesionAccessLog::where('capacitacion_id', $this->asignacion->capacitacion_id)
+                        ->where('personal_id', auth()->user()->personal_id)
+                        ->distinct('sesion_id')
+                        ->count('sesion_id');
+
+                    $this->allSessionsCompleted = ($sesionesCompletadas >= $totalSesiones);
+
                 } else {
                     // Manejo del caso donde no se encuentra la asignación
                     $this->asignacion_id = null;
@@ -72,39 +98,71 @@ class MisCapacitaciones extends Component
                 }
             }
         } catch (\Exception $e) {
-            // Manejo de excepciones
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 	
     public function sesion($id)
-    {        
+    {
         if ($id == 0) {
             $this->sesion_id = 0;
             $this->sesion = null;
         } else {
             $this->sesion = Sesione::find($id);
-            $this->sesion_id = $this->sesion->id;
+            $numero_de_sesion = $this->sesion->numero_de_sesion;
 
-            if ($this->sesion_id) {
+            $personalId = auth()->user()->personal_id;
 
+            // Verificar si ya ha accedido a la sesión anterior
+            $sesionAnterior = SesionAccessLog::where('capacitacion_id', $this->capacitacion_id)
+                ->where('personal_id', $personalId)
+                ->where('numero_de_sesion', '<', $numero_de_sesion)
+                ->orderBy('numero_de_sesion', 'desc')
+                ->first();
+
+            if ($sesionAnterior || $numero_de_sesion == 1) {
+                // Registrar el acceso a la sesión actual
+                SesionAccessLog::create([
+                    'capacitacion_id' => $this->capacitacion_id,
+                    'personal_id' => $personalId,
+                    'sesion_id' => $id,
+                    'numero_de_sesion' => $numero_de_sesion,
+                    'accessed_at' => Carbon::now(),
+                ]);
+
+                // Redirigir a la sesión
+                // return redirect()->route('session.view', ['sessionId' => $id]);
             } else {
-
+                session()->flash('error', 'Debe completar las sesiones anteriores antes de acceder a esta.');
             }
+            $this->sesion_id = $this->sesion->id;
         }
     }
 
     public function evaluacion($bool)
     {
         if ($bool) {
-            // dd($bool);
-            if(!empty($this->asignacion)) {
-                $preguntas = $this->asignacion->capacitacion->preguntas()->inRandomOrder()->limit(5)->get();
-                $this->preguntasAleatorias = $preguntas;
-                $this->viewEvaluation = true;
+            // Verificar si todas las sesiones han sido completadas
+            $totalSesiones = Capacitacione::find($this->capacitacion_id)->sesiones()->count();
+            $sesionesCompletadas = SesionAccessLog::where('capacitacion_id', $this->capacitacion_id)
+                ->where('personal_id', auth()->user()->personal_id)
+                ->distinct('sesion_id')
+                ->count();
+
+            if ($sesionesCompletadas >= $totalSesiones) {
+                if (!empty($this->asignacion)) {
+
+                    $preguntas = $this->asignacion->capacitacion->preguntas()->inRandomOrder()->limit(5)->get();
+
+                    //$preguntas = Capacitacione::find($this->capacitacion_id)->inRandomOrder()->limit(5)->get();
+                    $this->preguntasAleatorias = $preguntas;
+
+                    $this->viewEvaluation = true;
+                }
+            } else {
+                session()->flash('error', 'Debe completar todas las sesiones antes de acceder a la evaluación.');
             }
         } else {
-            // dd($bool);
             $this->viewEvaluation = false;
         }
     }

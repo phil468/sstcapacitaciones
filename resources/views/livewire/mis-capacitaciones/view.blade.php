@@ -140,56 +140,87 @@
                                 <div class="card-body">
                                     @if ($asignacion->capacitacion->sesiones->count() > 0)
                                         <div class="timeline">
+                                            
+                                            @php
+                                                $nextSessionEnabled = false;
+                                            @endphp
+                                            
                                             @foreach ($asignacion->capacitacion->sesiones as $index => $sesion)
                                                 <div class="timeline-item">
-                                                    <div class="timeline-icon text-white border border-color-success
-                                                            @if ($index == 0)
+                                                        <div class="timeline-icon text-white border border-color-success
+                                                            @if ($sesion->accessed)
                                                                 bg-vanguard
+                                                            @elseif (!$nextSessionEnabled)
+                                                                bg-primary   
                                                             @else
-                                                                bg-primary
+                                                                bg-gray
                                                             @endif
-                                                            ">{{ $index + 1 }}</div>
-                                                    <div wire:click="sesion({{$sesion->id}})">
-                                                        
-                                                        <div class="timeline-content btn text-left
-                                                                @if ($index == 0)
-                                                                    bg-vanguard
-                                                                @else
-                                                                    bg-primary
-                                                                @endif
-                                                                ">
-
-                                                                {{-- icono de success --}}
-                                                            
-                                                            <h5 class="text-white timeline-title">
-                                                                @if ($index == 0)
-                                                                    <i class="fas fa-check-circle fa-lg"></i>
-                                                                @else
-                                                                    <i class="text-white far fa-circle fa-lg"></i>
-                                                                @endif
-                                                                {{ $sesion->name }}</h5>
-                                                            {{-- <video width="100%" controls>
-                                                                <source src="{{ $sesion->video }}" type="video/mp4">
-                                                                Tu navegador no soporta la reproducción de videos.
-                                                            </video>
-                                                            <p class="mt-2 timeline-description">{{ $sesion->descripcion }}</p> --}}
+                                                            ">{{ $index + 1 }}
                                                         </div>
+                                                            
+                                                        <div>
+                                                        
+                                                            <div class="timeline-content text-left
+                                                                    @if ($sesion->accessed)
+                                                                        btn bg-vanguard
+                                                                    @elseif (!$nextSessionEnabled)
+                                                                        btn bg-primary   
+                                                                    @else
+                                                                        bg-gray
+                                                                    @endif
+                                                                    "
+                                                                    @if ($sesion->accessed)
+                                                                        wire:click="sesion({{$sesion->id}})"
+                                                                    @elseif (!$nextSessionEnabled)
+                                                                        wire:click="sesion({{$sesion->id}})"
+                                                                    @else
+                                                                    @endif
+                                                                    >
+                                                                
+                                                                <h5 class="text-white timeline-title">
+                                                                    @if ($sesion->accessed)
+                                                                        <i class="fas fa-check-circle fa-lg"></i>                                                                        
+                                                                    @else
+                                                                        <i class="text-white far fa-circle fa-lg"></i>
+                                                                    @endif
+                                                                    {{ $sesion->name }}
+                                                                </h5>
+                                                            </div>
+                                                        </div>
+                                                </div>
+                                                @if ($sesion->accessed)
+
+                                                @elseif (!$nextSessionEnabled)
+                                                    @php
+                                                        $nextSessionEnabled = true;
+                                                    @endphp
+                                                @else
+                                                
+                                                @endif
+                                            @endforeach
+                                            
+                                            @if ($allSessionsCompleted)
+                                                <div class="timeline-item">
+                                                    <div class="text-white align-content-center timeline-icon bg-primary">{{ $asignacion->capacitacion->sesiones->count() + 1 }}</div>
+                                                    <div class="text-left align-content-center timeline-content bg-primary btn" wire:click="evaluacion(true)">
+                                                        <h5 class="text-white timeline-title">
+                                                            <i class="text-white far fa-circle fa-lg"></i>
+                                                            Evaluación - 0 intento(s) de 2
+                                                        </h5>
                                                     </div>
                                                 </div>
-                                            @endforeach
-                                            <div class="timeline-item">
-                                                <div class="text-white align-content-center timeline-icon bg-primary">{{ $asignacion->capacitacion->sesiones->count() + 1 }}</div>
-                                                <div class="text-left align-content-center timeline-content bg-primary btn" wire:click="evaluacion({{true}})">
-                                                    <h5 class="text-white timeline-title ">
-                                                        <i class="text-white far fa-circle fa-lg"></i>
-                                                        Evaluación - 0 intento(s) de 2
-                                                    </h5>
-                                                    {{-- <video width="100%" controls>
-                                                        <source src="{{ $asignacion->capacitacion->video_final_url }}" type="video/mp4">
-                                                        Tu navegador no soporta la reproducción de videos.
-                                                    </video> --}}
+                                            @else
+                                                <div class="timeline-item">
+                                                    <div class="text-white align-content-center timeline-icon bg-gray">{{ $asignacion->capacitacion->sesiones->count() + 1 }}</div>
+                                                    <div class="text-left align-content-center timeline-content bg-gray">
+                                                        <h5 class="text-white timeline-title">
+                                                            <i class="text-white far fa-circle fa-lg"></i>
+                                                            Evaluación - 0 intento(s) de 2
+                                                        </h5>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            @endif
+                                            
                                         </div>
                                     @else
                                         <p>No hay sesiones disponibles para esta capacitación.</p>
