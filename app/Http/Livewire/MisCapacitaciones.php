@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Asignacione;
+use App\Models\CapacitacionHasPersonal;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\EvaluadorHasEvaluado;
@@ -29,7 +30,6 @@ class MisCapacitaciones extends Component
     public $viewSesion = false;
 
     protected $queryString = [
-        // 'capacitacion_id' => ['as' => 'c', 'except'=>0],
         'asignacion_id' => ['as' => 'a', 'except'=>0],
         'sesion_id' => ['as' => 's', 'except'=>0],
         'viewEvaluation' => ['as' => 'e', 'except'=>false],
@@ -37,7 +37,7 @@ class MisCapacitaciones extends Component
 
     public function mount()
     {
-        $this->misCapacitaciones = Asignacione::where('personal_id', auth()->user()->personal_id)->get();
+        $this->misCapacitaciones = CapacitacionHasPersonal::where('personal_id', auth()->user()->personal_id)->get();
 
         $this->asignacion($this->asignacion_id);
 
