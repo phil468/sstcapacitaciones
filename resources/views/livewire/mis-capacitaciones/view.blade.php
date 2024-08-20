@@ -56,7 +56,7 @@
 
                         <div class="card-body">
                             <video width="100%" controls>
-                                <source src="{{ $sesion->video }}" type="video/mp4">
+                                <source src="{{ Storage::disk('video_sesiones')->url($sesion->video) }}" type="video/mp4">
                                 Tu navegador no soporta la reproducción de videos.
                             </video>
                             {{-- <p class="mt-2 card-text">{{ $sesion->descripcion }}</p> --}}

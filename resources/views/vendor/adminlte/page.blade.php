@@ -75,6 +75,7 @@
             $('#importEncargadosPlanesDataModal').modal('hide');
             $('#updateEncargadosPlanesModal').modal('hide');
             $('#updateSesionModal').modal('hide');
+            $('#updatePreguntaModal').modal('hide');
             
         });
         
@@ -129,6 +130,10 @@
         
         window.livewire.on('openEncargadosPlanesModal', function () {
             $('#updateEncargadosPlanesModal').modal('show');
+        });
+        
+        window.livewire.on('openRegistroModal', function () {
+            $('#updateRegistroModal').modal('show');
         });
         
         window.livewire.on('limpiarFile', () => {

@@ -15,7 +15,8 @@ class Capacitacione extends Model
 
     protected $table = 'capacitaciones';
 
-    protected $fillable = ['empresa_id',
+    protected $fillable = [
+        'empresa_id',
         'capacitaciones_tipo_id',
         'tema_id',
         'sede_id',
@@ -37,6 +38,7 @@ class Capacitacione extends Model
         //nuevo campo
         'es_onboarding',
         'cantidad_de_preguntas_a_mostrar',
+        'es_aula_virtual'
     ];
 
     // dates

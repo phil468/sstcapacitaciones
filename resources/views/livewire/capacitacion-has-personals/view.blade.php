@@ -6,21 +6,22 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
-							<h5 class="h5">PERSONAL INSCRITO</h4>
+							@if (!$es_aula_virtual)
+								<h5 class="h5">Personal Inscrito</h5>
+							@else
+								<h5 class="h5">Asignaciones</h5>
+							@endif
 						</div>
-						{{--<div wire:poll.1s>
-							<code><h5>{{ now()->format('H:i:s') }}</h5></code>
-						</div>--}}
 						@if (session()->has('message'))
-						<div wire:poll.4s class="btn btn-sm btn-success" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
+							<div wire:poll.4s class="btn btn-sm btn-success" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
 						@endif
-						{{-- <div class="btn btn-sm btn-default" data-toggle="modal" data-target="#createDataModal">
-							<i class="fa fa-plus"></i>  Nuevo
-						</div> --}}
-						<a class="btn btn-sm btn-default" href={{route('capacitaciones')}}>
-							<i class="fa fa-arrow-left"></i>
-							Volver a la lista
-						</a>
+						
+						@if (!$es_aula_virtual)
+							<a class="btn btn-default rounded-xl" title="Volver" href={{route('capacitaciones')}}>
+								<i class="fa fa-arrow-left"></i> 
+							</a>
+						@endif
+						
 						{{-- <div>
 							<input wire:model='keyWord' type="text" class="form-control" name="search" id="search" placeholder="Buscar">
 						</div> --}}
@@ -38,53 +39,63 @@
 						@endcan --}}
 
 												
-						@can('editar-capacitacion')
+					@can('editar-capacitacion')
 						@include('livewire.capacitacion-has-personals.update-registro')
-						@endcan
+					@endcan
 
+					@if (!$es_aula_virtual)
 						<div class="table-responsive">
-							<table class="table table-striped table-hover table-sm">
-								<thead class="thead">
-									<tr> 
-										{{-- <th>ID</th>  --}}
-										<th>TIPO</th>
-										<th>FECHA</th>
-										<th>EMPRESA</th>
-										<th>MODALIDAD</th>
-										<th>EXPOSITOR</th>
-										<th>SEDE</th>
-										<th>REGISTRADOR</th>
-										<th>SESIONES</th>
-									</tr>
-								</thead>
-								<tbody>
-									@foreach($capacitacion as $row)
-									<tr>
-										{{-- {{dd($capacitacion)}} --}}
-										{{-- <td>{{ $row['id'] }}</td> --}}
-										<td>{{ $row['tipo_capacitacion']['name'] }}</td>
-										<td>{{ $row['fecha_capacitacion'] }}</td>
-										<td>{{ $row['empresa']['name'] }}</td>
-										<td>{{ $row['modalidad']['name'] }}</td>
-										<td>
-											@if ($row['expositor_externo'])
-												{{$row['nombre_expositor_externo']}}
-											@else
-												{{ $row['expositor']['name'] ??'' }}
-											@endif											
-										 </td>
-										<td>{{ $row['sede']['name'] }}</td>
-										<td>{{ $row['registrador']['name'] }}</td>
-										<td>{{ $row['cantidad_de_sesiones'] }}</td>
-									</tr>
-									@endforeach
-								</tbody>
-							</table>						
+								<table class="table table-striped table-hover table-sm">
+									<thead class="thead">
+										<tr> 
+											{{-- <th>ID</th>  --}}
+											<th>TIPO</th>
+											<th>FECHA</th>
+											<th>EMPRESA</th>
+											<th>MODALIDAD</th>
+											<th>EXPOSITOR</th>
+											<th>SEDE</th>
+											<th>REGISTRADOR</th>
+											<th>SESIONES</th>
+										</tr>
+									</thead>
+									<tbody>
+										@foreach($capacitacion as $row)
+										<tr>
+											{{-- {{dd($capacitacion)}} --}}
+											{{-- <td>{{ $row['id'] }}</td> --}}
+											<td>{{ $row['tipo_capacitacion']['name'] }}</td>
+											<td>{{ $row['fecha_capacitacion'] }}</td>
+											<td>{{ $row['empresa']['name'] }}</td>
+											<td>{{ $row['modalidad']['name'] }}</td>
+											<td>
+												@if ($row['expositor_externo'])
+													{{$row['nombre_expositor_externo']}}
+												@else
+													{{ $row['expositor']['name'] ??'' }}
+												@endif											
+											</td>
+											<td>{{ $row['sede']['name'] }}</td>
+											<td>{{ $row['registrador']['name'] }}</td>
+											<td>{{ $row['cantidad_de_sesiones'] }}</td>
+										</tr>
+										@endforeach
+									</tbody>
+								</table>						
 						</div>
-						<div class="h4">PERSONAS INSCRITAS</div>
+					@endif
+										
+					@if (!$es_aula_virtual)
+						<h5 class="h5">Personal Inscrito</h5>
+					@else
+
+					@endif
+										
+					<div>
+						@livewire('registros-table', ['exportable' => false,'capacitacion_id' => $capacitacion_id])
+					</div>
 						
 				{{-- @livewire('registros-table', ['exportable' => false,'listaParaAgregar' => true]) --}}
-				@livewire('registros-table', ['exportable' => false,'capacitacion_id' => $capacitacion_id])
 						{{-- {{dd(count($capacitacionHasPersonals))}} --}}
 						{{-- @if (isset($capacitacionHasPersonals) && count($capacitacionHasPersonals))
 						<div class="table-responsive">
@@ -119,34 +130,30 @@
 						</div>
 						@endif --}}
 
-						@can('editar-capacitacion')
-				<br>
-				<div class="h4">SELECCIONE PERSONAS PARA AGREGAR A LA CAPACITACIÓN</div>
-				<button title="Agregar Seleccionados" 
-				class="btn btn-primary"
-				@if (count($selectedFromPersonalTable) == 0)
-				disabled
-				@endif
-				wire:click="agregarSeleccionados()">
-					<i class="fa fa-plus"></i> Agregar Seleccionados 
-					
-					@if (count($selectedFromPersonalTable) != 0)
-					<span class="badge badge-light">{{count($selectedFromPersonalTable)}}</span>
-
-					@endif
-				</button>
-				<br>
-				<br>
-		@endcan
-						{{-- <div class="h5">SELECCIONE LAS PERSONAS A AGREGAR</div> 							 --}}
-						@can('editar-capacitacion')
-
-				@livewire('personal-table', ['exportable' => false,'listaParaAgregar' => true])
-				@endcan
-				
+					@can('editar-capacitacion')
+						<br>
+						<div class="h5">Seleccione personas para agregar a la capacitación</div>
+						<button title="Agregar Seleccionados" 
+							class="ml-4 btn btn-outline-vanguard"
+							@if (count($selectedFromPersonalTable) == 0)
+							disabled
+							@endif
+							wire:click="agregarSeleccionados()">
+							
+							<i class="fa fa-plus"></i> Agregar Seleccionados 
+							
+							@if (count($selectedFromPersonalTable) != 0)
+								<span class="badge badge-dark">{{count($selectedFromPersonalTable)}}</span>
+							@endif
+						</button>
+						<br>
+						<br>
+						
+						<div class="ml-4">
+							@livewire('personal-table', ['exportable' => false,'listaParaAgregar' => true])
+						</div>
+					@endcan
 				</div>				
-
-
 			</div>
 		</div>
 	</div>

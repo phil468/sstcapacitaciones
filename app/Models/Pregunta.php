@@ -16,10 +16,11 @@ class Pregunta extends Model
     protected $table = 'preguntas';
 
     protected $fillable = [
-        'pregunta',
-        'tipo_de_pregunta_id',
-        'numero_orden',
-        'capacitacion_id',
+            'pregunta',
+            'tipo_de_pregunta_id',
+            'numero_orden',
+            'opciones_requeridas',
+            'capacitacion_id',
         ];
 
     public function respuestas()

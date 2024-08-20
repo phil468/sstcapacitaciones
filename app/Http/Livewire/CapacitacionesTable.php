@@ -43,7 +43,8 @@ class CapacitacionesTable extends LivewireDatatable
         ->leftJoin('personal as registradores', 'registradores.id', 'capacitaciones.registrador_id')
         ->leftJoin('cargos as cargo_registradores', 'cargo_registradores.id', 'capacitaciones.cargo_registrador_id')
         ->leftJoin('statuses', 'statuses.id', 'capacitaciones.status_id')
-        ->leftJoin('modalidades', 'modalidades.id', 'capacitaciones.modalidad_id');
+        ->leftJoin('modalidades', 'modalidades.id', 'capacitaciones.modalidad_id')
+        ;
 
     }
 
@@ -101,166 +102,103 @@ class CapacitacionesTable extends LivewireDatatable
                 ->hideable()
                 ->alignCenter(),
 
+            Column::name('tipo_de_capacitaciones.name')
+                ->filterable($this->tipo_de_capacitaciones)
+                ->searchable()
+                ->sortBy('tipo_de_capacitaciones.name')
+                ->hideable()
+                ->label('Tipo de capacitación'),
+
+            DateColumn::name('fecha_capacitacion')
+                ->label('Fecha')
+                ->filterable()
+                ->searchable()
+                ->hideable()
+                ->sortBy('fecha_capacitacion'),
+                
+            Column::name('empresa.name')
+                ->filterable($this->empresas)
+                ->searchable()
+                ->sortBy('empresas.name')
+                ->hideable()
+                ->label('Empresa'),
+
+            Column::name('expositores.dni')
+                ->filterable()
+                ->searchable()
+                ->sortBy('expositores.dni')
+                ->hideable()
+                ->label('dni expositor'),
+
+            Column::name('modalidades.name')
+                ->filterable($this->modalidades)
+                ->searchable()
+                ->sortBy('modalidades.name')
+                ->hideable()
+                ->label('Modalidad'),
+
+            Column::name('expositores.name')
+                ->filterable($this->expositores)
+                ->searchable()
+                ->sortBy('expositores.name')
+                ->hideable()
+                ->label('Expositor'),
+
+            Column::name('cargo_expositores.name')
+                ->filterable($this->cargos)
+                ->searchable()
+                ->sortBy('cargo_expositores.name')
+                ->hideable()
+                ->label('Cargo de expositor'),
+            
+            Column::name('nombre_expositor_externo')
+                ->filterable()
+                ->searchable()
+                ->sortBy('nombre_expositor_externo')
+                ->hideable()
+                ->label('Expositor externo'),
+
+            Column::name('sede.name')
+                ->filterable($this->sedes)
+                ->searchable()
+                ->sortBy('sedes.name')
+                ->hideable()
+                ->label('Sede'),
+
+            Column::name('registradores.name')
+                ->filterable($this->registradores)
+                ->searchable()
+                ->sortBy('registradores.name')
+                ->hideable()
+                ->label('Registrador'),
+            
+            Column::name('cargo_registrador.name')
+                ->filterable($this->registrador_cargos)
+                ->searchable()
+                ->sortBy('cargo_registrador.name')
+                ->hideable()
+                ->label('Cargo de registrador'),
+
+            NumberColumn::name('cantidad_de_sesiones')
+                ->label('Sesiones')
+                ->filterable()
+                ->searchable()
+                ->hideable()
+                ->sortBy('cantidad_de_sesiones')
+                ->alignCenter(),
+
+            Column::callback('id,cantidad_de_sesiones', function ($id) {
+                    $capacitacion = Capacitacione::find($id);
+                    return $capacitacion->cantidad_personas;
+                })
+                ->label('Registrados')
+                ->searchable()
+                ->hideable(),
+            
             DateColumn::name('created_at')->label('Fecha de creacion')->format('d/m/Y h:i:s a')->searchable()->filterable()->defaultSort('asc'),
             DateColumn::name('updated_at')->label('Fecha de Modificación')->format('d/m/Y h:i:s a')->searchable()->filterable()->defaultSort('asc'),
             DateColumn::name('deleted_at')->label('Fecha de eliminación')->format('d/m/Y h:i:s a')->searchable()->filterable()->defaultSort('asc'),
             
-            // Column::name('tipo_de_capacitaciones.name')
-            //     ->filterable($this->tipo_de_capacitaciones)
-            //     ->searchable()
-            //     ->sortBy('tipo_de_capacitaciones.name')
-            //     ->hideable()
-            //     ->label('Tipo de capacitación'),
-
-            // campo para ->withCount('sesiones')
-            // NumberColumn::name('sesiones_count')
-            //     ->label('Sesiones')
-            //     ->filterable()
-            //     ->searchable()
-            //     ->hideable()
-            //     ->sortBy('sesiones_count')
-            //     ->alignCenter(),
-            // Column::callback('id,pdf', function ($id,$pdf) {
-            //     return view('table-actions-2', ['id' => $id, 'name'=>'','pdf'=>$pdf]);
-            // })->unsortable()
-            // ->label('acciones')
-            // ->excludeFromExport(),
-
-            // DateColumn::name('fecha_capacitacion')
-            //     ->label('Fecha')
-            //     ->filterable()
-            //     ->searchable()
-            //     ->hideable()
-            //     ->sortBy('fecha_capacitacion'),
-                
-            // Column::name('empresa.name')
-            //     ->filterable($this->empresas)
-            //     ->searchable()
-            //     ->sortBy('empresas.name')
-            //     ->hideable()
-            //     ->label('Empresa'),
-
-            // Column::name('expositores.dni')
-            //     ->filterable()
-            //     ->searchable()
-            //     ->sortBy('expositores.dni')
-            //     ->hideable()
-            //     ->label('dni'),
-
-            // Column::name('modalidades.name')
-            //     ->filterable($this->modalidades)
-            //     ->searchable()
-            //     ->sortBy('modalidades.name')
-            //     ->hideable()
-            //     ->label('Modalidad'),
-
-            // Column::name('expositores.name')
-            //     ->filterable($this->expositores)
-            //     ->searchable()
-            //     ->sortBy('expositores.name')
-            //     ->hideable()
-            //     ->label('Expositor'),
-
-            // Column::name('cargo_expositores.name')
-            //     ->filterable($this->cargos)
-            //     ->searchable()
-            //     ->sortBy('cargo_expositores.name')
-            //     ->hideable()
-            //     ->label('Cargo de expositor'),
-            
-            //columna expositor externo
-            // Column::name('nombre_expositor_externo')
-            //     ->filterable()
-            //     ->searchable()
-            //     ->sortBy('nombre_expositor_externo')
-            //     ->hideable()
-            //     ->label('Expositor externo'),
-            
-            // Column::
-            //     callback('id', function ($id) {
-            //         $devolucion = Devolucion::find($id);
-            //         $descripcion = "";
-            //         $i = 1;
-            //         foreach ($devolucion->activos as $activo) {
-            //             $descripcion = $descripcion."<b>".$i.")</b> ".$activo->descripcion."<br><br>";
-            //             $i++;
-            //         }
-            //         return $descripcion;
-            //     })
-            //     ->filterable()
-            //     ->searchable()
-            //     ->hideable()
-            //     ->label('activos'),
-
-            // Column::name('area.name')
-            //     ->filterable($this->areas)
-            //     ->searchable()
-            //     ->sortBy('areas.name')
-            //     ->hideable()
-            //     ->label('areas'),
-
-            // Column::name('sede.name')
-            //     ->filterable($this->sedes)
-            //     ->searchable()
-            //     ->sortBy('sedes.name')
-            //     ->hideable()
-            //     ->label('Sede'),
-
-            // Column::name('registradores.name')
-            //     ->filterable($this->registradores)
-            //     ->searchable()
-            //     ->sortBy('registradores.name')
-            //     ->hideable()
-            //     ->label('Registrador'),
-            
-            // Column::name('cargo_registradores.name')
-            //     ->filterable($this->registrador_cargos)
-            //     ->searchable()
-            //     ->sortBy('cargo_registradores.name')
-            //     ->hideable()
-            //     ->label('Cargo de registrador'),
-
-            // NumberColumn::name('cantidad_de_sesiones')
-            //     ->label('Sesiones')
-            //     ->filterable()
-            //     ->searchable()
-            //     ->hideable()
-            //     ->sortBy('cantidad_de_sesiones')
-            //     ->alignCenter(),
-
-
-            // Column::callback('id,cantidad_de_sesiones', function ($id) {
-            //         $capacitacion = Capacitacione::find($id);
-            //         return $capacitacion->cantidad_personas;
-            //         //return view('table-actions', ['id' => $id]);
-            //     })
-            //     ->label('Registrados')
-            //     // ->filterable()
-            //     ->searchable()
-            //     // ->sortBy('id,cantidad_de_sesiones')
-            //     ->hideable(),
-                
-
-            // Column::name('responsable_areas.name')
-            //     ->filterable($this->responsable_areas)
-            //     ->searchable()
-            //     ->sortBy('responsable_areas.name')
-            //     ->hideable()
-            //     ->label('responsable area'),
-
-            // Column::name('registrador_cargos.name')
-            //     ->filterable($this->registrador_cargos)
-            //     ->searchable()
-            //     ->sortBy('registrador_cargos.name')
-            //     ->hideable()
-            //     ->label('registrador cargo'),
-
-                
-            // Column::callback('id', function ($id) {
-            //     return view('table-actions', ['id' => $id, 'name'=>'']);
-            // })->unsortable()
-            // ->label('Acciones')
-            // ->excludeFromExport(),
 
         ];
     }

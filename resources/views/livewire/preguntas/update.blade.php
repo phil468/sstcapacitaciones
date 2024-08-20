@@ -1,5 +1,5 @@
 <!-- Modal -->
-<div wire:ignore.self class="modal fade" id="updateModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+<div wire:ignore.self class="modal fade" id="updatePreguntaModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
        <div class="rounded-2xl modal-content">
             <div class="text-white modal-header bg-vanguard rounded-t-2xl">                <h5 class="modal-title" id="updateModalLabel">Actualizar Pregunta</h5>
@@ -10,40 +10,58 @@
             <div class="modal-body">
                 <form>
 					<input type="hidden" wire:model="selected_id">
-            <div class="form-group">
-                <label for="seccion_id">Seccion Id</label>
-                <input wire:model="seccion_id" type="text" class="form-control" id="seccion_id" placeholder="Seccion Id">@error('seccion_id') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="evaluacion_id">Evaluacion Id</label>
-                <input wire:model="evaluacion_id" type="text" class="form-control" id="evaluacion_id" placeholder="Evaluacion Id">@error('evaluacion_id') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="qid">Qid</label>
-                <input wire:model="qid" type="text" class="form-control" id="qid" placeholder="Qid">@error('qid') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="pregunta">Pregunta</label>
-                <input wire:model="pregunta" type="text" class="form-control" id="pregunta" placeholder="Pregunta">@error('pregunta') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="tipo_de_pregunta_id">Tipo</label>
-                <input wire:model="tipo_de_pregunta_id" type="text" class="form-control" id="tipo_de_pregunta_id" placeholder="Tipo">@error('tipo_de_pregunta_id') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="opciones">Opciones</label>
-                <input wire:model="opciones" type="text" class="form-control" id="opciones" placeholder="Opciones">@error('opciones') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="numero_orden">Numero Orden</label>
-                <input wire:model="numero_orden" type="text" class="form-control" id="numero_orden" placeholder="Numero Orden">@error('numero_orden') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
+                        <div class="form-group">
+                            <label for="capacitacion_id">Capacitacion*</label>
+                            @isset($capacitacion)
+                                <input type="text" class="form-control" name="capacitacion" id="capacitacion" value="{{ $capacitacion->tema->name }}" disabled >
+                            @else
+                                <input wire:model="capacitacion_id" type="text" class="form-control" id="capacitacion_id" placeholder="Capacitacion Id">@error('capacitacion_id') <span class="error text-danger">{{ $message }}</span> @enderror                   
+                            @endisset
+                        </div>
+                        <div class="form-group">
+                            <label for="pregunta">Pregunta*</label>
+                            <textarea wire:model.defer="pregunta" class="form-control" id="pregunta" placeholder="Pregunta"></textarea>
+                            @error('pregunta') <span class="error text-danger">{{ $message }}</span> @enderror
+                        </div>
 
+                        <div class="form-group">
+                            <label for="opciones">Opciones*</label>
+                            {{-- {{dd($opciones)}} --}}
+                            @foreach($opciones as $index => $opcion)
+                                <div class="mb-2 input-group">
+                                    <input wire:model="opciones.{{ $index }}.opcion" type="text" class="form-control" placeholder="Opción {{ $index + 1 }}">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-danger" type="button" wire:click="removeOpcion({{ $index }})">Eliminar</button>
+                                    </div>                                
+                                </div>
+                            @endforeach
+                            <button class="btn btn-primary" type="button" wire:click="addOpcion" @if(count($opciones) >= 5) disabled @endif>Añadir Opción</button>
+                            @error('opciones') <span class="error text-danger">{{ $message }}</span> @enderror
+
+                        </div>
+                    
+                        <div class="form-group">
+                            <label for="solucion_id" class="form-label">Opción Correcta</label>
+                            <select id="solucion_id" wire:model="solucion_id" class="form-select">
+                                @foreach($opciones as $index => $opcion)
+                                    <option value="{{ $index }}">{{ $opcion['opcion'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" wire:click.prevent="cancel()" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" wire:click.prevent="update()" class="btn btn-primary">Guardar</button>
+                <button type="button" wire:click.prevent="cancel()" class="btn btn-secondary"
+                    data-dismiss="modal">Cerrar</button>
+
+                @if ($this->selected_id == 0)
+                    <button type="button" wire:click.prevent="store()"
+                        class="btn btn-primary close-modal">Guardar</button>
+                @else
+                    <button type="button" wire:click.prevent="update()" class="btn btn-primary"
+                        @if (!$this->updateMode) disabled @endif>Guardar</button>
+                @endif
             </div>
        </div>
     </div>

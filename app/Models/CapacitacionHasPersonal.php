@@ -31,6 +31,13 @@ class CapacitacionHasPersonal extends Model
         'tipo_de_personal_id',
         'capacitacion_has_personal_id',
         'synced',
+        'fecha_inicio',
+        'fecha_fin',
+    ];
+
+    protected $dates = [
+        'fecha_inicio',
+        'fecha_fin',
     ];
 	
     public function personal()

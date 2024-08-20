@@ -22,6 +22,15 @@
                     </div>
 					<input type="hidden" wire:model="selected_id">
                     
+                    <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <label for="activo">Activo*</label>
+                        <label class="mb-4 checkbox-container">
+                            <input wire:model="activo" type="checkbox" class="custom-checkbox" id="activo" style="display: none;">
+                            <span class="checkmark"></span>
+                        </label>
+                        @error('activo') <span class="error text-danger">{{ $message }}</span> @enderror
+                    </div>
+                    
                     <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                         <label>Habilitado</label>
                         <div class="form-check">
@@ -310,4 +319,65 @@
             </div>
        </div>
     </div>
+
+    <style>
+
+        .checkbox-container {
+            display: block;
+            position: relative;
+            padding-left: 35px;
+            cursor: pointer;
+            font-size: 22px;
+            user-select: none;
+        }
+
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 40px;
+            width: 40px;
+            background-color: #eee;
+            border-radius: 50%;
+            border: 5px solid #568ba5; /* Agrega un borde */
+
+        }
+
+        .checkbox-container:hover input ~ .checkmark {
+            background-color: #ccc;
+        }
+
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: white;
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .checkbox-container .checkmark:after {
+            left: 10.2px;
+            top: 4px;
+            width: 10px;
+            height: 20px;
+            border: solid #568ba5;
+            border-width: 0 5px 5px 0;
+            transform: rotate(45deg);
+        }
+    </style>
+    
 </div>

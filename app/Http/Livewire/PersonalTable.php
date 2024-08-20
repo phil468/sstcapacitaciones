@@ -33,16 +33,12 @@ class PersonalTable extends LivewireDatatable
 
     public function limpiarSeleccionPersonalTable()
     {
-        // dd('hola');
-        // Limpiar la selección en el componente PersonalTable
         $this->selected = [];
-        // $this->selected = [];
     }
 
     public function updatedSelected($value)
     {
         $this->emitUp('selectedUpdated', $value);
-        // dd($value);
     }
     
     public function toggleSelectAll()
@@ -59,43 +55,16 @@ class PersonalTable extends LivewireDatatable
 
     public function builder()
     {
-        // if(Personal::all()->count()){
-        //     return Personal::query()
-        //         ->leftJoin('empresas', function ($join) {
-        //             $join->on('personal.empresa_id', '=', 'empresas.id');
-        //         })
-
-        //         ->leftJoin('sedes', function ($join) {
-        //             $join->on('personal.sede_id', '=', 'sedes.id');
-        //         })
-
-        //         ->leftJoin('gerencias', function ($join) {
-        //             $join->on('personal.gerencia_id', '=', 'gerencias.id');
-        //         })
-
-        //         ->leftJoin('areas', function ($join) {
-        //             $join->on('personal.area_id', '=', 'areas.id');
-        //         })
-
-        //         ->leftJoin('cargos', function ($join) {
-        //             $join->on('personal.cargo_id', '=', 'cargos.id');
-        //         })
-        //     ;
-        // }
-        // else 
-        // {
-            // return Personal::query()
-            return Personal::query()
-            ->leftJoin('empresas', 'empresas.id', 'personal.empresa_id')
-            ->leftJoin('gerencias', 'gerencias.id', 'personal.gerencia_id')
-            ->leftJoin('sedes', 'sedes.id', 'personal.sede_id')
-            ->leftJoin('areas', 'areas.id', 'personal.area_id')
-            ->leftJoin('cargos', 'cargos.id', 'personal.cargo_id')
-            ->leftJoin('planillas', 'planillas.id', 'personal.planilla_id')
-            ->leftJoin('tipo_de_trabajador', 'tipo_de_trabajador.id', 'personal.tipo_de_trabajador_id')
-            ->leftJoin('tipo_de_personal', 'tipo_de_personal.id', 'personal.tipo_de_personal_id')
-            ;
-        // }
+        return Personal::query()
+        ->leftJoin('empresas', 'empresas.id', 'personal.empresa_id')
+        ->leftJoin('gerencias', 'gerencias.id', 'personal.gerencia_id')
+        ->leftJoin('sedes', 'sedes.id', 'personal.sede_id')
+        ->leftJoin('areas', 'areas.id', 'personal.area_id')
+        ->leftJoin('cargos', 'cargos.id', 'personal.cargo_id')
+        ->leftJoin('planillas', 'planillas.id', 'personal.planilla_id')
+        ->leftJoin('tipo_de_trabajador', 'tipo_de_trabajador.id', 'personal.tipo_de_trabajador_id')
+        ->leftJoin('tipo_de_personal', 'tipo_de_personal.id', 'personal.tipo_de_personal_id')
+        ;
     }
 
     public $model = Personal::class;

@@ -1,9 +1,9 @@
 <div class="btn-group">
     @canany(['editar-capacitacion'])
-        <a title="Editar" data-toggle="modal" data-target="#updateRegistroModal" class="btn btn-vanguard" wire:click="edit({{$id}})"><i class="fa fa-edit"></i></a>
+        <a title="Editar" data-toggle="modal" data-target="#updateRegistroModal" class="btn btn-outline-vanguard btn-lg" wire:click="edit({{$id}})"><i class="fa fa-edit"></i></a>
     @endcan
     @canany(['editar-capacitacion'])
-        <a title="Quitar de lista" class="btn btn-warning" onclick="confirm('¿Confirma quitar de la lista {{$id}} - {{ $name ?? '' }}? \n ¡Se perderán todas las asistencias registradas!')
+        <a title="Quitar de lista" class="btn btn-outline-warning btn-lg" onclick="confirm('¿Confirma quitar de la lista {{$id}} - {{ $name ?? '' }}? \n ¡Se perderán todas las asistencias registradas!')
     ||event.stopImmediatePropagation()" wire:click="destroy({{$id}})">
     <i class="fa fa-minus" aria-hidden="true"></i>
     {{-- <i class="fa fa-trash"></i> --}}

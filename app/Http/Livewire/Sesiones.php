@@ -52,6 +52,7 @@ class Sesiones extends Component
     private function resetInput()
     {		
 		$this->capacitacion_id = $this->capacitacion_id_general ?? null;
+        
 		$this->numero_de_sesion = null;
 		$this->fecha = null;
 		$this->hora_inicio = null;
@@ -119,7 +120,6 @@ class Sesiones extends Component
         // Manejar la carga del archivo
         if ($this->video) {
             $videoPath = $this->video->store(null,'video_sesiones');
-            // dd($this->video->getMimeType());
             $video = $videoPath;
         }
 

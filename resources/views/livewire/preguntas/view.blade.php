@@ -18,19 +18,24 @@
 							<input wire:model='keyWord' type="text" class="form-control" name="search" id="search" placeholder="Buscar">
 						</div> --}}
 						@can('crear-pregunta')
-						<div class="btn btn-default rounded-xl" data-toggle="modal" data-target="#createDataModal" title="Nueva Pregunta">
-						<i class="fa fa-plus"></i>
-						</div>
+							<div 
+							class="btn btn-default rounded-xl" 
+							wire:click="edit(0)" 
+							data-toggle="modal" 
+							data-target="#updatePreguntaModal" 
+							title="Nueva Pregunta">
+								<i class="fa fa-plus"></i>
+							</div>
 						@endcan
 					</div>
 				</div>
 				
 				<div class="card-body">
-						@can('crear-pregunta')
+						{{-- @can('crear-pregunta')
 						@include('livewire.preguntas.create')
-						@endcan						
+						@endcan						 --}}
 						@can('editar-pregunta')
-						@include('livewire.preguntas.update')
+							@include('livewire.preguntas.update')
 						@endcan
 				<div class="table-responsive">
 					<table class="table table-striped table-hover table-sm">
@@ -85,12 +90,12 @@
 								<td width="90">
 								<div class="btn-group">
 									@can('editar-pregunta')
-									<a data-toggle="modal" data-target="#updateModal" class="btn btn-vanguard rounded-xl" wire:click="edit({{$row->id}})">
+									<a data-toggle="modal" data-target="#updatePreguntaModal" class="btn btn-outline-vanguard rounded-xl" wire:click="edit({{$row->id}})">
 										<i class="fa fa-edit"></i>
 									</a>
 									@endcan
 									@can('borrar-pregunta')							 
-									<a class="btn btn-danger rounded-xl" onclick="confirm('Confirma borrar Pregunta : {{$row->name}}? \nPreguntas borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})">
+									<a class="btn btn-outline-danger rounded-xl" onclick="confirm('Confirma borrar Pregunta : {{$row->name}}? \nPreguntas borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})">
 										<i class="fa fa-trash"></i>
 									</a> 
 									@endcan  

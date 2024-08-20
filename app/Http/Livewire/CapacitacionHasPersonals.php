@@ -18,19 +18,25 @@ class CapacitacionHasPersonals extends Component
 
 	protected $paginationTheme = 'bootstrap';
     public $selected_id, $keyWord, $personal_id, $active, $observaciones, $empresa_id, $gerencia_id, $area_id, $cargo_id, $planilla_id, $sede_id, $tipo_de_trabajador_id, $tipo_de_personal_id;
-    public $areas, 
-	$gerencias,
-	$sedes,
-	$name_personal; 	
+    public $areas, $gerencias, $sedes, $name_personal, $fecha_inicio, $fecha_fin;
 	public $updateMode = false;
 
 	public $capacitacion_id;
+	public $capacitacion_id_general;
 
 	public $capacitacion;
+	public $es_aula_virtual;
+	
+	public $edit_gerencia = false;
+	public $edit_area = false;
+	public $edit_sede = false;
+	public $edit_fecha_inicio = false;
+	public $edit_fecha_fin = false;
 
 	protected $listeners = [
         'edit',
-		'selectedUpdated' => 'updateSelected'
+		'selectedUpdated' => 'updateSelected',
+		'edicionMasiva' => 'edicionMasiva'
     ];
 	
 	public function listarSelects() {
@@ -56,34 +62,33 @@ class CapacitacionHasPersonals extends Component
 	}
 
 	public $selectedFromPersonalTable = [];
+	public $selectedFromRegistroTable = [];
 
 	public function updateSelected($value)
 	{
 		$this->selectedFromPersonalTable = $value;
 	}
 
-    public function mount($capacitacion_id)
+    public function mount($capacitacion_id, $es_aula_virtual = false)
     {
         $this->capacitacion_id = $capacitacion_id;
+        $this->capacitacion_id_general = $capacitacion_id ?? null;
 		$this->capacitacion = Capacitacione::where('id',$capacitacion_id)
 		->with(['tipo_capacitacion','tema','sede','expositor','empresa','status','modalidad','registrador'])
 		->get()
 		->toArray();
-
-		// dd(Capacitacione::find($capacitacion_id));
     }
 
     public function render()
     {
 		$keyWord = '%'.$this->keyWord .'%';
         return view('livewire.capacitacion-has-personals.view', 
-		[ 'capacitacion' => $this->capacitacion,
-		//$this->capacitacion
+		[ 
+			'capacitacion' => $this->capacitacion,
             'capacitacionHasPersonals' => CapacitacionHasPersonal::orderBy('personal_name', 'asc')
 			->select('capacitacion_has_personal.*','personal.name as personal_name')
 						->where('capacitacion_id', $this->capacitacion_id)
-						->with(['personal'
-						])
+						->with(['personal'])
 						->leftJoin('personal', 'personal.id', 'capacitacion_has_personal.personal_id')
 						->get(),
         ]);
@@ -102,64 +107,64 @@ class CapacitacionHasPersonals extends Component
 		// Inicializa un array para almacenar los datos reorganizados
 		$resultArray = [];
 
-		// Itera sobre los resultados y organiza la información
-		foreach ($personalData as $personal) {
-			$resultArray[$personal->id] = [
-				'gerencia_id' => $personal->gerencia_id,
-				'area_id' => $personal->area_id,
-				'sede_id' => $personal->sede_id,
-				'cargo_id' => $personal->cargo_id,
-				'planilla_id' => $personal->planilla_id,
-				'tipo_de_trabajador_id' => $personal->tipo_de_trabajador_id,
-				'tipo_de_personal_id' => $personal->tipo_de_personal_id,
-				'empresa_id' => $personal->empresa_id,
+		// Construye el array de datos reorganizados
+		$resultArray = $personalData->mapWithKeys(function ($personal) {
+			return [
+				$personal->id => [
+					'gerencia_id' => $personal->gerencia_id,
+					'area_id' => $personal->area_id,
+					'sede_id' => $personal->sede_id,
+					'cargo_id' => $personal->cargo_id,
+					'planilla_id' => $personal->planilla_id,
+					'tipo_de_trabajador_id' => $personal->tipo_de_trabajador_id,
+					'tipo_de_personal_id' => $personal->tipo_de_personal_id,
+					'empresa_id' => $personal->empresa_id,
+				],
 			];
-		}
+		})->toArray();
 
-		// dd($resultArray);
-		$capacitacion->personal()->syncWithoutDetaching($resultArray);
+		$result = $capacitacion->personal()->syncWithoutDetaching($resultArray);
 
-		$capacitacion->personal()->syncWithoutDetaching($this->selectedFromPersonalTable);
+		// Obtener los IDs de las nuevas relaciones
+		$nuevasRelacionesIds = $result['attached'];
+
+		// Realiza una consulta para obtener los registros de CapacitacionHasPersonal correspondientes a esos IDs
+		$nuevasRelaciones = CapacitacionHasPersonal::whereIn('id', $nuevasRelacionesIds)->where('capacitacion_id',$this->capacitacion_id)->select('id')->get()->toArray();
+
+		// $capacitacion->personal()->syncWithoutDetaching($this->selectedFromPersonalTable);
 		$this->selectedFromPersonalTable = [];
 		$this->emit('limpiarSeleccionPersonalTable');
 		$this->emit('refrescarRegistroTable');
-		session()->flash('message', 'Personal creado correctamente.');
+		// session()->flash('message', 'Personal creado correctamente.');
+		$this->edicionMasiva($nuevasRelaciones);
+
 	}
 
 	public function cancelarSeleccionados()
 	{
 		$this->selectedFromPersonalTable = [];
-		// $this->emit('closeModal');
 		session()->flash('message', 'Personal creado correctamente.');
 
 	}
 
 	public function quitarAsistente($value)
 	{
-		// dd($this->selectedFromPersonalTable);
-		// foreach ($this->selectedFromPersonalTable as $key => $value) {
-			// dd($value);
-		CapacitacionHasPersonal::find($value)
-			->delete();
-		// }
+		CapacitacionHasPersonal::find($value)->delete();
 		$this->selectedFromPersonalTable = [];
-		// $this->emit('closeModal');
 		session()->flash('message', 'Personal quitado correctamente.');
-
 	}
 
     public function cancel()
     {
         $this->resetInput();
 		$this->emit('limpiarDatosP');
-        // $this->updateMode = false;
     }
 	
     private function resetInput()
     {		
 		$this->name_personal = null;
 		$this->personal_id = null;
-		$this->capacitacion_id = null;
+		$this->capacitacion_id = $this->capacitacion_id_general ?? null;
 		$this->active = null;
 		$this->observaciones = null;
 		$this->empresa_id = null;
@@ -170,6 +175,9 @@ class CapacitacionHasPersonals extends Component
 		$this->sede_id = null;
 		$this->tipo_de_trabajador_id = null;
 		$this->tipo_de_personal_id = null;
+		$this->fecha_inicio = null;
+		$this->fecha_fin = null;
+		$this->selectedFromRegistroTable = [];
     }
 
     public function store()
@@ -191,7 +199,9 @@ class CapacitacionHasPersonals extends Component
 			'planilla_id' => $this-> planilla_id,
 			'sede_id' => $this-> sede_id,
 			'tipo_de_trabajador_id' => $this-> tipo_de_trabajador_id,
-			'tipo_de_personal_id' => $this-> tipo_de_personal_id
+			'tipo_de_personal_id' => $this-> tipo_de_personal_id,
+			'fecha_inicio' => $this-> fecha_inicio,
+			'fecha_fin' => $this-> fecha_fin,
         ]);
         
         $this->resetInput();
@@ -203,22 +213,28 @@ class CapacitacionHasPersonals extends Component
     public function edit($id)
     {
 		if ($id != 0) {
-        $record = CapacitacionHasPersonal::findOrFail($id);
+			$record = CapacitacionHasPersonal::findOrFail($id);
 
-		$this->name_personal = $record->personal->name;
-        $this->selected_id = $id; 
-		$this->personal_id = $record-> personal_id;
-		// $this->capacitacion_id = $record-> capacitacion_id;
-		// $this->active = $record-> active;
-		// $this->observaciones = $record-> observaciones;
-		$this->empresa_id = $record-> empresa_id;
-		$this->gerencia_id = $record-> gerencia_id;
-		$this->area_id = $record-> area_id;
-		// $this->cargo_id = $record-> cargo_id;
-		// $this->planilla_id = $record-> planilla_id;
-		$this->sede_id = $record-> sede_id;
-		// $this->tipo_de_trabajador_id = $record-> tipo_de_trabajador_id;
-		// $this->tipo_de_personal_id = $record-> tipo_de_personal_id;
+			$this->name_personal = $record->personal->name;
+			$this->selected_id = $id; 
+			$this->personal_id = $record-> personal_id;
+			// $this->capacitacion_id = $record-> capacitacion_id;
+			// $this->active = $record-> active;
+			// $this->observaciones = $record-> observaciones;
+			$this->empresa_id = $record-> empresa_id;
+			$this->gerencia_id = $record-> gerencia_id;
+			$this->area_id = $record-> area_id;
+			// $this->cargo_id = $record-> cargo_id;
+			// $this->planilla_id = $record-> planilla_id;
+			$this->sede_id = $record-> sede_id;
+			$this->fecha_inicio = $record->fecha_inicio ? 
+			date('Y-m-d\TH:i', strtotime($record->fecha_inicio)) 
+			: '';
+			$this->fecha_fin = $record->fecha_fin ? 
+			date('Y-m-d\TH:i', strtotime($record->fecha_fin)) 
+			: '';
+			// $this->tipo_de_trabajador_id = $record-> tipo_de_trabajador_id;
+			// $this->tipo_de_personal_id = $record-> tipo_de_personal_id;
 		
 		} else {
 			$this->resetValidation();
@@ -231,11 +247,27 @@ class CapacitacionHasPersonals extends Component
 		$this->listarSelects();
     }
 
-    public function update()
+	public function edicionMasiva($selectedFromRegistroTable)
     {
+		$this->selectedFromRegistroTable = $selectedFromRegistroTable;
+		if (count($selectedFromRegistroTable) > 0) {
+			$this->gerencia_id = null;
+			$this->area_id = null;
+			$this->sede_id = null;
+			$this->fecha_inicio = null;
+			$this->fecha_fin = null;
+
+			$this->emit('openRegistroModal');
+			$this->updateMode = true;
+			$this->listarSelects();
+		}
+    }
+
+    public function update()
+    {		
         $this->validate([
-		'personal_id' => 'required',
-		'capacitacion_id' => 'required',
+			'personal_id' => 'required',
+			'capacitacion_id' => 'required',
         ]);
 
         if ($this->selected_id) {
@@ -251,6 +283,8 @@ class CapacitacionHasPersonals extends Component
 			// 'cargo_id' => $this-> cargo_id,
 			// 'planilla_id' => $this-> planilla_id,
 			'sede_id' => $this-> sede_id,
+			'fecha_inicio' => $this-> fecha_inicio,
+			'fecha_fin' => $this-> fecha_fin,
 			// 'tipo_de_trabajador_id' => $this-> tipo_de_trabajador_id,
 			// 'tipo_de_personal_id' => $this-> tipo_de_personal_id
             ]);
@@ -265,9 +299,66 @@ class CapacitacionHasPersonals extends Component
             $this->resetInput();
             $this->updateMode = false;
 		    $this->emit('closeModal');
+			$this->emit('limpiarSeleccionRegistroTable');
 			session()->flash('message', 'CapacitacionHasPersonal actualizado correctamente.');
         }
     }
+
+	public function updateMasivo()
+	{
+		$rules = [];
+
+		if ($this->edit_gerencia) 		{ $rules['gerencia_id'] 	= 'required'; }
+		if ($this->edit_area) 			{ $rules['area_id'] 		= 'required'; }
+		if ($this->edit_sede) 			{ $rules['sede_id'] 		= 'required'; }
+		if ($this->edit_fecha_inicio) 	{ $rules['fecha_inicio'] 	= 'required'; }
+		if ($this->edit_fecha_fin) 		{ $rules['fecha_fin'] 		= 'required'; }
+
+		// Validar que al menos uno de los checkboxes esté marcado
+		if (!$this->edit_gerencia && !$this->edit_area && !$this->edit_sede && !$this->edit_fecha_inicio && !$this->edit_fecha_fin) {
+			session()->flash('errorEdicionMasiva', 'Debe seleccionar al menos una opción para editar.');
+			return;
+		}
+
+		$this->validate($rules);
+
+		if ($this->selectedFromRegistroTable) {
+			$updateData = [];
+
+			$personalUpdateData = [];
+
+			if ($this->edit_gerencia) {
+				$updateData['gerencia_id'] = $this->gerencia_id;
+
+				$personalUpdateData['gerencia_id'] = $this->gerencia_id;
+			}
+			if ($this->edit_area) {
+				$updateData['area_id'] = $this->area_id;
+
+				$personalUpdateData['area_id'] = $this->area_id;
+			}
+			if ($this->edit_sede) {
+				$updateData['sede_id'] = $this->sede_id;
+
+				$personalUpdateData['sede_id'] = $this->sede_id;
+			}
+			if ($this->edit_fecha_inicio) {
+				$updateData['fecha_inicio'] = $this->fecha_inicio;
+			}
+			if ($this->edit_fecha_fin) {
+				$updateData['fecha_fin'] = $this->fecha_fin;
+			}
+
+			CapacitacionHasPersonal::whereIn('id', $this->selectedFromRegistroTable)->update($updateData);
+
+			Personal::whereIn('id', $this->selectedFromRegistroTable)->update($personalUpdateData);
+
+			$this->resetInput();
+			$this->updateMode = false;
+			$this->emit('closeModal');
+			session()->flash('message', 'Registros actualizados correctamente.');
+		}
+	}
 
     public function destroy($id)
     {
