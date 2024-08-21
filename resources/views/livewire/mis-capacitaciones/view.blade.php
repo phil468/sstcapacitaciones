@@ -131,9 +131,11 @@
                                             @section('title', __('Capacitación: '.$asignacion->capacitacion->tema->name))
                                         </div>
                                         {{-- boton de volver --}}
-                                        <div class="rounded-xl btn btn-sm btn-default " wire:click="asignacion(0)">
+                                        <a class="rounded-xl btn btn-sm btn-default" href="{{route('mis-capacitaciones')}}"
+                                        {{-- wire:click="asignacion(0)" --}}
+                                        >
                                             <i class="fas fa-arrow-left"></i> Volver
-                                        </div>
+                                        </a>
                                     </div>
                                 </div>
 
