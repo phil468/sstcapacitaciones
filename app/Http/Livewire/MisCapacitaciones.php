@@ -68,6 +68,9 @@ class MisCapacitaciones extends Component
             if ($id == 0) {
                 $this->asignacion_id = 0;
                 $this->asignacion = null;
+                // refresh
+                // $this->render();
+                // redirect()->route('mis-capacitaciones');
             } else {
                 $this->asignacion = $this->misCapacitaciones->find($id);
 
@@ -132,10 +135,11 @@ class MisCapacitaciones extends Component
 
                 // Redirigir a la sesión
                 // return redirect()->route('session.view', ['sessionId' => $id]);
+                $this->sesion_id = $this->sesion->id;
             } else {
                 session()->flash('error', 'Debe completar las sesiones anteriores antes de acceder a esta.');
+                $this->sesion_id = 0;
             }
-            $this->sesion_id = $this->sesion->id;
         }
     }
 
