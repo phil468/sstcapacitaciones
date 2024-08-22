@@ -12,9 +12,9 @@
 								<h5 class="h5">Asignaciones</h5>
 							@endif
 						</div>
-						@if (session()->has('message'))
+						{{-- @if (session()->has('message'))
 							<div wire:poll.4s class="btn btn-sm btn-success" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
-						@endif
+						@endif --}}
 						
 						@if (!$es_aula_virtual)
 							<a class="btn btn-default rounded-xl" title="Volver" href={{route('capacitaciones')}}>
@@ -162,183 +162,73 @@
 		document.addEventListener('livewire:load', function () {
 			console.log('Inicializar Choice.js');
 			
+			const placeholder = [ { value: '', label: ' - Seleccione - '} ];
+					
 			const opciones = {
 				removeItemButton: true,
 				itemSelectText: 'Seleccione',
+				noChoicesText: 'No hay opciones para elegir',
+				
 				searchPlaceholderValue: 'Buscar',
 				placeholderValue: 'Selecciona una opción',
-				placeholder: true, // Activa el placeholder			
-				allowHTML: false,
-				shouldSort: false,
 				noResultsText: 'Resultados no encontrados',
-    			searchResultLimit: 10,
+				
+				placeholder: true, // Activa el placeholder		
+    			placeholderValue: null,	
+				allowHTML: false,
+				shouldSort: true,
+    			searchResultLimit: 15,
     			searchFields: ['label'],
+
+				searchFloor: 1,
+				renderChoiceLimit: 15
 			}
+			
+        // Verificar que los elementos existan en el DOM
+        const gerenciaElement = document.querySelector('#gerencia_id');
+        const sedeElement = document.querySelector('#sede_id');
+        const areaElement = document.querySelector('#area_id');
 
-			const placeholder = [
-						{ value: '', label: ' - Seleccione - '},
-					];
-	
-			// const personal_id_select = new Choices('#personal_id', opciones);
-			// personal_id_select.passedElement.element.addEventListener('change', function (event) {
-			// 		dato = personal_id_select.getValue(true) !== undefined ? personal_id_select.getValue(true) : '' ;
-			// 		@this.set('personal_id', dato );
-			// 		deshabilitarDatosPersonal();
-			// });
-			
-			// const empresa_id_select = new Choices('#empresa_id', opciones);
-			// empresa_id_select.passedElement.element.addEventListener('change', function (event) {
-			// 	// console.log(empresa_id_select.getValue(true));
-			// 	if (empresa_id_select.getValue(true) !== undefined) {
-			// 		@this.set('empresa_id', empresa_id_select.getValue(true));
-			// 	} else {
-			// 		@this.set('empresa_id', null);
-			// 	}
-			// });
-			
-			const gerencia_id_select = new Choices('#gerencia_id', opciones);
-			gerencia_id_select.passedElement.element.addEventListener('change', function (event) {
-				if (gerencia_id_select.getValue(true) !== undefined) {
-					@this.set('gerencia_id', gerencia_id_select.getValue(true));
-				} else {
-					@this.set('gerencia_id', null);
-				}
-			});
-			
-			const sede_id_select = new Choices('#sede_id', opciones);
-			sede_id_select.passedElement.element.addEventListener('change', function (event) {
-				if (sede_id_select.getValue(true) !== undefined) {
-					@this.set('sede_id', sede_id_select.getValue(true));
-				} else {
-					@this.set('sede_id', null);
-				}
-			});
-			
-			const area_id_select = new Choices('#area_id', opciones);
-			area_id_select.passedElement.element.addEventListener('change', function (event) {
-				if (area_id_select.getValue(true) !== undefined) {
-					@this.set('area_id', area_id_select.getValue(true));
-				} else {
-					@this.set('area_id', null);
-				}
-			});
-			
-			// const cargo_id_select = new Choices('#cargo_id', opciones);
-			// cargo_id_select.passedElement.element.addEventListener('change', function (event) {
-			// 	if (cargo_id_select.getValue(true) !== undefined) {
-			// 		@this.set('cargo_id', cargo_id_select.getValue(true));
-			// 	} else {
-			// 		@this.set('cargo_id', null);
-			// 	}
-			// });
-			
-			Livewire.on('actualizarDatosP', function (
-				// personal_id,
-				// empresa_id,
-				gerencia_id,sede_id,area_id,
-				// cargo_id
-				) 
-				{
-				habilitarDatosPersonal();
-	// console.log(sede_id);
-				// personal_id_select.setChoiceByValue(personal_id ?? '');
-				// empresa_id_select.setChoiceByValue(empresa_id ?? '');
-				gerencia_id_select.setChoiceByValue(gerencia_id ?? '');
-				sede_id_select.setChoiceByValue(sede_id ?? '');
-				area_id_select.setChoiceByValue(area_id ?? '');				
-				// cargo_id_select.setChoiceByValue(cargo_id ?? '');
-			}
-			);
-			
-			// Livewire.on('actualizarDatosR', function (personal_id,area_id,cargo_id) {
-			// 	habilitarDatosResponsable();
-	
-			// 	responsable_id_select.setChoiceByValue(personal_id ?? '');
-			// 	responsable_area_id_select.setChoiceByValue(area_id ?? '');				
-			// 	responsable_cargo_id_select.setChoiceByValue(cargo_id ?? '');
-			// });
-	
-			Livewire.on('listar_selects', function (
-				// personal,
-			// empresas,
-			gerencias,sedes,areas,
-			// cargos
-			// ,responsables
-			) {
+        if (gerenciaElement && sedeElement && areaElement) {
+            const gerencia_id_select = new Choices(gerenciaElement, opciones);
+            const sede_id_select = new Choices(sedeElement, opciones);
+            const area_id_select = new Choices(areaElement, opciones);
+                    
+            gerencia_id_select.passedElement.element.addEventListener('change', function (event) {
+                @this.set('gerencia_id', gerencia_id_select.getValue(true));
+            });
+            
+            sede_id_select.passedElement.element.addEventListener('change', function (event) {
+                @this.set('sede_id', sede_id_select.getValue(true));
+            });
+            
+            area_id_select.passedElement.element.addEventListener('change', function (event) {
+                @this.set('area_id', area_id_select.getValue(true));
+            });
+    
+            Livewire.on('listar_selects_personal', function (gerencias, sedes, areas, gerencia_id, sede_id, area_id) {
+                gerencia_id_select.hideDropdown();
+                sede_id_select.hideDropdown();
+                area_id_select.hideDropdown();
+                
+                gerencia_id_select.setChoices(gerencias, 'value', 'label', true);
+                sede_id_select.setChoices(sedes, 'value', 'label', true);
+                area_id_select.setChoices(areas, 'value', 'label', true);
+                
+                gerencia_id_select.setChoiceByValue(gerencia_id ?? null);
+                sede_id_select.setChoiceByValue(sede_id ?? null);
+                area_id_select.setChoiceByValue(area_id ?? null);
+            });
 
-				deshabilitarDatosPersonal();	
-				
-				limpiarDatosPersonal();
-				
-				// personal_id_select.setChoices(personal);
-				// empresa_id_select.setChoices(empresas);
-				gerencia_id_select.setChoices(gerencias);
-				sede_id_select.setChoices(sedes);
-				area_id_select.setChoices(areas);
-				// cargo_id_select.setChoices(cargos);
-				// responsable_id_select.setChoices(responsables);
-				// responsable_area_id_select.setChoices(areas);
-				// responsable_cargo_id_select.setChoices(cargos);
-				
-			});
-
-			Livewire.on('limpiarDatosP', function () {
-					limpiarDatosPersonal();
-			});
-
-			const limpiarDatosPersonal = () => {
-				
-				// empresa_id_select.clearChoices();
-				gerencia_id_select.clearChoices();
-				sede_id_select.clearChoices();
-				area_id_select.clearChoices();
-				// cargo_id_select.clearChoices();
-
-				// empresa_id_select.clearStore();
-				gerencia_id_select.clearStore();
-				sede_id_select.clearStore();
-				area_id_select.clearStore();
-				// cargo_id_select.clearStore();
-				
-				// empresa_id_select.setChoices(placeholder);
-				gerencia_id_select.setChoices(placeholder);
-				sede_id_select.setChoices(placeholder);
-				area_id_select.setChoices(placeholder);
-				// cargo_id_select.setChoices(placeholder);
-
-				// empresa_id_select.unhighlightAll();
-			}
-	
-			const deshabilitarDatosPersonal = () => {
-				// personal_id_select.disable();
-				// empresa_id_select.disable();
-				gerencia_id_select.disable();
-				sede_id_select.disable();
-				area_id_select.disable();
-				// cargo_id_select.disable();
-			};
-			
-			// const deshabilitarDatosResponsable = () => {
-			// 	responsable_id_select.disable();
-			// 	responsable_area_id_select.disable();
-			// 	responsable_cargo_id_select.disable();
-			// };
-			
-			const habilitarDatosPersonal = () => {
-				// personal_id_select.enable();
-				// empresa_id_select.enable();
-				gerencia_id_select.enable();
-				sede_id_select.enable();
-				area_id_select.enable();
-				// cargo_id_select.enable();
-			};
-			
-			// const habilitarDatosResponsable = () => {
-			// 	responsable_id_select.enable();
-			// 	responsable_area_id_select.enable();
-			// 	responsable_cargo_id_select.enable();
-			// };
-		})
+            Livewire.on('limpiarDatosP', function () {
+                gerencia_id_select.removeActiveItems();
+                sede_id_select.removeActiveItems();
+                area_id_select.removeActiveItems();
+            });
+        } else {
+            console.error('Uno o más elementos select no se encontraron en el DOM.');
+        }
+		});
 	</script>
 	@endpush
 </div>

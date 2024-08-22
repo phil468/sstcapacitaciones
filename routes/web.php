@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +59,8 @@ Route::get('/auth/callback', function () {
 
     // Inicia sesión con el usuario
     Auth::login($localUser, true);
+    $loginController = new LoginController();
+    $loginController->auditlogin($localUser);
 
     // $response = Http::withToken($user->token)->get('https://graph.microsoft.com/v1.0/me/contacts');
     // $response = Http::withToken($user->token)->get('https://graph.microsoft.com/v1.0/users');
@@ -84,7 +87,7 @@ Route::get('/logout', function () {
 })->name('logout');
 
 // Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('dash.index');
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('dash.index');
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('dash.index');
 Route::get('/personal/importar/{numero}', [App\Http\Controllers\PersonalController::class,'actualizarPersonalNisira'])->name('personal.actualizar');
 Route::get('/personal/actualizarEstadoParaTodos', [App\Http\Controllers\PersonalController::class,'actualizarEstadoParaTodos'])->name('personal.actualizarEstadoParaTodos');
 Route::get('/planilla/importar/{empresa}/{val}', [App\Http\Controllers\PlanillaController::class,'upsert'])->name('planilla.upsert');
@@ -230,7 +233,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
 // Auth::routes();
 Route::get('/web/capacitaciones/{tipo_user}/{user_id}', [App\Http\Controllers\Api\ws\CapacitacionesController::class, 'getCapacitaciones'])->name('capacitaciones.getCapacitaciones'); //FALTA MODIFICAR
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/validar-codigo', [App\Http\Controllers\VerificationController::class, 'verifyCode'])->name('verification.verify');
 

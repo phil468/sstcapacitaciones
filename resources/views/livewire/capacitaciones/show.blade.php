@@ -1,4 +1,5 @@
 <div>
+	@include('components.adminlte-alerts')
     <div class="card rounded-xl">
         <div class="text-white card-header bg-vanguard rounded-t-xl">
             <div style="display: flex; justify-content: space-between; align-items: center;">

@@ -10,21 +10,15 @@ use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
 class RegistrosTable extends LivewireDatatable
 {
-    public $capacitacion_id,
-        $selected_personal_id,
-        $sede_id,
-        $gerencia_id,
-        $subgerencia_id,
-        $area_id;
-    
-        public $hideable = 'inline';
-        public $exportable = true;
-        public $beforeTableSlot = 'components.edicionMasiva';
-        // public $updateMode = false;
-        public $selected = [];
-        // public $showColumns = ['id', 'dni']; // Columnas predeterminadas
-        public $listaParaAgregar = false;
-        public $modalEdicionMasiva = '#updateRegistroModal';
+    public $capacitacion_id, $selected_personal_id, $sede_id, $gerencia_id, $subgerencia_id, $area_id;
+    public $hideable = 'inline';
+    public $exportable = true;
+    public $beforeTableSlot = 'components.edicionMasiva';
+    // public $updateMode = false;
+    public $selected = [];
+    // public $showColumns = ['id', 'dni']; // Columnas predeterminadas
+    public $listaParaAgregar = false;
+    public $modalEdicionMasiva = '#updateRegistroModal';
         
     protected $listeners = [
         'closeModal' => '$refresh',
@@ -42,22 +36,22 @@ class RegistrosTable extends LivewireDatatable
         $this->emitUp('edicionMasiva', $this->selected);
     }
 
-    public function updatedSelected($value)
-    {
-        $this->emitUp('selectedRegistroUpdated', $value);
-    }
+    // public function updatedSelected($value)
+    // {
+    //     $this->emitUp('selectedRegistroUpdated', $value);
+    // }
     
-    public function toggleSelectAll()
-    {
-        if (count($this->selected) === $this->getQuery()->count()) {
-            $this->selected = [];
-        } else {
-            $this->selected = $this->checkboxQuery()->values()->toArray();
-        }
-        $this->forgetComputed();
+    // public function toggleSelectAll()
+    // {
+    //     if (count($this->selected) === $this->getQuery()->count()) {
+    //         $this->selected = [];
+    //     } else {
+    //         $this->selected = $this->checkboxQuery()->values()->toArray();
+    //     }
+    //     $this->forgetComputed();
         
-        $this->emitUp('selectedRegistroUpdated', $this->selected);
-    }
+    //     $this->emitUp('selectedRegistroUpdated', $this->selected);
+    // }
 
     public function builder()
     {
@@ -75,6 +69,7 @@ class RegistrosTable extends LivewireDatatable
             })->unsortable()
             ->label('Acciones')
             ->excludeFromExport(),
+            
             // Column::name('id')->label('ID'),
             Column::name('personal.dni')->label('DNI')->sortable()->searchable(),
             Column::name('personal.name')->label('Nombre del Personal')->sortable()->searchable()
@@ -107,7 +102,8 @@ class RegistrosTable extends LivewireDatatable
 
     public function edit($id)
     {
-        $this->emit('edit', $id);
+        // dd($id);
+        $this->emitUp('edit', $id);
     }
 
     public function destroy($id)

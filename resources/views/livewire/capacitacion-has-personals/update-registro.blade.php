@@ -21,114 +21,136 @@
             </div>
             <div class="modal-body">
                 <form>
-                    <fieldset class="row" 
+                    <fieldset class="row" wire:target="edit,store,update" wire:loading.attr="disabled"
                     @if (!$this->updateMode)                    
                         disabled
                     @endif
                     >
-                        @if (!$this->updateMode)
-                            <div class="col-12 alert alert-warning" role="alert">
-                                Cargando ...
-                            </div>
-                        @endif
 
                         <input type="hidden" wire:model="selected_id">
-                        
-                        <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
-                            <label for="Nombre">NOMBRE</label>
-                            <br>
-                            {{ $name_personal }}
-                        </div>
-                        
-                        <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
-                            @if($selectedFromRegistroTable)
-                                <label>
-                                    <input type="checkbox" wire:model="edit_gerencia"> Editar Gerencia
-                                </label>
-                                <br>
-                            @endif
-                                <label for="gerencia_id">Gerencia *</label>
-                                <div wire:ignore>
-                                    <select 
-                                        name="gerencia_id"
-                                        class="form-control" 
-                                        id="gerencia_id" placeholder="Gerencias">
-                                    </select>
-                                </div>
-                                @error('gerencia_id')
-                                    <span class="error text-danger">{{ $message }}</span>
-                                @enderror
-                        </div>
 
+                    <div class="col-12">
+                        <label for="Nombre">NOMBRE: </label>
+                        <br>
+                        @foreach ($name_personal as $item)
+                            <span class="badge badge-info">{{ $item }}</span>
+                        @endforeach
+                    </div>
+                     
                         <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
-                            @if($selectedFromRegistroTable)
-                                <label>
-                                    <input type="checkbox" wire:model="edit_sede"> Editar Sede
-                                </label>
-                                <br>
+
+                            <label for="gerencia_id">Gerencia *</label>
+                            
+                            <div wire:ignore>
+                                <select 
+                                    name="gerencia_id"
+                                    class="form-control" 
+                                    id="gerencia_id"
+                                    placeholder="Gerencias">
+                                    <option value="">Seleccione</option>
+                                </select>
+                            </div>
+
+                            @error('gerencia_id')
+                                <span class="error text-danger">{{ $message }}</span>
+                            @enderror
+                            
+                            @if($editMasiva)
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" wire:model.defer="edit_gerencia"> Editar Gerencia
+                                </div>
                             @endif
+
+                        </div>
+                        
+                        <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                            
                             <label for="sede_id">Sede *</label>
+                            
                             <div wire:ignore>
                                 <select 
                                     name="sede_id"
-                                    class="form-control" id="sede_id"
-                                    placeholder="Sede">
+                                    class="form-control"
+                                    id="sede_id"
+                                    placeholder="Sedes">
+                                    <option value="">Seleccione</option>
                                 </select>
                             </div>
+                            
                             @error('sede_id')
                                 <span class="error text-danger">{{ $message }}</span>
                             @enderror
-                        </div>
-                        <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
-                            @if($selectedFromRegistroTable)
-                                <label>
-                                    <input type="checkbox" wire:model="edit_area"> Editar Área
-                                </label>
-                                <br>
+                            
+                            @if($editMasiva)
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" wire:model.defer="edit_sede"> Editar Sede
+                                </div>
                             @endif
+                            
+                        </div>
+                        
+                        <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
+
                             <label for="area_id">Area *</label>
+                            
                             <div wire:ignore>
-                            <select 
-                            name="area_id"
-                                class="form-control" id="area_id"
-                                placeholder="Area">
-                            </select>
+                                <select 
+                                    name="area_id"
+                                    class="form-control" 
+                                    id="area_id"
+                                    placeholder="Area">
+                                    <option value="">Seleccione</option>
+                                </select>
                             </div>
+
                             @error('area_id')
                                 <span class="error text-danger">{{ $message }}</span>
                             @enderror
+
+                            @if($editMasiva)
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" wire:model.defer="edit_area"> Editar Área
+                                </div>
+                            @endif
+
                         </div>
-
+                        
                         @if ($es_aula_virtual)
-                            <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                                @if($selectedFromRegistroTable)
-                                    <label>
-                                        <input type="checkbox" wire:model="edit_fecha_inicio"> Editar Fecha Inicio
-                                    </label>
-                                    <br>
-                                @endif
+                            
+                            <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
                                 <label for="fecha_inicio">Fecha Inicio*</label>
-                                <input wire:model="fecha_inicio" type="datetime-local" class="form-control" id="fecha_inicio" placeholder="Fecha Inicio">@error('fecha_inicio') <span class="error text-danger">{{ $message }}</span> @enderror
-                            </div>
+                                <input wire:model="fecha_inicio" type="datetime-local" class="form-control" id="fecha_inicio" placeholder="Fecha Inicio">
+                                @error('fecha_inicio') 
+                                    <span class="error text-danger">{{ $message }}</span> 
+                                @enderror
 
-                            <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                                @if($selectedFromRegistroTable)
-                                    <label>
-                                        <input type="checkbox" wire:model="edit_fecha_fin"> Editar Fecha Fin
-                                    </label>
-                                    <br>
+                                @if($editMasiva)
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" wire:model="edit_fecha_inicio"> Editar Fecha Inicio
+                                    </div>
                                 @endif
+                                
+                            </div>
+                        
+                            <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
                                 <label for="fecha_fin">Fecha Fin*</label>
-                                <input wire:model="fecha_fin" type="datetime-local" class="form-control" id="fecha_fin" placeholder="Fecha Fin">@error('fecha_fin') <span class="error text-danger">{{ $message }}</span> @enderror
+                                <input wire:model="fecha_fin" type="datetime-local" class="form-control" id="fecha_fin" placeholder="Fecha Fin">
+                                @error('fecha_fin')
+                                    <span class="error text-danger">{{ $message }}</span> 
+                                @enderror
+                            
+                                @if($editMasiva)
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" wire:model="edit_fecha_fin"> Editar Fecha Fin
+                                    </div>
+                                @endif
                             </div>
                         @endif
                         
                         @if (session()->has('errorEdicionMasiva'))
-                        
                             <div class="col-12">
                                 <div wire:poll.4s class="btn btn-sm btn-danger" style="margin-top:0px; margin-bottom:0px;"> {{ session('errorEdicionMasiva') }} </div>
                             </div>
-                        
                         @endif
                         
                     </fieldset>
@@ -138,15 +160,14 @@
                 <button type="button" wire:click="cancel()" class="btn btn-secondary"
                 data-dismiss="modal"
                 >Cerrar</button>
-
                 
-                @if ($selectedFromRegistroTable)
+                @if ($editMasiva)
                     <button type="button" wire:click.prevent="updateMasivo()" class="btn btn-primary" 
                     @if (!$this->updateMode)                    
                         disabled
                     @endif >Guardar</button>                     
                 @else
-                    @if ($this->selected_id != 0)                    
+                    @if ($this->selected_id == 0)                    
                         <button type="button" wire:click.prevent="store()" class="btn btn-primary close-modal">Guardar</button>
                     @else
                         <button type="button" wire:click.prevent="update()" class="btn btn-primary" 
