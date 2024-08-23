@@ -266,12 +266,15 @@
                                                                 <p class="mb-1 card-text">
                                                                     {{ $row->capacitacion->sesiones->count() }} Sesiones
                                                                 </p>
-                                                                <p class="mb-1 card-text">
-                                                                        <span class="font-weight-bold">Nota: </span>
-                                                                        <h5 class="h4">
-                                                                            <span class="badge @if ($row->obtenerNota() >= $row->capacitacion->nota_minima_aprobatoria) badge-success @elseif ($puntaje > 0) badge-warning @else badge-danger @endif">{{ $row->obtenerNota() }}</span>
-                                                                        </h5>
-                                                                </p>
+
+                                                                @if ($row->finalizada || $row->intentos_agotados)
+                                                                    <p class="mb-1 card-text">
+                                                                            <span class="font-weight-bold">Nota: </span>
+                                                                            <h5 class="h4">
+                                                                                <span class="badge @if ($row->obtenerNota() >= $row->capacitacion->nota_minima_aprobatoria) badge-success @elseif ($puntaje > 0) badge-warning @else badge-danger @endif">{{ $row->obtenerNota() }}</span>
+                                                                            </h5>
+                                                                    </p>
+                                                                @endif
                                                                 
                                                             </div>
                                                         </div>

@@ -42,6 +42,21 @@ class CapacitacionHasPersonal extends Model
     ];
 
     
+    /// quiero deveolver un valor verdadero si hoy se encuentra entre $evaluador_has_evaluado->evaluacion->fecha_inicio y $evaluador_has_evaluado->evaluacion->fecha_fin
+    public function getActivaAttribute()
+    {
+        return $this->fecha_inicio <= now() && $this->fecha_fin >= now();
+    }
+
+    public function getFinalizadaAttribute()
+    {
+        return $this->fecha_fin < now();
+    }
+
+    public function getIntentosAgotadosAttribute()
+    {
+        return ($this->numero_de_intento_actual >= $this->intentos_de_evaluacion ?? $this->capacitacion->intentos_de_evaluacion);
+    }
 	
     public function personal()
     {
@@ -102,11 +117,20 @@ class CapacitacionHasPersonal extends Model
     public function obtenerNota()
     {
         $prueba = Prueba::where('capacitacion_id', $this->capacitacion_id)
-                        ->where('personal_id', auth()->user()->personal_id)
+                        ->where('personal_id', $this->personal_id)
                         ->where('status_id', 2)
                         ->orderBy('intento', 'desc')
                         ->first();
-            return $prueba ? $prueba->puntaje : null;
+        return $prueba ? $prueba->puntaje : null;
     }
 
+    public function getNumeroDeIntentoActualAttribute()
+    {
+        $prueba = Prueba::where('capacitacion_id', $this->capacitacion_id)
+                        ->where('personal_id', $this->personal_id)
+                        ->where('status_id', 2)
+                        ->orderBy('intento', 'desc')
+                        ->first();
+        return $prueba ? $prueba->intento : null;
+    }
 }
