@@ -33,12 +33,15 @@ class CapacitacionHasPersonal extends Model
         'synced',
         'fecha_inicio',
         'fecha_fin',
+        'intentos_de_evaluacion',
     ];
 
     protected $dates = [
         'fecha_inicio',
         'fecha_fin',
     ];
+
+    
 	
     public function personal()
     {
@@ -93,6 +96,17 @@ class CapacitacionHasPersonal extends Model
     public function sesiones()
     {
         return $this->hasMany(Sesione::class,'capacitacion_has_personal_id','id');
+    }
+
+    // Nuevo método para obtener la nota de la última prueba finalizada
+    public function obtenerNota()
+    {
+        $prueba = Prueba::where('capacitacion_id', $this->capacitacion_id)
+                        ->where('personal_id', auth()->user()->personal_id)
+                        ->where('status_id', 2)
+                        ->orderBy('intento', 'desc')
+                        ->first();
+            return $prueba ? $prueba->puntaje : null;
     }
 
 }

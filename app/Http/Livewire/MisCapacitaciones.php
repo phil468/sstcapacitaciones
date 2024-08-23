@@ -8,6 +8,9 @@ use App\Models\CapacitacionHasPersonal;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\EvaluadorHasEvaluado;
+use App\Models\Pregunta;
+use App\Models\Prueba;
+use App\Models\Respuesta;
 use App\Models\SesionAccessLog;
 use App\Models\Sesione;
 use Carbon\Carbon;
@@ -33,6 +36,11 @@ class MisCapacitaciones extends Component
     public $viewAsignacion = false;
     public $viewSesion = false;
     public $allSessionsCompleted = false;
+    public $intentosPermitidos;
+    public $intentosRegistrados;
+    public $respuestas = [];
+    public $puntaje;
+    public $nota_minima_aprobatoria;
 
     protected $queryString = [
         'asignacion_id' => ['as' => 'a', 'except'=>0],
@@ -68,6 +76,10 @@ class MisCapacitaciones extends Component
                 $this->asignacion_id = 0;
                 $this->asignacion = null;
                 $this->capacitacion_id = 0;
+
+                $this->intentosPermitidos = null;
+                $this->intentosRegistrados = null;
+                $this->puntaje = null;
                 // refresh
                 // $this->render();
                 // redirect()->route('mis-capacitaciones');
@@ -93,6 +105,43 @@ class MisCapacitaciones extends Component
                         ->count('sesion_id');
 
                     $this->allSessionsCompleted = ($sesionesCompletadas >= $totalSesiones);
+                    
+                    $exists = SesionAccessLog::where('capacitacion_id', $this->capacitacion_id)
+                        ->where('personal_id', auth()->user()->personal_id)
+                        ->where('ingreso_a_capacitacion', 1)
+                        ->exists();
+
+                    if (!$exists) {
+                        SesionAccessLog::create([
+                            'capacitacion_id' => $this->capacitacion_id,
+                            'personal_id' => auth()->user()->personal_id,
+                            'ingreso_a_capacitacion' => true,
+                            'accessed_at' => Carbon::now(),
+                        ]);
+                    }
+
+                    // Verificar si ya existe un registro de prueba
+                    $prueba = Prueba::where('capacitacion_id', $this->capacitacion_id)
+                    ->where('personal_id', auth()->user()->personal_id)
+                    ->where('status_id', 2)
+                    ->orderBy('intento', 'desc')
+                    ->first();
+                    
+                    $capacitacion = Capacitacione::find($this->capacitacion_id);
+                    // dd($this->asignacion->intentos_de_evaluacion , $capacitacion->intentos_de_evaluacion );
+                    $this->intentosPermitidos =  $this->asignacion->intentos_de_evaluacion ?? $capacitacion->intentos_de_evaluacion ?? 1;
+
+                    $this->intentosRegistrados = 0;
+
+                    if (!$prueba) {
+                        // Crear el registro de la prueba con el primer intento
+                        $this->intentosRegistrados = 0;
+                    } else {
+                        // Verificar si el usuario tiene intentos disponibles
+                        $this->intentosRegistrados = $prueba->intento;
+                        $this->puntaje = $prueba->puntaje;
+                        $this->nota_minima_aprobatoria = $capacitacion->nota_minima_aprobatoria??10.50;
+                    }
 
                 } else {
                     // Manejo del caso donde no se encuentra la asignación
@@ -110,6 +159,8 @@ class MisCapacitaciones extends Component
         if ($id == 0) {
             $this->sesion_id = 0;
             $this->sesion = null;
+            
+            // $this->asignacion($this->asignacion_id);
         } else {
             $this->sesion = Sesione::find($id);
             $numero_de_sesion = $this->sesion->numero_de_sesion;
@@ -125,13 +176,21 @@ class MisCapacitaciones extends Component
 
             if ($sesionAnterior || $numero_de_sesion == 1) {
                 // Registrar el acceso a la sesión actual
-                SesionAccessLog::create([
-                    'capacitacion_id' => $this->capacitacion_id,
-                    'personal_id' => $personalId,
-                    'sesion_id' => $id,
-                    'numero_de_sesion' => $numero_de_sesion,
-                    'accessed_at' => Carbon::now(),
-                ]);
+                $exists = SesionAccessLog::where('capacitacion_id', $this->capacitacion_id)
+                ->where('personal_id', auth()->user()->personal_id)
+                ->where('sesion_id', $id)
+                ->where('numero_de_sesion', $numero_de_sesion)
+                ->exists();
+
+                if (!$exists) {
+                    SesionAccessLog::create([
+                        'capacitacion_id' => $this->capacitacion_id,
+                        'personal_id' => $personalId,
+                        'sesion_id' => $id,
+                        'numero_de_sesion' => $numero_de_sesion,
+                        'accessed_at' => Carbon::now(),
+                    ]);
+                }
 
                 // Redirigir a la sesión
                 // return redirect()->route('session.view', ['sessionId' => $id]);
@@ -155,16 +214,112 @@ class MisCapacitaciones extends Component
 
             if ($sesionesCompletadas >= $totalSesiones) {
                 if (!empty($this->asignacion)) {
+                    $prueba = null ;
+                    // Verificar si ya existe un registro de prueba
+                    $prueba = Prueba::where('capacitacion_id', $this->capacitacion_id)
+                        ->where('personal_id', auth()->user()->personal_id)
+                        ->orderBy('intento', 'desc')
+                        ->where('status_id',"!=", 3) // Asumiendo que 1 es el estado inicial
+                        ->first();
+                    
+                    $capacitacion = Capacitacione::find($this->capacitacion_id);
+                    $intentosPermitidos =  $this->asignacion->intentos_de_evaluacion ?? $capacitacion->intentos_de_evaluacion ?? 1;
 
-                    $preguntas = $this->asignacion->capacitacion->preguntas()->inRandomOrder()->limit(5)->get();
+                    // dd($prueba, $intentosPermitidos);
+                    if (!$prueba) {
+                        // Crear el registro de la prueba con el segundo intento
+                        $prueba = Prueba::create([
+                            'capacitacion_id' => $this->capacitacion_id,
+                            'personal_id' => auth()->user()->personal_id,
+                            'fecha_inicio' => Carbon::now(),
+                            'intento' => 1,
+                            'status_id' => 1, // Asumiendo que 1 es el estado inicial
+                        ]);
+                    }
 
-                    //$preguntas = Capacitacione::find($this->capacitacion_id)->inRandomOrder()->limit(5)->get();
-                    $this->preguntasAleatorias = $preguntas;
+                    if ($prueba->status_id == 2) {
+                        if ($prueba->intento < $intentosPermitidos) {
+                            // Crear el registro de la prueba con el segundo intento
+                            $prueba = Prueba::create([
+                                'capacitacion_id' => $this->capacitacion_id,
+                                'personal_id' => auth()->user()->personal_id,
+                                'fecha_inicio' => Carbon::now(),
+                                'intento' => $prueba->intento+1,
+                                'status_id' => 1, // Asumiendo que 1 es el estado inicial
+                            ]);
+    
+                        } else {
+                            $this->emit('alert', ['type' => 'error', 'message' => 'Ha alcanzado el límite de intentos para esta evaluación.']);
+                            return;
+                        }
+                    }
+
+                    // Verificar si ya existen respuestas guardadas
+                    $respuestas = Respuesta::where('prueba_id', $prueba->id)->get();
+
+                    if ($respuestas->isEmpty()) {
+                        // Obtener preguntas aleatorias
+                        $preguntas = $this->asignacion->capacitacion->preguntas()->inRandomOrder()->limit($capacitacion->cantidad_de_preguntas_a_mostrar??5)->get();
+
+                        // Crear respuestas con las preguntas aleatorias
+                        foreach ($preguntas as $pregunta) {
+                            Respuesta::create([
+                                'prueba_id' => $prueba->id,
+                                'personal_id' => auth()->user()->personal_id,
+                                'pregunta_id' => $pregunta->id,
+                                'opcion_id' => null, // Inicialmente sin respuesta
+                            ]);
+                        }
+                        
+                        // Mezclar las opciones de cada pregunta
+                        foreach ($preguntas as $pregunta) {
+                            $opciones = $pregunta->opciones->toArray();
+                            shuffle($opciones);
+                            $pregunta->opciones = collect($opciones);
+                        }
+
+                        $this->preguntasAleatorias = $preguntas;
+
+                        // $this->preguntasAleatorias = $preguntas;
+
+                    } else {
+                        // Retornar las preguntas guardadas en el modelo Respuesta
+                        $preguntasIds = $respuestas->pluck('pregunta_id');
+                        $preguntas = Pregunta::whereIn('id', $preguntasIds)->get();
+                        
+                        // Mezclar las opciones de cada pregunta
+                        foreach ($preguntas as $pregunta) {
+                            $opciones = $pregunta->opciones->toArray();
+                            shuffle($opciones);
+                            $pregunta->opciones = collect($opciones);
+                        }
+
+                        $this->preguntasAleatorias = $preguntas;
+                    }
+                    
+                    $exists = SesionAccessLog::where('capacitacion_id', $this->capacitacion_id)
+                    ->where('personal_id', auth()->user()->personal_id)
+                    ->where('ingreso_a_evaluacion', 1)
+                    ->exists();
+
+                    if (!$exists) {
+                        SesionAccessLog::create([
+                            'capacitacion_id' => $this->capacitacion_id,
+                            'personal_id' => auth()->user()->personal_id,
+                            'ingreso_a_evaluacion' => true,
+                            'accessed_at' => Carbon::now(),
+                        ]);
+                    }
 
                     $this->viewEvaluation = true;
-                }
+
+                    } 
+
+                
             } else {
-                session()->flash('error', 'Debe completar todas las sesiones antes de acceder a la evaluación.');
+                $this->emit('alert', ['type' => 'error', 'message' => 'Debe completar todas las sesiones antes de acceder a la evaluación.']);
+
+                // session()->flash('error', 'Debe completar todas las sesiones antes de acceder a la evaluación.');
             }
         } else {
             $this->viewEvaluation = false;
@@ -172,13 +327,85 @@ class MisCapacitaciones extends Component
     }
 
     public function enviarEvaluacion() {
-        // Aquí puedes procesar las respuestas del usuario
-        // Por ejemplo, podrías almacenarlas en la base de datos
-        // O podrías hacer algo con ellas, como calcular el puntaje
-        // O simplemente podrías mostrar un mensaje de éxito
+        $prueba = Prueba::where('capacitacion_id', $this->capacitacion_id)
+            ->where('personal_id', auth()->user()->personal_id)
+            ->latest()
+            ->first();
 
-        session()->flash('message', '¡Evaluación enviada con éxito!');
-        $this->emit('alert', ['type' => 'success', 'message' => '¡Evaluación enviada con éxito!']);
+        if (!$prueba) {
+            // session()->flash('error', 'No se encontró una prueba activa.');
+            $this->emit('alert', ['type' => 'error', 'message' => 'No se encontró una prueba activa.']);
+            return;
+        }
+
+        $correctas = 0;
+        $incorrectas = 0;
+
+        // Recorrer las preguntas aleatorias y guardar las respuestas
+        foreach ($this->respuestas as $preguntaId => $respuestaId) {
+            // $respuestaId = request()->input('pregunta_' . $pregunta->id);
+            $opcion_correcta_id = Pregunta::find($preguntaId)->solucion->opcion_id;
+            if ($respuestaId) {
+                // Actualizar o crear la respuesta en el modelo Respuesta
+                Respuesta::updateOrCreate(
+                    [
+                        'prueba_id' => $prueba->id,
+                        'pregunta_id' => $preguntaId,
+                    ],
+                    [
+                        'intento' => $prueba->intento,
+                        'opcion_id' => $respuestaId,
+                        'opcion_correcta_id' => $opcion_correcta_id,
+                    ]
+                );
+
+                // Contar respuestas correctas e incorrectas
+                if ($respuestaId == $opcion_correcta_id) {
+                    $correctas++;
+                } else {
+                    $incorrectas++;
+                }
+            }
+        }
+
+        // Calcular el puntaje (asumiendo 1 punto por respuesta correcta)
+
+        $totalPreguntas = count($this->preguntasAleatorias);
+        $puntaje = ($correctas / $totalPreguntas) * 20;
+
+        // Calcular la duración de la prueba
+        $fecha_inicio = Carbon::parse($prueba->fecha_inicio);
+        $fecha_fin = Carbon::now();
+        $duracion = $fecha_fin->diffInMinutes($fecha_inicio);
+
+        // Actualizar el estado de la prueba
+        $prueba->update([
+            'fecha_fin' => Carbon::now(),
+            'status_id' => 2, // Asumiendo que 2 es el estado de finalizado
+            'puntaje' => $puntaje,
+            'correctas' => $correctas,
+            'incorrectas' => $incorrectas,
+            'duracion' => $duracion,
+        ]);
+
+        // $this->emit('alert', ['type' => 'success', 'message' => '¡Evaluación enviada con éxito!']);
+        
+        // evaluar cuantas evaluaciones se han realizado para luego incrementar el numero_de_evaluacion
+        $numero_de_evaluacion = SesionAccessLog::where('capacitacion_id', $this->capacitacion_id)
+            ->where('personal_id', auth()->user()->personal_id)
+            ->whereNotNull('numero_de_evaluacion')
+            ->count();
+
+        if ($numero_de_evaluacion < 2) {
+            SesionAccessLog::create([
+                'capacitacion_id' => $this->capacitacion_id,
+                'personal_id' => auth()->user()->personal_id,
+                'numero_de_evaluacion' => $numero_de_evaluacion +1,
+                'accessed_at' => Carbon::now(),
+            ]);
+        }
+
+        $this->emit('alert', ['type' => 'success', 'message' => 'Evaluación enviada exitosamente.']);
 
         $this->viewEvaluation = false;
     }

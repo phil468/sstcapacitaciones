@@ -27,7 +27,7 @@ class CapacitacionNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('Tiene alguna(s) Capacitacion(es) disponible(s).')
+                    ->line('Tiene alguna(s) Capacitacion(es) pendiente(s).')
                     ->action('Ver Mis Capacitaciones', url('/mis-capacitaciones'))
                     ->line('Gracias por usar nuestra aplicación!');
     }

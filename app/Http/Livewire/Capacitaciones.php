@@ -343,7 +343,10 @@ class Capacitaciones extends Component
 			'cantidad_de_sesiones' => $this-> cantidad_de_sesiones??1,
 			'expositor_externo' => $this-> expositor_externo,
 			'nombre_expositor_externo' => $this-> nombre_expositor_externo,
-			'synced' =>false
+			'synced' =>false,
+			'intentos_de_evaluacion' => 2,
+			'cantidad_de_preguntas_a_mostrar' => 5,
+			'nota_minima_aprobatoria' => 10.50,
         ]);
 
 		if($record) {
@@ -481,6 +484,9 @@ class Capacitaciones extends Component
 	{
 		$capacitaciones = [];
 
+		// 0: notificar todas las capacitaciones
+		// n: notificar solo la capacitacion con id = n
+
 		if ($id == 0) {
 			$capacitaciones = Capacitacione::where('activo', 1)
 				->where('status_id', '!=', 3)
@@ -494,6 +500,7 @@ class Capacitaciones extends Component
 				->get();
 		}
 
+		// TODO: Enviar notificaciones a los usuarios que no han ingresado a la capacitación
 		$notificacionesEnviadas = 0;
 
 		foreach($capacitaciones as $capacitacion) {
@@ -503,14 +510,14 @@ class Capacitaciones extends Component
 					->whereDate('fecha_inicio', '<=', now())
 					->whereDate('fecha_fin', '>=', now())
 					->get();
-				// dd($capacitacion->id);
+
 				$notificacionesEnviadas = 0;
 
 				foreach ($personal as $persona) {
 					$sesionLog = SesionAccessLog::where('capacitacion_id', $capacitacion->id)
 						->where('personal_id', $persona->personal_id)
-						->where('numero_de_sesion', 1)
-						->first();
+						->whereNotNull('numero_de_evaluacion')
+						->count();
 
 					if (!$sesionLog) {
 						Notification::send($persona->personal->user, new CapacitacionNotification($capacitacion));
@@ -519,8 +526,8 @@ class Capacitaciones extends Component
 							'capacitacion_id' => $capacitacion->id,
 							'personal_id' => $persona->personal_id,
 						]);
+
 						$notificacionesEnviadas++;
-	
 					}
 				}
 				

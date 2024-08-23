@@ -38,7 +38,9 @@ class Capacitacione extends Model
         //nuevo campo
         'es_onboarding',
         'cantidad_de_preguntas_a_mostrar',
-        'es_aula_virtual'
+        'es_aula_virtual',
+        'nota_minima_aprobatoria',
+        'intentos_de_evaluacion'
     ];
 
     // dates

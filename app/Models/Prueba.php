@@ -15,6 +15,21 @@ class Prueba extends Model
 
     protected $table = 'pruebas';
 
-    protected $fillable = ['personal_id','capacitacion_id','puntaje','correctas','incorrectas','fecha_inicio','fecha_fin','duracion','status_id'];
-	
+    protected $fillable = ['personal_id','capacitacion_id','puntaje','correctas','incorrectas','fecha_inicio','fecha_fin','duracion','status_id', 'intento'];
+
+    protected $dates = ['fecha_inicio','fecha_fin'];
+
+    public function personal() {
+        return $this->belongsTo(Personal::class,'personal_id');
+    }
+
+    public function capacitacion() {
+        return $this->belongsTo(Capacitacione::class,'capacitacion_id');
+    }
+
+    public function estado() {
+        return $this->belongsTo(Status::class,'status_id');
+    }
+
+
 }
