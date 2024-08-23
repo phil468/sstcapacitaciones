@@ -7,6 +7,11 @@
                     <h5 class="h5">Detalles de la Capacitación</h5>
                 </div>
                 <div>
+                    @if ($capacitacion->activo && ($capacitacion->estado->name !== 'cancelada'))
+                        <a class="mx-2 btn btn-default rounded-xl" title="Enviar Notificación" wire:click='notificar({{$capacitacion->id}})'>
+                            <i class="fa fa-bell"></i>
+                        </a>
+                    @endif
                     <a href="{{ route('capacitaciones') }}" class="btn btn-default rounded-xl" title="Volver a lista de Capacitaciones">
                         <i class="fa fa-arrow-left"></i> 
                     </a>

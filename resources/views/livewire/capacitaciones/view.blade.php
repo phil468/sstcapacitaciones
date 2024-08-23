@@ -7,28 +7,30 @@
 				<div class="card rounded-xl">
 					<div class="text-white card-header bg-vanguard rounded-t-xl">
 						<div style="display: flex; justify-content: space-between; align-items: center;">
+							
 							<div class="float-left">
 								<h5 class="h5">Lista Capacitaciones </h5>
 							</div>
-							{{--<div wire:poll.1s>
-								<code><h5>{{ now()->format('H:i:s') }}</h5></code>
-							</div>--}}
-							@if (session()->has('message'))
-							<div wire:poll.4s class="btn btn-sm btn-success" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
-							@endif
 
+							{{-- @if (session()->has('message'))
+							<div wire:poll.4s class="btn btn-sm btn-success" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
+							@endif --}}
 							
-							{{-- <div>
-								<input wire:model='keyWord' type="text" class="form-control" name="search" id="search" placeholder="Buscar">
-							</div> --}}
 							@can('crear-capacitacion')
-								<div class="ml-1 btn btn-md btn-default rounded-xl" 
+							<div>
+								<a class="mx-2 btn btn-default rounded-xl" title="Enviar Notificación" wire:click='notificar(0)'>
+									<i class="fa fa-bell"></i>
+								</a>
+						
+								<a class="ml-1 btn btn-md btn-default rounded-xl" 
 									wire:click="edit(0)" 
 									data-toggle="modal"
 									title="Nueva Capacitación"
 									data-target="#updateModal">
 									<i class="fa fa-plus"></i>
-								</div>
+								</a>
+								
+							</div>
 
 							{{-- <div class="btn btn-sm btn-default" data-toggle="modal" data-target="#createDataModal">
 							<i class="fa fa-plus"></i>  Nuevo
@@ -38,13 +40,11 @@
 					</div>
 					
 					<div class="card-body">
-							{{-- @can('crear-capacitacion')
-							@endcan						 --}}
-							@can('editar-capacitacion')
-								@include('livewire.capacitaciones.update')
-							@endcan
+						@can('editar-capacitacion')
+							@include('livewire.capacitaciones.update')
+						@endcan
 
-							@livewire('capacitaciones-table')
+						@livewire('capacitaciones-table')
 					</div>
 					
 					<div wire:loading wire:target="importar,exportar,create,edit,destroy,store,update,agregar_tema">

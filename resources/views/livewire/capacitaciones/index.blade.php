@@ -22,7 +22,6 @@
         @endif
 @endif
 
-
 @stop
 
 @section('css')

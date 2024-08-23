@@ -6,14 +6,19 @@ use App\Models\Area;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Capacitacione;
+use App\Models\CapacitacionHasPersonal;
 use App\Models\Cargo;
 use App\Models\Empresa;
 use App\Models\Modalidade;
+use App\Models\NotificacionEnviada;
 use App\Models\Personal;
 use App\Models\Sede;
+use App\Models\SesionAccessLog;
 use App\Models\Status;
 use App\Models\Tema;
 use App\Models\TipoDeCapacitacione;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\CapacitacionNotification;
 
 class Capacitaciones extends Component
 {
@@ -232,7 +237,7 @@ class Capacitaciones extends Component
 
 	}
 
-		public function render()
+	public function render()
     {
 		// $keyWord = '%'.$this->keyWord .'%';
         return view('livewire.capacitaciones.view');
@@ -471,4 +476,61 @@ class Capacitaciones extends Component
             $record->delete();
         }
     }
+	
+	public function notificar($id)
+	{
+		$capacitaciones = [];
+
+		if ($id == 0) {
+			$capacitaciones = Capacitacione::where('activo', 1)
+				->where('status_id', '!=', 3)
+				->where('es_aula_virtual', '=', 1)
+				->get();
+		} else {
+			$capacitaciones = Capacitacione::where('id', $id)
+				->where('activo', 1)
+				->where('status_id', '!=', 3)
+				->where('es_aula_virtual', '=', 1)
+				->get();
+		}
+
+		$notificacionesEnviadas = 0;
+
+		foreach($capacitaciones as $capacitacion) {
+
+			if ($capacitacion->activo && $capacitacion->estado->name !== 'cancelada') {
+				$personal = CapacitacionHasPersonal::where('capacitacion_id', $capacitacion->id)
+					->whereDate('fecha_inicio', '<=', now())
+					->whereDate('fecha_fin', '>=', now())
+					->get();
+				// dd($capacitacion->id);
+				$notificacionesEnviadas = 0;
+
+				foreach ($personal as $persona) {
+					$sesionLog = SesionAccessLog::where('capacitacion_id', $capacitacion->id)
+						->where('personal_id', $persona->personal_id)
+						->where('numero_de_sesion', 1)
+						->first();
+
+					if (!$sesionLog) {
+						Notification::send($persona->personal->user, new CapacitacionNotification($capacitacion));
+					
+						NotificacionEnviada::create([
+							'capacitacion_id' => $capacitacion->id,
+							'personal_id' => $persona->personal_id,
+						]);
+						$notificacionesEnviadas++;
+	
+					}
+				}
+				
+				if ($notificacionesEnviadas > 0) {
+					$this->emit('alert', ['type' => 'success', 'message' => 'Notificaciones enviadas correctamente.']);
+				} else {
+					$this->emit('alert', ['type' => 'info', 'message' => 'No hay notificaciones nuevas para enviar.']);
+				}
+			}
+		}
+	}
+
 }
