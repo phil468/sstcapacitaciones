@@ -55,7 +55,7 @@ class CapacitacionHasPersonal extends Model
 
     public function getIntentosAgotadosAttribute()
     {
-        return ($this->numero_de_intento_actual >= $this->intentos_de_evaluacion ?? $this->capacitacion->intentos_de_evaluacion);
+        return ($this->numero_de_intento_actual > 0 && $this->numero_de_intento_actual >= ($this->intentos_de_evaluacion ?? $this->capacitacion->intentos_de_evaluacion ?? 1));
     }
 	
     public function personal()
@@ -121,7 +121,7 @@ class CapacitacionHasPersonal extends Model
                         ->where('status_id', 2)
                         ->orderBy('intento', 'desc')
                         ->first();
-        return $prueba ? $prueba->puntaje : null;
+        return $prueba ? $prueba->puntaje : 0.00;
     }
 
     public function getNumeroDeIntentoActualAttribute()
