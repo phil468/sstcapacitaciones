@@ -262,6 +262,7 @@
                                                                 </p>
 
                                                                 <div class="mb-2 card-subtitle text-muted">
+                                                                    {{ $row->fecha_inicio->format('d/m/Y g:i A') }} - {{ $row->fecha_fin->format('d/m/Y g:i A') }}
                                                                 </div>
                                                                 <p class="mb-1 card-text">
                                                                     {{ $row->capacitacion->sesiones->count() }} Sesiones

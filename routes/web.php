@@ -114,9 +114,9 @@ Route::group(['middleware'  =>  ['auth']],function(){
 
     Route::view('/mis-capacitaciones','livewire.mis-capacitaciones.index')->name('mis-capacitaciones')->middleware(['can:ver-mis-capacitaciones']);
 
-    // Route::get('/capacitaciones/{capacitacion_id}', function ($capacitacion_id) {
-    //     return view('livewire.capacitacion-has-personals.index')->with('capacitacion_id', $capacitacion_id);
-    // })->name('capacitaciones.personal')->middleware(['can:ver-capacitacion']);
+    Route::get('/capacitaciones/registro/{capacitacion_id}', function ($capacitacion_id) {
+        return view('livewire.capacitacion-has-personals.index')->with('capacitacion_id', $capacitacion_id);
+    })->name('capacitaciones.personal')->middleware(['can:ver-capacitacion']);
     Route::get('/capacitaciones/{capacitacion_id}/asistencia', function ($capacitacion_id) {
         return view('livewire.asistenciums.index')->with('capacitacion_id', $capacitacion_id);
     })->name('capacitaciones.asistencia')->middleware(['can:ver-capacitacion']);
@@ -235,7 +235,7 @@ Route::get('/web/capacitaciones/{tipo_user}/{user_id}', [App\Http\Controllers\Ap
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/validar-codigo', [App\Http\Controllers\VerificationController::class, 'verifyCode'])->name('verification.verify');
+// Route::get('/validar-codigo', [App\Http\Controllers\VerificationController::class, 'verifyCode'])->name('verification.verify');
 
-Route::get('/enviar-correo', [App\Http\Controllers\VerificationController::class, 'enviarCorreo']);
+// Route::get('/enviar-correo', [App\Http\Controllers\VerificationController::class, 'enviarCorreo']);
 

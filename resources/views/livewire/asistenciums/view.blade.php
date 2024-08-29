@@ -45,8 +45,8 @@
 									<th>MODALIDAD</th>
 									<th>EXPOSITOR</th>
 									<th>SEDE</th>
-									<th>REGISTRADOR</th>
-									<th>SESIONES</th>
+									{{-- <th>REGISTRADOR</th> --}}
+									{{-- <th>SESIONES</th> --}}
 								</tr>
 							</thead>
 							<tbody>
@@ -66,8 +66,8 @@
 										@endif											
 									 </td>
 									<td>{{ $row['sede']['name'] }}</td>
-									<td>{{ $row['registrador']['name'] }}</td>
-									<td>{{ $row['cantidad_de_sesiones'] }}</td>
+									{{-- <td>{{ $row['registrador']['name'] }}</td> --}}
+									{{-- <td>{{ $row['cantidad_de_sesiones'] }}</td> --}}
 								</tr>
 								@endforeach
 							</tbody>

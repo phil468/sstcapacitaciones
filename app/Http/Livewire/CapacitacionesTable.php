@@ -13,6 +13,7 @@ use App\Models\Modalidade;
 use App\Models\Personal;
 use App\Models\Sede;
 use App\Models\TipoDeCapacitacione;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Mediconesystems\LivewireDatatables\BooleanColumn;
 use Mediconesystems\LivewireDatatables\Column;
@@ -27,12 +28,18 @@ class CapacitacionesTable extends LivewireDatatable
     public $afterTableSlot = 'components.selected';
     public $numeroSerieValidado=true, $fileUpload;
     public $updateMode = false;
+    public $ingresar_capacitaciones_de_aula_virtual, $ingresar_capacitaciones_de_no_aula_virtual;
+    
 
     protected $listeners = ['closeModal' => '$refresh', 'close' => '$refresh'];
 
     public function builder()
     {
-        return Capacitacione::query()
+        
+		$this->ingresar_capacitaciones_de_aula_virtual 		= Auth::user()->can('ingresar-capacitaciones-de-aula-virtual');
+		$this->ingresar_capacitaciones_de_no_aula_virtual 	= Auth::user()->can('ingresar-capacitaciones-de-no-aula-virtual');
+
+        $query = Capacitacione::query()
         ->with('personal')
         ->leftJoin('empresas', 'empresas.id', 'capacitaciones.empresa_id')
         ->leftJoin('tipo_de_capacitaciones', 'tipo_de_capacitaciones.id', 'capacitaciones.capacitaciones_tipo_id')
@@ -46,15 +53,32 @@ class CapacitacionesTable extends LivewireDatatable
         ->leftJoin('modalidades', 'modalidades.id', 'capacitaciones.modalidad_id')
         ;
 
+        // Aplicar filtros según los permisos
+        if ($this->ingresar_capacitaciones_de_aula_virtual && !$this->ingresar_capacitaciones_de_no_aula_virtual) {
+            $query->where('capacitaciones.es_aula_virtual', true);
+        } elseif (!$this->ingresar_capacitaciones_de_aula_virtual && $this->ingresar_capacitaciones_de_no_aula_virtual) {
+            $query->where('capacitaciones.es_aula_virtual', false)->orWhere('capacitaciones.es_aula_virtual', null);
+        }
+
+        return $query;
+
     }
 
     public $model = Capacitacione::class;
 
     public function columns()
     {
-        return [
-            Column::callback('id', function ($id) {
-                return view('livewire.capacitaciones.table-actions', ['id' => $id]);
+		$this->ingresar_capacitaciones_de_aula_virtual 		= Auth::user()->can('ingresar-capacitaciones-de-aula-virtual');
+		$this->ingresar_capacitaciones_de_no_aula_virtual 	= Auth::user()->can('ingresar-capacitaciones-de-no-aula-virtual');
+
+        $columns = [
+            Column::callback('id,es_aula_virtual', function ($id, $es_aula_virtual) {
+                if($es_aula_virtual){
+                    return view('livewire.capacitaciones.table-actions', ['id' => $id]);
+                } else {
+                    return view('livewire.capacitaciones.table-actions-aula-no-virtual', ['id' => $id]);
+                }
+                // return view('livewire.capacitaciones.table-actions', ['id' => $id]);
             })->unsortable()
             ->label('Acciones')
             ->excludeFromExport(),
@@ -92,15 +116,6 @@ class CapacitacionesTable extends LivewireDatatable
                 ->searchable()
                 ->hideable()
                 ->alignCenter(),
-            
-            BooleanColumn::callback(['id', 'es_onboarding'], function ($id, $es_onboarding) {
-                    return view('livewire.custom-boolean', ['modelId' => $id, 'field' => 'es_onboarding', 'value' => $es_onboarding]);
-                })
-                ->label('Onboarding')
-                ->filterable()
-                ->searchable()
-                ->hideable()
-                ->alignCenter(),
 
             Column::name('tipo_de_capacitaciones.name')
                 ->filterable($this->tipo_de_capacitaciones)
@@ -109,12 +124,12 @@ class CapacitacionesTable extends LivewireDatatable
                 ->hideable()
                 ->label('Tipo de capacitación'),
 
-            DateColumn::name('fecha_capacitacion')
-                ->label('Fecha')
-                ->filterable()
-                ->searchable()
-                ->hideable()
-                ->sortBy('fecha_capacitacion'),
+            // DateColumn::name('fecha_capacitacion')
+            //     ->label('Fecha')
+            //     ->filterable()
+            //     ->searchable()
+            //     ->hideable()
+            //     ->sortBy('fecha_capacitacion'),
                 
             Column::name('empresa.name')
                 ->filterable($this->empresas)
@@ -123,12 +138,12 @@ class CapacitacionesTable extends LivewireDatatable
                 ->hideable()
                 ->label('Empresa'),
 
-            Column::name('expositores.dni')
-                ->filterable()
+            Column::name('sede.name')
+                ->filterable($this->sedes)
                 ->searchable()
-                ->sortBy('expositores.dni')
+                ->sortBy('sedes.name')
                 ->hideable()
-                ->label('dni expositor'),
+                ->label('Sede'),
 
             Column::name('modalidades.name')
                 ->filterable($this->modalidades)
@@ -136,6 +151,13 @@ class CapacitacionesTable extends LivewireDatatable
                 ->sortBy('modalidades.name')
                 ->hideable()
                 ->label('Modalidad'),
+
+            Column::name('expositores.dni')
+                ->filterable()
+                ->searchable()
+                ->sortBy('expositores.dni')
+                ->hideable()
+                ->label('dni expositor'),
 
             Column::name('expositores.name')
                 ->filterable($this->expositores)
@@ -158,49 +180,57 @@ class CapacitacionesTable extends LivewireDatatable
                 ->hideable()
                 ->label('Expositor externo'),
 
-            Column::name('sede.name')
-                ->filterable($this->sedes)
-                ->searchable()
-                ->sortBy('sedes.name')
-                ->hideable()
-                ->label('Sede'),
-
-            Column::name('registradores.name')
-                ->filterable($this->registradores)
-                ->searchable()
-                ->sortBy('registradores.name')
-                ->hideable()
-                ->label('Registrador'),
+            // Column::name('registradores.name')
+            //     ->filterable($this->registradores)
+            //     ->searchable()
+            //     ->sortBy('registradores.name')
+            //     ->hideable()
+            //     ->label('Registrador'),
             
-            Column::name('cargo_registrador.name')
-                ->filterable($this->registrador_cargos)
-                ->searchable()
-                ->sortBy('cargo_registrador.name')
-                ->hideable()
-                ->label('Cargo de registrador'),
+            // Column::name('cargo_registrador.name')
+            //     ->filterable($this->registrador_cargos)
+            //     ->searchable()
+            //     ->sortBy('cargo_registrador.name')
+            //     ->hideable()
+            //     ->label('Cargo de registrador'),
 
-            NumberColumn::name('cantidad_de_sesiones')
-                ->label('Sesiones')
-                ->filterable()
-                ->searchable()
-                ->hideable()
-                ->sortBy('cantidad_de_sesiones')
-                ->alignCenter(),
+            // NumberColumn::name('cantidad_de_sesiones')
+            //     ->label('Sesiones')
+            //     ->filterable()
+            //     ->searchable()
+            //     ->hideable()
+            //     ->sortBy('cantidad_de_sesiones')
+            //     ->alignCenter(),
 
-            Column::callback('id,cantidad_de_sesiones', function ($id) {
+            Column::callback('id', function ($id) {
                     $capacitacion = Capacitacione::find($id);
                     return $capacitacion->cantidad_personas;
-                })
+                },[],'Inscritos')
                 ->label('Registrados')
                 ->searchable()
                 ->hideable(),
-            
+        ];
+
+        // dd($this->ingresar_capacitaciones_de_aula_virtual);
+        if ($this->ingresar_capacitaciones_de_aula_virtual) {
+            // dd('hola');
+            $columns = array_merge($columns, [
+                BooleanColumn::name('es_aula_virtual')->label('Es Aula Virtual')->searchable()->filterable(),
+                BooleanColumn::name('es_onboarding')->label('Es Onboarding')->searchable()->filterable(),
+                NumberColumn::name('cantidad_de_preguntas_a_mostrar')->label('Cantidad de Preguntas a Mostrar')->searchable()->filterable(),
+                NumberColumn::name('nota_minima_aprobatoria')->label('Nota Mínima Aprobatoria')->searchable()->filterable(),
+                NumberColumn::name('intentos_de_evaluacion')->label('Intentos de Evaluación')->searchable()->filterable(),
+            ]);
+        }
+
+        $columns = array_merge($columns, [
             DateColumn::name('created_at')->label('Fecha de creacion')->format('d/m/Y h:i:s a')->searchable()->filterable()->defaultSort('asc'),
             DateColumn::name('updated_at')->label('Fecha de Modificación')->format('d/m/Y h:i:s a')->searchable()->filterable()->defaultSort('asc'),
             DateColumn::name('deleted_at')->label('Fecha de eliminación')->format('d/m/Y h:i:s a')->searchable()->filterable()->defaultSort('asc'),
-            
+        ]);
 
-        ];
+        return $columns;
+    
     }
 
     public function getPersonalProperty()

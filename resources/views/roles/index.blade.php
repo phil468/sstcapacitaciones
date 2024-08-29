@@ -15,9 +15,10 @@
                     <div class="float-left">
                         <h3 class="h4">Roles</h3>
                     </div>
-                    
                     @can('crear-rol')
-                        <a class="float-right mt-1 mr-1 btn btn-default rounded-xl" href="{{ route('roles.create') }}">Nuevo</a>                        
+                        <a class="float-right mt-1 mr-1 btn btn-default rounded-xl" href="{{ route('roles.create') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>                        
                     @endcan
                 </div>
             <!-- /.card-header -->
@@ -33,17 +34,18 @@
                             @foreach ($roles as $role)
                             <tr>
                                 <td>
-
-                                    @can('editar-rol')
-                                        <a class="m-1 btn btn-vanguard" href="{{ route('roles.edit',$role->id) }}"><i class="fa fa-edit"></i></a>
-                                    @endcan
-                                    
-                                    @can('borrar-rol')
-                                        {!! Form::open(['method' => 'DELETE','route' => ['roles.destroy', $role->id],'style'=>'display:inline']) !!}
-                                        <button title="Eliminar" class="m-1 btn btn-danger" type="submit" 
-                                        value="borrar" style="width: 43.8px;"><i class="fa fa-trash"></i></button>
-                                        {!! Form::close() !!}
-                                    @endcan
+                                    <div class="btn-group">
+                                        @can('editar-rol')
+                                            <a class="m-1 btn btn-outline-vanguard" href="{{ route('roles.edit',$role->id) }}"><i class="fa fa-edit"></i></a>
+                                        @endcan
+                                        
+                                        @can('borrar-rol')
+                                            {!! Form::open(['method' => 'DELETE','route' => ['roles.destroy', $role->id],'style'=>'display:inline']) !!}
+                                            <button title="Eliminar" class="m-1 btn btn-outline-danger" type="submit" 
+                                            value="borrar" style="width: 43.8px;"><i class="fa fa-trash"></i></button>
+                                            {!! Form::close() !!}
+                                        @endcan
+                                    </div>
                                 </td>
                                 <td>{{ $role->name }}</td>                    
                                 <td>

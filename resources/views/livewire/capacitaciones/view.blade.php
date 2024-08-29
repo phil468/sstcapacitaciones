@@ -171,23 +171,23 @@
 					// }
 				});
 
-				const registrador_id_select = new Choices('#registrador_id', opciones);
-				registrador_id_select.passedElement.element.addEventListener('change', function(event) {
-					// if (registrador_id_select.getValue(true) !== undefined) {
-						@this.set('registrador_id', registrador_id_select.getValue(true));
-					// } else {
-						// @this.set('registrador_id', null);
-					// }
-				});
+				// const registrador_id_select = new Choices('#registrador_id', opciones);
+				// registrador_id_select.passedElement.element.addEventListener('change', function(event) {
+				// 	// if (registrador_id_select.getValue(true) !== undefined) {
+				// 		@this.set('registrador_id', registrador_id_select.getValue(true));
+				// 	// } else {
+				// 		// @this.set('registrador_id', null);
+				// 	// }
+				// });
 
-				const cargo_registrador_id_select = new Choices('#cargo_registrador_id', opciones);
-				cargo_registrador_id_select.passedElement.element.addEventListener('change', function(event) {
-					if (cargo_registrador_id_select.getValue(true) !== undefined) {
-						@this.set('cargo_registrador_id', cargo_registrador_id_select.getValue(true));
-					} else {
-						@this.set('cargo_registrador_id', null);
-					}
-				});
+				// const cargo_registrador_id_select = new Choices('#cargo_registrador_id', opciones);
+				// cargo_registrador_id_select.passedElement.element.addEventListener('change', function(event) {
+				// 	if (cargo_registrador_id_select.getValue(true) !== undefined) {
+				// 		@this.set('cargo_registrador_id', cargo_registrador_id_select.getValue(true));
+				// 	} else {
+				// 		@this.set('cargo_registrador_id', null);
+				// 	}
+				// });
 				
 				const area_id_select = new Choices('#area_id', opciones);
 				area_id_select.passedElement.element.addEventListener('change', function(event) {
@@ -244,8 +244,8 @@
 					sede_id_select.setChoiceByValue(sede_id ?? '');
 					expositor_id_select.setChoiceByValue(expositor_id ?? '');
 					cargo_expositor_id_select.setChoiceByValue(cargo_expositor_id ?? '');
-					registrador_id_select.setChoiceByValue(registrador_id ?? '');
-					cargo_registrador_id_select.setChoiceByValue(cargo_registrador_id ?? '');
+					// registrador_id_select.setChoiceByValue(registrador_id ?? '');
+					// cargo_registrador_id_select.setChoiceByValue(cargo_registrador_id ?? '');
 					area_id_select.setChoiceByValue(area_id ?? '');
 					modalidad_id_select.setChoiceByValue(modalidad_id ?? '');
 				});
@@ -286,16 +286,16 @@
 					registrador_id
 				) {
 					if(cargo_registrador_id) {
-						cargo_registrador_id_select.setChoiceByValue(cargo_registrador_id);
-						cargo_registrador_id_select.disable();
+						// cargo_registrador_id_select.setChoiceByValue(cargo_registrador_id);
+						// cargo_registrador_id_select.disable();
 					}
 					else {
-						cargo_registrador_id_select.setChoiceByValue('');
+						// cargo_registrador_id_select.setChoiceByValue('');
 						if(registrador_id) {
-							cargo_registrador_id_select.enable();
+							// cargo_registrador_id_select.enable();
 						}
 						else {
-							cargo_registrador_id_select.disable();
+							// cargo_registrador_id_select.disable();
 						}
 					}
 				});
@@ -317,7 +317,7 @@
 					// ,responsables
 				) {
 					cargo_expositor_id_select.disable();
-					cargo_registrador_id_select.disable();
+					// cargo_registrador_id_select.disable();
 
 					// @this.set('updateMode', false);
 					// console.log(@this.set('updateMode',false));
@@ -337,8 +337,8 @@
 					// personal_id_select.setChoices();
 					expositor_id_select.setChoices(expositors);
 					cargo_expositor_id_select.setChoices(cargos);
-					registrador_id_select.setChoices(registradors);
-					cargo_registrador_id_select.setChoices(cargos);
+					// registrador_id_select.setChoices(registradors);
+					// cargo_registrador_id_select.setChoices(cargos);
 					area_id_select.setChoices(areas);
 					modalidad_id_select.setChoices(modalidades);
 					// @this.set('updateMode', true);
@@ -373,8 +373,8 @@
 					sede_id_select.clearChoices();
 					expositor_id_select.clearChoices();
 					cargo_expositor_id_select.clearChoices();
-					registrador_id_select.clearChoices();
-					cargo_registrador_id_select.clearChoices();
+					// registrador_id_select.clearChoices();
+					// cargo_registrador_id_select.clearChoices();
 					area_id_select.clearChoices();
 					modalidad_id_select.clearChoices();
 
@@ -385,8 +385,8 @@
 					sede_id_select.clearStore();
 					expositor_id_select.clearStore();
 					cargo_expositor_id_select.clearStore();
-					registrador_id_select.clearStore();
-					cargo_registrador_id_select.clearStore();
+					// registrador_id_select.clearStore();
+					// cargo_registrador_id_select.clearStore();
 					area_id_select.clearStore();
 					modalidad_id_select.clearStore();
 
@@ -398,7 +398,7 @@
 					expositor_id_select.setChoices(placeholder);
 					cargo_expositor_id_select.setChoices(placeholder);
 					// registrador_id_select.setChoices(placeholder);
-					cargo_registrador_id_select.setChoices(placeholder);
+					// cargo_registrador_id_select.setChoices(placeholder);
 
 					// @this.set('updateMode', false);
 
@@ -413,7 +413,7 @@
 					sede_id_select.disable();
 					expositor_id_select.disable();
 					// cargo_expositor_id_select.disable();
-					registrador_id_select.disable();
+					// registrador_id_select.disable();
 					// cargo_registrador_id_select.disable();
 					area_id_select.disable();
 					modalidad_id_select.disable();
@@ -427,7 +427,7 @@
 					sede_id_select.enable();
 					expositor_id_select.enable();
 					// cargo_expositor_id_select.enable();
-					registrador_id_select.enable();
+					// registrador_id_select.enable();
 					// cargo_registrador_id_select.enable();
 					area_id_select.enable();
 					modalidad_id_select.enable();

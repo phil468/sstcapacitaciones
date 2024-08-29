@@ -35,16 +35,18 @@ class Capacitacione extends Model
         'expositor_externo',
         'nombre_expositor_externo',
         'synced',
-        //nuevo campo
+        //nuevos campos
         'es_onboarding',
         'cantidad_de_preguntas_a_mostrar',
         'es_aula_virtual',
         'nota_minima_aprobatoria',
-        'intentos_de_evaluacion'
+        'intentos_de_evaluacion',
+        'fecha_inicio',
+        'fecha_fin',
     ];
 
     // dates
-    // protected $dates = ['fecha_capacitacion','fecha_registro'];
+    protected $dates = ['fecha_inicio','fecha_fin'];
 	    
     public function empresa()
     {
