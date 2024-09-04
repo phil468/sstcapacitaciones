@@ -204,6 +204,9 @@ class MisCapacitaciones extends Component
 
     public function evaluacion($bool)
     {
+        $this->preguntasAleatorias = null;
+        $this->respuestas = null;
+
         if ($bool) {
             // Verificar si todas las sesiones han sido completadas
             $totalSesiones = Capacitacione::find($this->capacitacion_id)->sesiones()->count();
@@ -333,7 +336,6 @@ class MisCapacitaciones extends Component
             ->first();
 
         if (!$prueba) {
-            // session()->flash('error', 'No se encontró una prueba activa.');
             $this->emit('alert', ['type' => 'error', 'message' => 'No se encontró una prueba activa.']);
             return;
         }
@@ -343,7 +345,6 @@ class MisCapacitaciones extends Component
 
         // Recorrer las preguntas aleatorias y guardar las respuestas
         foreach ($this->respuestas as $preguntaId => $respuestaId) {
-            // $respuestaId = request()->input('pregunta_' . $pregunta->id);
             $opcion_correcta_id = Pregunta::find($preguntaId)->solucion->opcion_id;
             if ($respuestaId) {
                 // Actualizar o crear la respuesta en el modelo Respuesta

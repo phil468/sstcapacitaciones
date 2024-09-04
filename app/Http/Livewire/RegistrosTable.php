@@ -7,6 +7,7 @@ use App\Models\Personal;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\DateColumn;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
+use Mediconesystems\LivewireDatatables\NumberColumn;
 
 class RegistrosTable extends LivewireDatatable
 {
@@ -80,6 +81,10 @@ class RegistrosTable extends LivewireDatatable
 
             DateColumn::name('fecha_fin')->format('d/m/Y h:i:s a')
             ->label('Fecha de fin (Aula Virtual)')->searchable()->filterable()->sortable(),
+
+            NumberColumn::callback('id', function ($id) {
+                return CapacitacionHasPersonal::find($id)->intentos_de_evaluacion;
+            })->label('Intentos de Evaluación')->sortable()->searchable(),
 
             Column::name('empresa.name')->label('Empresa')->sortable()->searchable(),
             Column::name('gerencia.name')->label('Gerencia')->sortable()->searchable(),

@@ -18,7 +18,7 @@ class CapacitacionHasPersonals extends Component
 
 	protected $paginationTheme = 'bootstrap';
     public $selected_id, $keyWord, $personal_id, $active, $observaciones, $empresa_id, $gerencia_id, $area_id, $cargo_id, $planilla_id, $sede_id, $tipo_de_trabajador_id, $tipo_de_personal_id;
-    public $areas, $gerencias, $sedes, $name_personal = [], $fecha_inicio, $fecha_fin;
+    public $areas, $gerencias, $sedes, $name_personal = [], $fecha_inicio, $fecha_fin, $intentos_de_evaluacion;
 	public $updateMode = false;
 
 	public $capacitacion_id;
@@ -32,6 +32,7 @@ class CapacitacionHasPersonals extends Component
 	public $edit_sede = false;
 	public $edit_fecha_inicio = false;
 	public $edit_fecha_fin = false;
+	public $edit_intentos_de_evaluacion = false;
 	public $editMasiva = false;
 
 	protected $listeners = [
@@ -181,12 +182,14 @@ class CapacitacionHasPersonals extends Component
 		$this->tipo_de_personal_id = null;
 		$this->fecha_inicio = null;
 		$this->fecha_fin = null;
+		$this->intentos_de_evaluacion = null;
 		$this->selectedFromRegistroTable = [];
 		$this->edit_gerencia = null;
 		$this->edit_area = null;
 		$this->edit_sede = null;
 		$this->edit_fecha_inicio = null;
 		$this->edit_fecha_fin = null;
+		$this->edit_intentos_de_evaluacion = null;
     }
 
     public function store()
@@ -245,6 +248,7 @@ class CapacitacionHasPersonals extends Component
 			$this->fecha_fin = $record->fecha_fin ? 
 			date('Y-m-d\TH:i', strtotime($record->fecha_fin)) 
 			: '';
+			$this->intentos_de_evaluacion = $record->intentos_de_evaluacion;
 			// $this->tipo_de_trabajador_id = $record-> tipo_de_trabajador_id;
 			// $this->tipo_de_personal_id = $record-> tipo_de_personal_id;
 		} else {
@@ -276,6 +280,7 @@ class CapacitacionHasPersonals extends Component
 			$this->sede_id = null;
 			$this->fecha_inicio = null;
 			$this->fecha_fin = null;
+			$this->intentos_de_evaluacion = null;
 
 			$this->emit('openRegistroModal');
 			$this->updateMode = true;
@@ -305,6 +310,7 @@ class CapacitacionHasPersonals extends Component
 			'sede_id' => $this-> sede_id,
 			'fecha_inicio' => $this-> fecha_inicio,
 			'fecha_fin' => $this-> fecha_fin,
+			'intentos_de_evaluacion' => $this-> intentos_de_evaluacion,
 			// 'tipo_de_trabajador_id' => $this-> tipo_de_trabajador_id,
 			// 'tipo_de_personal_id' => $this-> tipo_de_personal_id
             ]);
@@ -336,9 +342,10 @@ class CapacitacionHasPersonals extends Component
 		if ($this->edit_sede) 			{ $rules['sede_id'] 		= 'required'; }
 		if ($this->edit_fecha_inicio) 	{ $rules['fecha_inicio'] 	= 'required'; }
 		if ($this->edit_fecha_fin) 		{ $rules['fecha_fin'] 		= 'required'; }
+		if ($this->edit_intentos_de_evaluacion) { $rules['intentos_de_evaluacion'] = 'required'; }
 
 		// Validar que al menos uno de los checkboxes esté marcado
-		if (!$this->edit_gerencia && !$this->edit_area && !$this->edit_sede && !$this->edit_fecha_inicio && !$this->edit_fecha_fin) {
+		if (!$this->edit_gerencia && !$this->edit_area && !$this->edit_sede && !$this->edit_fecha_inicio && !$this->edit_fecha_fin && !$this->edit_intentos_de_evaluacion) {
 			// session()->flash('errorEdicionMasiva', 'Debe seleccionar al menos una opción para editar.');
 			$this->emit('alert', ['type' => 'success', 'message' => 'Debe seleccionar al menos una opción para editar.']);
 
@@ -372,6 +379,9 @@ class CapacitacionHasPersonals extends Component
 			}
 			if ($this->edit_fecha_fin) {
 				$updateData['fecha_fin'] = $this->fecha_fin;
+			}
+			if ($this->edit_intentos_de_evaluacion) {
+				$updateData['intentos_de_evaluacion'] = $this->intentos_de_evaluacion;
 			}
 
 			CapacitacionHasPersonal::whereIn('id', $this->selectedFromRegistroTable)->update($updateData);

@@ -36,12 +36,12 @@
                                 <td>
                                     <div class="btn-group">
                                         @can('editar-rol')
-                                            <a class="m-1 btn btn-outline-vanguard" href="{{ route('roles.edit',$role->id) }}"><i class="fa fa-edit"></i></a>
+                                            <a class="btn btn-outline-vanguard" href="{{ route('roles.edit',$role->id) }}"><i class="fa fa-edit"></i></a>
                                         @endcan
                                         
                                         @can('borrar-rol')
                                             {!! Form::open(['method' => 'DELETE','route' => ['roles.destroy', $role->id],'style'=>'display:inline']) !!}
-                                            <button title="Eliminar" class="m-1 btn btn-outline-danger" type="submit" 
+                                            <button title="Eliminar" class="btn btn-outline-danger" type="submit" 
                                             value="borrar" style="width: 43.8px;"><i class="fa fa-trash"></i></button>
                                             {!! Form::close() !!}
                                         @endcan
@@ -51,7 +51,7 @@
                                 <td>
                                     @if(!empty($role->getPermissionNames()))
                                     @foreach($role->getPermissionNames() as $name)
-                                        <span class="border-rounded badge badge-primary">{{ $name }}</span>
+                                        <span class="border-rounded badge badge-info">{{ $name }}</span>
                                     @endforeach
                                     @endif
                                 </td>  

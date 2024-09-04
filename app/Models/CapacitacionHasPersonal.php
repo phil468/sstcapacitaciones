@@ -40,7 +40,6 @@ class CapacitacionHasPersonal extends Model
         'fecha_inicio',
         'fecha_fin',
     ];
-
     
     /// quiero deveolver un valor verdadero si hoy se encuentra entre $evaluador_has_evaluado->evaluacion->fecha_inicio y $evaluador_has_evaluado->evaluacion->fecha_fin
     public function getActivaAttribute()
@@ -124,6 +123,12 @@ class CapacitacionHasPersonal extends Model
         return $prueba ? $prueba->puntaje : 0.00;
     }
 
+    // Método para obtener el valor de intentos_de_evaluacion
+    public function getIntentosDeEvaluacionAttribute()
+    {
+        return $this->attributes['intentos_de_evaluacion'] ?? $this->capacitacion->intentos_de_evaluacion;
+    }
+
     public function getNumeroDeIntentoActualAttribute()
     {
         $prueba = Prueba::where('capacitacion_id', $this->capacitacion_id)
@@ -133,4 +138,16 @@ class CapacitacionHasPersonal extends Model
                         ->first();
         return $prueba ? $prueba->intento : null;
     }
+
+    public function getNotaAttribute()
+    {
+        return $this->obtenerNota();
+    }
+
+    public function getNotaFinalAttribute()
+    {
+        return $this->obtenerNota();
+    }
+
+
 }

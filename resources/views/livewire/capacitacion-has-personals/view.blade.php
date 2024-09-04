@@ -95,41 +95,6 @@
 						@livewire('registros-table', ['exportable' => false,'capacitacion_id' => $capacitacion_id])
 					</div>
 						
-				{{-- @livewire('registros-table', ['exportable' => false,'listaParaAgregar' => true]) --}}
-						{{-- {{dd(count($capacitacionHasPersonals))}} --}}
-						{{-- @if (isset($capacitacionHasPersonals) && count($capacitacionHasPersonals))
-						<div class="table-responsive">
-							<table class="table table-striped table-hover table-sm">
-								<thead class="thead">
-									<tr> 
-										<th>#</th> 
-										<th>Personal</th>
-										@can('editar-capacitacion')
-											<th>Botón Quitar</th>
-										@endauth
-									</tr>
-								</thead>
-								<tbody>
-									
-									@foreach($capacitacionHasPersonals as $row)
-									<tr>
-										<td>{{ $loop->iteration }}</td> 
-										<td>{{ $row->personal->name}}</td>
-										@can('editar-capacitacion')
-
-										<td>
-										<a class="btn btn-sm btn-danger" 
-											onclick="confirm('Confirma quitar Personal : {{$row->personal->name}}? \nPersonal borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="quitarAsistente({{$row->id}})"> 
-											Quitar 
-										</a>
-										</td>
-										@endcan
-									@endforeach
-								</tbody>
-							</table>						
-						</div>
-						@endif --}}
-
 					@can('editar-capacitacion')
 						<br>
 						<div class="h5">Seleccione personas para agregar a la capacitación</div>

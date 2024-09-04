@@ -43,10 +43,9 @@
                                 @section('title', __('Evaluación de '.$asignacion->capacitacion->tema->name))
                                 @if (!empty($preguntasAleatorias))
                                     <form wire:submit.prevent="enviarEvaluacion">
-
                                         <ol class="pl-3">
                                             @foreach ($preguntasAleatorias as $index => $pregunta)
-                                            <li class="mb-4">
+                                            <li class="mb-4" wire:ignore>
                                                 <div class="border-0 shadow-sm card">
                                                     <div class="text-white card-header bg-vanguard">
                                                         <strong>Pregunta {{ $index + 1 }}:</strong> {{ $pregunta->pregunta }}

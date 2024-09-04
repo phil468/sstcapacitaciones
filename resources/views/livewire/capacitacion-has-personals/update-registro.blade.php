@@ -145,6 +145,23 @@
                                     </div>
                                 @endif
                             </div>
+
+                            {{--campo intentos_de_evaluacion--}}
+
+                            <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                                <label for="intentos_de_evaluacion"></label>
+                                <input wire:model="intentos_de_evaluacion" type="number" class="form-control" id="intentos_de_evaluacion" placeholder="Cantidad de intentos de evaluacion permitidos">
+                                @error('fecha_fin')
+                                    <span class="error text-danger">{{ $message }}</span> 
+                                @enderror
+                            
+                                @if($editMasiva)
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" wire:model="edit_intentos_de_evaluacion"> Editar Intentos de Evaluación
+                                    </div>
+                                @endif
+                            </div>
+
                         @endif
                         
                         @if (session()->has('errorEdicionMasiva'))

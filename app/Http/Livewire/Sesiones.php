@@ -28,16 +28,15 @@ class Sesiones extends Component
 
     public function render()
     {
-		$keyWord = '%'.$this->keyWord .'%';
+        // dd(Sesione::orderBy('numero_de_sesion')
+        // ->when($this->capacitacion_id_general, function ($query) {
+        //     return $query->where('capacitacion_id', $this->capacitacion_id_general);
+        // })->get()->toArray());
+		// $keyWord = '%'.$this->keyWord .'%';
         return view('livewire.sesiones.view', [
             'sesiones' => Sesione::orderBy('numero_de_sesion')
-						->orWhere('capacitacion_id', 'LIKE', $keyWord)
-						->orWhere('numero_de_sesion', 'LIKE', $keyWord)
-						->orWhere('fecha', 'LIKE', $keyWord)
-						->orWhere('hora_inicio', 'LIKE', $keyWord)
-						->orWhere('hora_fin', 'LIKE', $keyWord)
-                        ->when($this->capacitacion_id, function ($query) {
-                            return $query->where('capacitacion_id', $this->capacitacion_id);
+                        ->when($this->capacitacion_id_general, function ($query) {
+                            return $query->where('capacitacion_id', $this->capacitacion_id_general);
                         })
 						->paginate(10),
         ]);
