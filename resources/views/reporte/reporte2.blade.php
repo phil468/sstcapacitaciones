@@ -16,7 +16,7 @@
             </div>
             <div class="col-md-4">
                 <div class="mb-4 d-flex justify-content-end">
-                    <a class="btn btn-primary" href="{{ URL::to('/reporte1/pdf') }}">Convertir a PDF</a>
+                    <a class="btn btn-vanguard" href="{{ URL::to('/reporte1/pdf') }}">Convertir a PDF</a>
                 </div>
             </div>
         </div>

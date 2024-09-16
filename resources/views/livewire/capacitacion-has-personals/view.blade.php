@@ -25,11 +25,11 @@
 						{{-- <div>
 							<input wire:model='keyWord' type="text" class="form-control" name="search" id="search" placeholder="Buscar">
 						</div> --}}
-						@can('crear-capacitacionHasPersonal')
+						{{-- @can('crear-capacitacionHasPersonal')
 						<div class="btn btn-sm btn-default" data-toggle="modal" data-target="#createDataModal">
 						<i class="fa fa-plus"></i>  Nuevo
 						</div>
-						@endcan
+						@endcan --}}
 					</div>
 				</div>
 				

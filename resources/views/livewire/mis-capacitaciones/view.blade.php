@@ -233,8 +233,12 @@
                                 @if ($vistaAlternativa == false)
                                     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4">
                                         @foreach ($misCapacitaciones as $row)
-                                            <div class="mb-4 col">
-                                                <div  wire:click='asignacion({{$row->id}})'>
+                                            <div class="mb-2 col">
+                                                <div 
+                                                @if ($row->activa)
+                                                    wire:click='asignacion({{$row->id}})'
+                                                @endif
+                                                >
                                                   
                                                     <div class="h-full bg-gray-100 btn card rounded-2xl"'>
                                                         <div class="text-center align-content-top card-body bg-default">
@@ -261,7 +265,8 @@
                                                                 </p>
 
                                                                 <div class="mb-2 card-subtitle text-muted">
-                                                                    {{ $row->fecha_inicio->format('d/m/Y g:i A') }} - {{ $row->fecha_fin->format('d/m/Y g:i A') }}
+                                                                    {{ $row->fecha_inicio?$row->fecha_inicio->format('d/m/Y h:i:s a').' - ':'' }} 
+                                                                    {{ $row->fecha_fin?$row->fecha_fin->format('d/m/Y h:i:s a'):'' }}
                                                                 </div>
                                                                 <p class="mb-1 card-text">
                                                                     {{ $row->capacitacion->sesiones->count() }} Sesiones

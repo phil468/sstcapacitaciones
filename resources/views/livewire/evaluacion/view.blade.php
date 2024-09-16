@@ -9,7 +9,7 @@
                             <h4 class="h4">EVALUACIÓN DE COMPETENCIAS</h4>
                         </div>
                         @if ($errors->any())
-                            <div wire:poll.4s class="btn btn-sm btn-danger" style="margin-top:0px; margin-bottom:0px;">
+                            <div wire:poll.4s class="btn btn-sm btn-danger rounded-xl" style="margin-top:0px; margin-bottom:0px;">
                                 Debe responder todas las preguntas.
                             </div>
                         @endif

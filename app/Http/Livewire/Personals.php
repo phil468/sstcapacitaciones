@@ -139,9 +139,13 @@ class Personals extends Component
 			$this->edit($personal->id);
 			session()->flash('message-busqueda-dni', 'DNI '. $this->dni.' encontrado. Datos de usuario seleccionados.');
 		} else {
-			$this->tokenValidation();
 
-			if (isset($this->token)) {
+			$res = app('App\Http\Controllers\PersonalController')->actualizarPersonalNisira($this->dni);
+
+
+			// $this->tokenValidation();
+
+			if (isset($res)) {
 
 				$this->empresa_id = null;
 				$this->gerencia_id = null;
@@ -151,81 +155,82 @@ class Personals extends Component
 
 				$message_error = '';
 
-				$response2  = Http::withHeaders([
-					'Authorization' => 'Bearer '.$this->token->access_token,
-				])->get('http://10.13.10.49:81/api/manager/personal/'.$this->dni);
+				// $response2  = Http::withHeaders([
+				// 	'Authorization' => 'Bearer '.$this->token->access_token,
+				// ])->get('http://10.13.10.49:81/api/manager/personal/'.$this->dni);
 
 
-				if ($response2->successful()) {
-					$data = $response2->json();
+				if ($res) {
+					// $data = $response2->json();
 					
-					if(!$data) {
+					if(!$res['res']) {
 						$this->empresa_id = null;
 						$this->gerencia_id = null;
 						$this->sede_id = null;
 						$this->area_id = null;
 						$this->cargo_id = null;
 
-						session()->flash('message-busqueda-dni', 'Se consultó en el ERP NISIRA. DNI '. $this->dni.' no encontrado.');
+						session()->flash('message-busqueda-dni', $res['message']);
 
 					} else {
-						$row=$data[0];
-						// foreach ($data as $row) 
-						// {
-							//Recuperando o Insertando Empresa
-							if(!empty(trim($row['IDEMPRESA']))){
-								$empresa = Empresa::firstOrCreate(
-									['idempresa_nisira' => trim($row['IDEMPRESA'])],
-									['name' => trim($row['empresa']) , 'estado' => 1]
-								);
-							}
+						// $row=$data[0];
+						// // foreach ($data as $row) 
+						// // {
+						// 	//Recuperando o Insertando Empresa
+						// 	if(!empty(trim($row['IDEMPRESA']))){
+						// 		$empresa = Empresa::firstOrCreate(
+						// 			['idempresa_nisira' => trim($row['IDEMPRESA'])],
+						// 			['name' => trim($row['empresa']) , 'estado' => 1]
+						// 		);
+						// 	}
 		
-							//Recuperando o Insertando Cargo
-							if(!empty(trim($row['IDCARGO']))){
-							$cargo = Cargo::firstOrCreate(
-								['idcargo_nisira' => trim($row['IDCARGO'])],
-								['name' => trim($row['cargo']) , 'estado' => 1]
-							);
-							} else {
-								$cargo =  Cargo::where('name', trim($row['cargo']))->firstOr(function () {
-									return NULL;
-								});
-							}
+						// 	//Recuperando o Insertando Cargo
+						// 	if(!empty(trim($row['IDCARGO']))){
+						// 	$cargo = Cargo::firstOrCreate(
+						// 		['idcargo_nisira' => trim($row['IDCARGO'])],
+						// 		['name' => trim($row['cargo']) , 'estado' => 1]
+						// 	);
+						// 	} else {
+						// 		$cargo =  Cargo::where('name', trim($row['cargo']))->firstOr(function () {
+						// 			return NULL;
+						// 		});
+						// 	}
 		
-							//Actualizando o Insertando Personal
-							$personal = Personal::updateOrCreate(
-								[
-									'dni' => trim($row['NRODOCUMENTO']),
-								],
-								[
-									'name' =>trim($row['nombrecompleto']),
-									'nombres' => trim($row['NOMBRES']),
-									'apellido_paterno' => trim($row['A_PATERNO']),
-									'apellido_materno' => trim($row['A_MATERNO']),
-									'empresa_id' => $empresa->id??NULL,
-									'cargo_id' => $cargo->id??NULL,
-									'correo_personal' => trim($row['EMAIL']),
-									'celular_personal' => trim($row['CELULAR']),
-									'fecha_ingreso'  => trim($row['FECHA_INGRESO']) == '' ? NULL : (Carbon::createFromFormat('Y-m-d H:i:s.u', trim($row['FECHA_INGRESO']))->toDateString())
-								]
-							);
+						// 	//Actualizando o Insertando Personal
+						// 	$personal = Personal::updateOrCreate(
+						// 		[
+						// 			'dni' => trim($row['NRODOCUMENTO']),
+						// 		],
+						// 		[
+						// 			'name' =>trim($row['nombrecompleto']),
+						// 			'nombres' => trim($row['NOMBRES']),
+						// 			'apellido_paterno' => trim($row['A_PATERNO']),
+						// 			'apellido_materno' => trim($row['A_MATERNO']),
+						// 			'empresa_id' => $empresa->id??NULL,
+						// 			'cargo_id' => $cargo->id??NULL,
+						// 			'correo_personal' => trim($row['EMAIL']),
+						// 			'celular_personal' => trim($row['CELULAR']),
+						// 			'fecha_ingreso'  => trim($row['FECHA_INGRESO']) == '' ? NULL : (Carbon::createFromFormat('Y-m-d H:i:s.u', trim($row['FECHA_INGRESO']))->toDateString())
+						// 		]
+						// 	);
 						// }
+
+						$personal = Personal::where('dni',$this->dni)->first();
 		
 						if ($personal) {
-
 							$this->edit($personal->id);
-							session()->flash('message-busqueda-dni', 'DNI '. $this->dni.' importados desde NISIRA. Datos de usuario seleccionados.');
+							session()->flash('message-busqueda-dni', $res['message']);
 							// $this->emit('alert-success');
 							$this->listarSelects();
 						} else {
-							session()->flash('message-busqueda-dni', 'DNI '. $this->dni.' no encontrado en la lista de personal. Se consultaron los datos de NISIRA pero hubo un error en la inserción/lectura de los datos');
+							session()->flash('message-busqueda-dni', 'DNI '. $this->dni.' no encontrado en la lista de personal. Se consultaron los datos de NISIRA pero hubo un error en la inserción/lectura de los datos.\\n'.$res['message']);
 							// $this->emit('alert-danger');
 							// Manejar el código de estado de error
 						}
 					}
 				} else {
 					// La solicitud no fue exitosa, manejar el error
-					$statusCode = $response2->status();
+					$statusCode = $res->status();
 					session()->flash('message-busqueda-dni', 'DNI '. $this->dni.' no encontrado en la lista de personal ni en los registros de NISIRA. Error: '.$statusCode);
 					// $this->emit('alert-danger');
 					// Manejar el código de estado de error
@@ -248,53 +253,55 @@ class Personals extends Component
 
     public function render()
     {
-		$keyWord = '%'.$this->keyWord .'%';
-        return view('livewire.personals.view', [
-            'personals' => Personal::latest('personal.id')
-						->select(
-							'personal.*',
-							'personal.name as name',
-						)
-						->orWhere('personal.dni', 'LIKE', $keyWord)
-						->orWhere('personal.name', 'LIKE', $keyWord)
-						->orWhere('personal.nombres', 'LIKE', $keyWord)
-						->orWhere('personal.apellido_paterno', 'LIKE', $keyWord)
-						->orWhere('personal.apellido_materno', 'LIKE', $keyWord)
-						->orWhere('personal.correo_empresa', 'LIKE', $keyWord)
-						->orWhere('personal.celular_empresa', 'LIKE', $keyWord)
-						->orWhere('personal.correo_personal', 'LIKE', $keyWord)
-						->orWhere('personal.telefono_personal', 'LIKE', $keyWord)
-						->orWhere('personal.celular_personal', 'LIKE', $keyWord)
-						->orWhere('personal.foto', 'LIKE', $keyWord)
-						->orWhere('personal.genero', 'LIKE', $keyWord)
-						->orWhere('personal.fecha_ingreso', 'LIKE', $keyWord)
-                        ->orWhere('empresas.name', 'LIKE', $keyWord)
-                        ->leftJoin('empresas', function ($join) {
-                            $join->on('personal.empresa_id', '=', 'empresas.id');
-                        })
-                        ->orWhere('sedes.name', 'LIKE', $keyWord)
-                        ->leftJoin('sedes', function ($join) {
-                            $join->on('personal.sede_id', '=', 'sedes.id');
-                        })
-                        ->orWhere('gerencias.name', 'LIKE', $keyWord)
-                        ->leftJoin('gerencias', function ($join) {
-                            $join->on('personal.gerencia_id', '=', 'gerencias.id');
-                        })
-                        ->orWhere('areas.name', 'LIKE', $keyWord)
-                        ->leftJoin('areas', function ($join) {
-                            $join->on('personal.area_id', '=', 'areas.id');
-                        })
-                        ->orWhere('cargos.name', 'LIKE', $keyWord)
-                        ->leftJoin('cargos', function ($join) {
-                            $join->on('personal.cargo_id', '=', 'cargos.id');
-                        })
-						->paginate(10),
-						// 'empresas' 	=> 	Empresa::	orderBy('name')->where('estado',1)->select('name', 'id')->get()->toArray(),
-						// 'gerencias' => 	Gerencia::	orderBy('name')->where('estado',1)->select('name', 'id')->get()->toArray(),
-						// 'sedes' 	=> 	Sede::		orderBy('name')->where('estado',1)->select('name', 'id')->get()->toArray(),
-						// 'areas' 	=> 	Area::		orderBy('name')->where('estado',1)->select('name', 'id')->get()->toArray(),
-						// 'cargos' 	=>	Cargo::		orderBy('name')->where('estado',1)->select('name', 'id')->get()->toArray(),
-        ]);
+		// $keyWord = '%'.$this->keyWord .'%';
+        return view('livewire.personals.view'
+		// , [
+        //     'personals' => Personal::latest('personal.id')
+		// 				->select(
+		// 					'personal.*',
+		// 					'personal.name as name',
+		// 				)
+		// 				->orWhere('personal.dni', 'LIKE', $keyWord)
+		// 				->orWhere('personal.name', 'LIKE', $keyWord)
+		// 				->orWhere('personal.nombres', 'LIKE', $keyWord)
+		// 				->orWhere('personal.apellido_paterno', 'LIKE', $keyWord)
+		// 				->orWhere('personal.apellido_materno', 'LIKE', $keyWord)
+		// 				->orWhere('personal.correo_empresa', 'LIKE', $keyWord)
+		// 				->orWhere('personal.celular_empresa', 'LIKE', $keyWord)
+		// 				->orWhere('personal.correo_personal', 'LIKE', $keyWord)
+		// 				->orWhere('personal.telefono_personal', 'LIKE', $keyWord)
+		// 				->orWhere('personal.celular_personal', 'LIKE', $keyWord)
+		// 				->orWhere('personal.foto', 'LIKE', $keyWord)
+		// 				->orWhere('personal.genero', 'LIKE', $keyWord)
+		// 				->orWhere('personal.fecha_ingreso', 'LIKE', $keyWord)
+        //                 ->orWhere('empresas.name', 'LIKE', $keyWord)
+        //                 ->leftJoin('empresas', function ($join) {
+        //                     $join->on('personal.empresa_id', '=', 'empresas.id');
+        //                 })
+        //                 ->orWhere('sedes.name', 'LIKE', $keyWord)
+        //                 ->leftJoin('sedes', function ($join) {
+        //                     $join->on('personal.sede_id', '=', 'sedes.id');
+        //                 })
+        //                 ->orWhere('gerencias.name', 'LIKE', $keyWord)
+        //                 ->leftJoin('gerencias', function ($join) {
+        //                     $join->on('personal.gerencia_id', '=', 'gerencias.id');
+        //                 })
+        //                 ->orWhere('areas.name', 'LIKE', $keyWord)
+        //                 ->leftJoin('areas', function ($join) {
+        //                     $join->on('personal.area_id', '=', 'areas.id');
+        //                 })
+        //                 ->orWhere('cargos.name', 'LIKE', $keyWord)
+        //                 ->leftJoin('cargos', function ($join) {
+        //                     $join->on('personal.cargo_id', '=', 'cargos.id');
+        //                 })
+		// 				->paginate(10),
+		// 				// 'empresas' 	=> 	Empresa::	orderBy('name')->where('estado',1)->select('name', 'id')->get()->toArray(),
+		// 				// 'gerencias' => 	Gerencia::	orderBy('name')->where('estado',1)->select('name', 'id')->get()->toArray(),
+		// 				// 'sedes' 	=> 	Sede::		orderBy('name')->where('estado',1)->select('name', 'id')->get()->toArray(),
+		// 				// 'areas' 	=> 	Area::		orderBy('name')->where('estado',1)->select('name', 'id')->get()->toArray(),
+		// 				// 'cargos' 	=>	Cargo::		orderBy('name')->where('estado',1)->select('name', 'id')->get()->toArray(),
+        // ]
+	);
     }
 	
     public function cancel()

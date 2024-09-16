@@ -3,6 +3,8 @@
 	<div class="row justify-content-center">
 		<div class="col-md-12">
 			
+            @include('components.adminlte-alerts')
+
 			@if (!$capacitacion)
 				<div class="card rounded-xl">
 					<div class="text-white card-header bg-vanguard rounded-t-xl">
@@ -18,7 +20,17 @@
 							
 							@can('crear-capacitacion')
 							<div>
-								<a class="mx-2 btn btn-default rounded-xl" title="Enviar Notificación" wire:click='notificar(0)'>
+								@can('ver-import-capacitaciones')
+									<a href="{{ route('capacitaciones.import.form') }}" class="ml-1 btn btn-default rounded-xl" title="Importar Capacitaciones">
+										<i class="fas fa-file-import"></i>
+									</a>
+									
+									<a href="{{ route('capacitaciones.personal.import.form') }}" class="ml-1 btn btn-default rounded-xl" title="Importar Personal">
+										<i class="fas fa-users"></i>
+									</a>
+								@endcan
+								
+								<a class="ml-1 btn btn-default rounded-xl" title="Enviar Notificación" wire:click='notificar(0)'>
 									<i class="fa fa-bell"></i>
 								</a>
 						

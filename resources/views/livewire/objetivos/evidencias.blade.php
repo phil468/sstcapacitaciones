@@ -16,7 +16,7 @@
                                 <input type="file" class="form-control" id="evidencia_subir" wire:model.defer="evidencia_subir" placeholder="Ingrese Valor">
                                 @error('evidencia_subir') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
-                        <button type="submit" class="btn btn-primary">Cargar</button>
+                        <button type="submit" class="btn btn-vanguard">Cargar</button>
                     </fieldset>
                 </form>
             </div>

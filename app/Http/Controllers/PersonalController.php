@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Area;
+use App\Models\Capacitacione;
+use App\Models\CapacitacionHasPersonal;
 use App\Models\Cargo;
 use App\Models\Empresa;
 use App\Models\Personal;
@@ -12,6 +14,7 @@ use App\Models\TipoDeTrabajador;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class PersonalController extends Controller
 {    
@@ -130,6 +133,22 @@ class PersonalController extends Controller
 
                     $personal = Personal::firstOrNew(['dni' => trim($row['NRODOCUMENTO'])]);
 
+                    // dd($personal->exists);
+                    $asignarCapacitaciones = false;
+                    
+                    if ($personal->exists) {
+                        // El modelo ya existía en la base de datos
+                        // Puedes realizar alguna acción específica aquí si es necesario
+                        // Log::info('El modelo ya existía en la base de datos: ' . $personal->dni);
+                        $asignarCapacitaciones = false;
+                    } else {
+                        $asignarCapacitaciones = true;
+
+                        // Se creó un nuevo modelo
+                        // Puedes realizar alguna acción específica aquí si es necesario
+                        // Log::info('Se creó un nuevo modelo: ' . $personal->dni);
+                    }
+
                     $personal->name = mb_strtoupper(trim($row['nombrecompleto']));
                     $personal->nombres = mb_strtoupper(trim($row['NOMBRES']));
                     $personal->apellido_paterno = mb_strtoupper(trim($row['A_PATERNO']));
@@ -157,6 +176,8 @@ class PersonalController extends Controller
                     $personal->cesado = 0;
                     $personal->importado = 1;
                     $personal->fecha_cese = NULL;
+                    $personal->correo_personal = trim($row['EMAIL']);
+                    $personal->celular_personal = trim($row['CELULAR']);
                     $personal->fecha_ingreso  = trim($row['FECHA_INGRESO']) == '' ? NULL : (Carbon::createFromFormat('Y-m-d H:i:s.u', trim($row['FECHA_INGRESO']))->toDateString());
                     
                     if ($personal->isDirty()) {
@@ -168,6 +189,36 @@ class PersonalController extends Controller
 
                     if($personal) {
                         $res = true;
+
+                        if($asignarCapacitaciones) {
+
+                            $capacitaciones = Capacitacione::where('es_aula_virtual', true)
+                            ->where('activo', true)
+                            ->where('status_id', 1)
+                            ->get();
+    
+                            foreach ($capacitaciones as $capacitacion) {
+                                CapacitacionHasPersonal::create([
+                                    'personal_id' => $personal->id,
+                                    'capacitacion_id' => $capacitacion->id,
+                                    'active' => true,
+                                    'observaciones' => 'Agregado automaticamente: Usuario - '. auth()->user()->personal->name. ' - ' .auth()->user()->email. ' - ' .now(),
+                                    'empresa_id' => $personal->empresa_id,
+                                    'gerencia_id' => $personal->gerencia_id,
+                                    'area_id' => $personal->area_id,
+                                    'cargo_id' => $personal->cargo_id,
+                                    'planilla_id' => $personal->planilla_id,
+                                    'sede_id' => $personal->sede_id,
+                                    'tipo_de_trabajador_id' => $personal->tipo_de_trabajador_id,
+                                    'tipo_de_personal_id' => $personal->tipo_de_personal_id,
+                                    'synced' => true,
+                                    'fecha_inicio' => now(),
+                                    'fecha_fin' => now()->addMonth(),
+                                    'intentos_de_evaluacion' => $capacitacion->intentos_de_evaluacion,
+                                ]);
+                            }
+
+                        }
                         // if ($numero != 0) {
                         // }
 

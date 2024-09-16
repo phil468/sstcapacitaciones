@@ -70,6 +70,7 @@ class Capacitaciones extends Component
 	$intentos_de_evaluacion,
 	$fecha_inicio,
 	$fecha_fin,
+	$identificador_unico,
 
 	$ingresar_capacitaciones_de_aula_virtual,
 	$ingresar_capacitaciones_de_no_aula_virtual,
@@ -98,6 +99,7 @@ class Capacitaciones extends Component
 		'tema_id' => 'required|exists:temas,id',
 		'fecha_inicio' => 'required|date|before_or_equal:fecha_fin',
 		'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+		'identificador_unico' => 'required|max:10|unique:capacitaciones,identificador_unico',
 
         'es_aula_virtual' => 'required|boolean',
         'es_onboarding' => 'required_if:es_aula_virtual,true|exclude_unless:es_aula_virtual,true',
@@ -293,9 +295,9 @@ class Capacitaciones extends Component
 	}
 
 	public function mount($id = null) {		
-		$this->estado_realizado = Status::where('name', '=', 'realizado')->first()->id ?? null;
+		$this->estado_realizado = Status::where('name', '=', 'REALIZADA')->first()->id ?? null;
 		if ($this->estado_realizado == null) {
-			session()->flash('message-danger', 'No se encuentra definido el estado "realizado"
+			session()->flash('message-danger', 'No se encuentra definido el estado "REALIZADA"
 			. Por favor revisar el nombre de los estados');
 			$this->emit('alert-danger');
 		}
@@ -355,6 +357,7 @@ class Capacitaciones extends Component
 		$this->intentos_de_evaluacion = null;
 		$this->fecha_inicio = null;
 		$this->fecha_fin = null;
+		$this->identificador_unico = null;
     }
 
 	// public function create() 
@@ -445,13 +448,14 @@ class Capacitaciones extends Component
 			'expositor_externo' => $this-> expositor_externo,
 			'nombre_expositor_externo' => $this-> nombre_expositor_externo,
 			'synced' =>false,
-			'intentos_de_evaluacion' => 2,
-			'cantidad_de_preguntas_a_mostrar' => 5,
-			'nota_minima_aprobatoria' => 10.50,
+			'intentos_de_evaluacion' => $this->intentos_de_evaluacion,
+			'cantidad_de_preguntas_a_mostrar' => $this->cantidad_de_preguntas_a_mostrar,
+			'nota_minima_aprobatoria' => $this->nota_minima_aprobatoria,
 			'es_aula_virtual' => $this-> es_aula_virtual,
 			'es_onboarding' => $this-> es_onboarding,
 			'fecha_inicio' => $this-> fecha_inicio,
 			'fecha_fin' => $this-> fecha_fin,
+			'identificador_unico' => $this-> identificador_unico
 
         ]);
 
@@ -499,8 +503,9 @@ class Capacitaciones extends Component
 			$this->es_aula_virtual = $record->es_aula_virtual;
 			$this->nota_minima_aprobatoria = $record->nota_minima_aprobatoria;
 			$this->intentos_de_evaluacion = $record->intentos_de_evaluacion;
-			$this->fecha_inicio = $record->fecha_inicio;
-			$this->fecha_fin = $record->fecha_fin;
+			$this->fecha_inicio = $record->fecha_inicio ? $record->fecha_inicio->format('Y-m-d\TH:i') : null;
+			$this->fecha_fin = $record->fecha_fin ? $record->fecha_fin->format('Y-m-d\TH:i') : null;
+			$this->identificador_unico = $record->identificador_unico;
 
 		} else {
 			$this->resetValidation();
@@ -513,6 +518,8 @@ class Capacitaciones extends Component
 			$this->modalidad_id = 2;
 			$this->empresa_id = 1;
 			$this->status_id = 1;
+
+			$this->es_onboarding =  false;
 		}
 		
 		$this->listarSelects();
@@ -547,6 +554,7 @@ class Capacitaciones extends Component
 		}
 
         $rules = $this->rules;
+		$rules['identificador_unico'] = 'required|unique:capacitaciones,identificador_unico,'.$this->selected_id;
 
 		$this->validate($rules);
 
@@ -581,25 +589,35 @@ class Capacitaciones extends Component
         if ($this->selected_id) {
 			$record = Capacitacione::find($this->selected_id);
             $record->update([ 
-			'empresa_id' => $this-> empresa_id,
-			'capacitaciones_tipo_id' => $this-> capacitaciones_tipo_id,
-			'tema_id' => $this-> tema_id,
-			'sede_id' => $this-> sede_id,
-			'fecha_capacitacion' => $this-> fecha_capacitacion,
-			'hora_inicio' => $this-> hora_inicio,
-			'hora_fin' => $this-> hora_fin,
-			'expositor_id' => $this-> expositor_id,
-			'cargo_expositor_id' => $this-> cargo_expositor_id,
-			'registrador_id' => $this-> registrador_id,
-			'cargo_registrador_id' => $this-> cargo_registrador_id,
-			'fecha_registro' => $this-> fecha_registro,
-			'activo' => $this-> activo,
-			'status_id' => $this-> status_id,
-			'modalidad_id' => $this-> modalidad_id,
-			'cantidad_de_sesiones' => $this-> cantidad_de_sesiones??1,
-			'expositor_externo' => $this-> expositor_externo,
-			'nombre_expositor_externo' => $this-> nombre_expositor_externo,
-			'synced'=>false
+				'empresa_id' => $this-> empresa_id,
+				'capacitaciones_tipo_id' => $this-> capacitaciones_tipo_id,
+				'tema_id' => $this-> tema_id,
+				'sede_id' => $this-> sede_id,
+				'fecha_capacitacion' => $this-> fecha_capacitacion,
+				'hora_inicio' => $this-> hora_inicio,
+				'hora_fin' => $this-> hora_fin,
+				'expositor_id' => $this-> expositor_id,
+				'cargo_expositor_id' => $this-> cargo_expositor_id,
+				'registrador_id' => $this-> registrador_id,
+				'cargo_registrador_id' => $this-> cargo_registrador_id,
+				'fecha_registro' => $this-> fecha_registro,
+				'activo' => $this-> activo,
+				'status_id' => $this-> status_id,
+				'modalidad_id' => $this-> modalidad_id,
+				'cantidad_de_sesiones' => $this-> cantidad_de_sesiones??1,
+				'expositor_externo' => $this-> expositor_externo,
+				'nombre_expositor_externo' => $this-> nombre_expositor_externo,
+				'synced'=>false,
+
+				'es_onboarding' => $this->es_onboarding,
+				'cantidad_de_preguntas_a_mostrar' => $this->cantidad_de_preguntas_a_mostrar,
+				'es_aula_virtual' => $this->es_aula_virtual,
+				'nota_minima_aprobatoria' => $this->nota_minima_aprobatoria,
+				'intentos_de_evaluacion' => $this->intentos_de_evaluacion,
+				'fecha_inicio' => $this->fecha_inicio,
+				'fecha_fin' => $this->fecha_fin,
+				'identificador_unico' => $this->identificador_unico
+
             ]);
 			
 			$record->areas()->sync($this->area_id);

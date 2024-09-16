@@ -21,4 +21,9 @@ class Tema extends Model
     {
         $this->attributes['name'] = mb_strtoupper(trim($value));
     }
+    
+    public function scopeActivo($query)
+    {
+        return $query->where('estado',1);
+    }    
 }

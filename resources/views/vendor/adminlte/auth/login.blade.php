@@ -50,7 +50,7 @@
     <a 
     {{-- href = "#" --}}
     href="{{ url('/auth/redirect') }}" 
-    class="btn btn-primary btn-lg">
+    class="btn btn-vanguard btn-lg">
         <span><i class="fab fa-windows"></i></span>
         <span>Iniciar sesión</span>
     </a>

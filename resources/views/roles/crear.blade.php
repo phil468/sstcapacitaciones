@@ -48,7 +48,7 @@
 		</div>
 
         <div class="mb-3">	 
-		  <button type="submit" class="btn btn-primary mb-3">Crear Rol</button>
+		  <button type="submit" class="btn btn-vanguard mb-3">Crear Rol</button>
 		  <a class="btn btn-success mb-3" href="{{route('roles.index')}}">Regresar</a>
 		</div>
 		{!! Form::close() !!}                        

@@ -19,8 +19,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" wire:click.prevent="cancel_no_asignacion()" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" wire:click.prevent="update_activo_no_asignacion({{$selected_activo_index}},1)" class="btn btn-primary close-modal">Guardar</button>
-                <button type="button" wire:click.prevent="update_activo_no_asignacion({{$selected_activo_index}},0)" class="btn btn-primary close-modal">Quitar sin observaciones</button>
+                <button type="button" wire:click.prevent="update_activo_no_asignacion({{$selected_activo_index}},1)" class="btn btn-vanguard close-modal">Guardar</button>
+                <button type="button" wire:click.prevent="update_activo_no_asignacion({{$selected_activo_index}},0)" class="btn btn-vanguard close-modal">Quitar sin observaciones</button>
             </div>
        </div>
     </div>

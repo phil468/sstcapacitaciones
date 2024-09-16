@@ -44,7 +44,7 @@
                     >
                     @error('dni') <span class="error text-danger">{{ $message }}</span> @enderror
                     @if ($selected_id == 0)                    
-                        <a wire:click="buscar_dni()" type="button" class="btn btn-primary"><i class="fas fa-search"></i></a>
+                        <a wire:click="buscar_dni()" type="button" class="btn btn-vanguard"><i class="fas fa-search"></i></a>
                     @endif
                 </div>
             @if (session()->has('message-busqueda-dni'))
@@ -200,9 +200,9 @@
                 >Cerrar</button>
 
                 @if ($this->selected_id == 0)                    
-                <button type="button" wire:click.prevent="store()" class="btn btn-primary close-modal">Guardar</button>
+                <button type="button" wire:click.prevent="store()" class="btn btn-vanguard close-modal">Guardar</button>
                 @else
-                    <button type="button" wire:click.prevent="update()" class="btn btn-primary" 
+                    <button type="button" wire:click.prevent="update()" class="btn btn-vanguard" 
                     @if (!$this->updateMode)                    
                         disabled
                     @endif >Guardar</button>

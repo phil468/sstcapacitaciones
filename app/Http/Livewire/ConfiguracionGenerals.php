@@ -53,6 +53,8 @@ class ConfiguracionGenerals extends Component
     public function store()
     {
         $this->validate([
+            'name' => 'required',
+            'valor' => 'required',
         ]);
 
         ConfiguracionGeneral::create([ 
@@ -87,12 +89,14 @@ class ConfiguracionGenerals extends Component
     public function update()
     {
         $this->validate([
+            'name' => 'required',
+            'valor' => 'required',
         ]);
 
         if ($this->selected_id) {
 			$record = ConfiguracionGeneral::find($this->selected_id);
             $record->update([ 
-			'name' => $this-> name,
+			// 'name' => $this-> name,
 			'valor' => $this-> valor,
 			'tipo_de_dato_id' => $this-> tipo_de_dato_id,
 			'created_by' => $this-> created_by,

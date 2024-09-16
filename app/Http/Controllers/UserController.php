@@ -62,7 +62,27 @@ class UserController extends Controller
     public function create()
     {
         $personal = Personal::orderBy('name')->pluck('name','id')->all();
+        
         $roles = Role::pluck('name','name')->all();
+
+        if(!auth()->user()->hasRole('Administrador')) {
+            if (!auth()->user()->hasRole('Administrador SST')) {
+                $roles = array_filter($roles, function ($role) {
+                    return $role !== 'Administrador SST';
+                });
+            }
+    
+            if (!auth()->user()->hasRole('Administrador Capacitaciones')) {
+                $roles = array_filter($roles, function ($role) {
+                    return $role !== 'Administrador Capacitaciones';
+                });
+            }
+
+            $roles = array_filter($roles, function ($role) {
+                return $role !== 'Administrador';
+            });
+        }
+
         return view('users.crear',compact('roles','personal'));
     }
 
@@ -124,7 +144,27 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::find($id);
+        
         $roles = Role::pluck('name','name')->all();
+
+        if(!auth()->user()->hasRole('Administrador')) {
+            if (!auth()->user()->hasRole('Administrador SST')) {
+                $roles = array_filter($roles, function ($role) {
+                    return $role !== 'Administrador SST';
+                });
+            }
+    
+            if (!auth()->user()->hasRole('Administrador Capacitaciones')) {
+                $roles = array_filter($roles, function ($role) {
+                    return $role !== 'Administrador Capacitaciones';
+                });
+            }
+
+            $roles = array_filter($roles, function ($role) {
+                return $role !== 'Administrador';
+            });
+        }
+
         $personal = Personal::orderBy('name')->pluck('name','id')->all();
         $userRole = $user->roles->pluck('name','name')->all();
     

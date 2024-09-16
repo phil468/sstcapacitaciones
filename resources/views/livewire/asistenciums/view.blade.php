@@ -84,7 +84,7 @@
 										<option value="{{$i}}">{{$i}}</option>
 									@endfor
 								</select>								
-								<a wire:click="agregarSesion()" type="button" class="btn btn-primary"
+								<a wire:click="agregarSesion()" type="button" class="btn btn-vanguard"
 								onclick="confirm('Confirma agregar Sesion? \nSesiones agregadas no pueden ser eliminadas!')||event.stopImmediatePropagation()"
 								>
 									<i class="fa fa-plus"></i>Agregar Sesion
@@ -122,7 +122,7 @@
 									id="dni_search" class="form-control"
 									placeholder="DNI" 
 									autofocus>
-									<a wire:click="buscar_dni()" type="button" class="btn btn-primary"><i class="fas fa-search"></i></a>
+									<a wire:click="buscar_dni()" type="button" class="btn btn-vanguard"><i class="fas fa-search"></i></a>
 									</div>								
 								</div>
 								@error('dni_search') <span class="error text-danger">{{ $message }}</span> @enderror
@@ -216,7 +216,7 @@
 												<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-vanguard rounded-xl" wire:click="edit({{$row->id}})">Editar </a>
 												@endcan
 												@can('borrar-asistencia')							 
-												<a class="btn btn-sm btn-danger" onclick="confirm('Confirma borrar Asistencium : {{$row->name}}? \nAsistenciums borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 
+												<a class="btn btn-sm btn-danger rounded-xl" onclick="confirm('Confirma borrar Asistencium : {{$row->name}}? \nAsistenciums borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 
 												@endcan  
 											</div>
 											</td>

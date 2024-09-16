@@ -490,7 +490,36 @@ return [
                     'url'  => 'capacitaciones',
                     'icon' => 'fas fa-sign-in-alt',
                     'can'  => 'ver-capacitacion',
-                    'active' => ['regex:@^capacitaciones/[0-9]+/edit$@','capacitaciones/create','regex:@^capacitaciones/[0-9]+@']
+                    'active' => [
+                        'regex:@^capacitaciones/[0-9]+/edit$@',
+                        'capacitaciones/create',
+                        'regex:@^capacitaciones/[0-9]+@',
+                        'regex:@^capacitaciones/registro/[0-9]+@',
+                        'capacitaciones/importar-personal',
+                        'capacitaciones/confirmar-importacion-personal',
+                        'capacitaciones/resultado-importacion-personal'
+                        ]
+                ],
+                [
+                    'text' => 'Importación de Capacitaciones',
+                    'url'  => 'import-capacitaciones',
+                    'icon' => 'fas fa-file-import',
+                    'can'  => 'ver-import-capacitaciones',
+                    'active' => ['regex:@^import-capacitaciones/[0-9]+/edit$@','import-capacitaciones/create','confirm-import-capacitaciones','regex:@^import-capacitaciones/[0-9]+@']
+                ],
+                [
+                    'text' => 'Ver Avance y Notas Por Personal',
+                    'url'  => 'avance-por-personal',
+                    'icon' => 'fas fa-clipboard-list',
+                    'can'  => 'ver-avance-por-personal',
+                    'classes' => 'rounded-xl',
+                ],                
+                [
+                    'text' => 'Configuración General - Aula Virtual',
+                    'url'  => 'configuracion-general',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-configuracion-general',
+                    'active' => ['regex:@^configuracion-general/[0-9]+/edit$@','configuracion-general/create','regex:@^configuracion-general/[0-9]+@']
                 ],
                 // [
                 //     'text' => 'Evaluaciones',
@@ -516,13 +545,13 @@ return [
                 //     'classes' => 'rounded-xl',
                 // ],
 
-                [
-                    'text' => 'Preguntas',
-                    'url'  => 'preguntas',
-                    'icon' => 'fas fa-cog fa-xs',
-                    'can'  => 'ver-modalidad',
-                    'classes' => 'rounded-xl',
-                ],
+                // [
+                //     'text' => 'Preguntas',
+                //     'url'  => 'preguntas',
+                //     'icon' => 'fas fa-cog fa-xs',
+                //     'can'  => 'ver-modalidad',
+                //     'classes' => 'rounded-xl',
+                // ],
 
                 // [
                 //     'text' => 'Estados de Planes de accion',

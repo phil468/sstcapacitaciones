@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\CapacitacionImportController;
+use App\Http\Controllers\PersonalImportController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -70,7 +72,7 @@ Route::get('/auth/callback', function () {
     // dd($response->json());
 
     // Redirige al usuario a la página de inicio o a donde quieras
-    return redirect('/mis-capacitaciones');
+    return redirect('/home');
     //return redirect(route('dash.index'));
 
 });
@@ -98,13 +100,24 @@ Auth::routes();
 
 Route::group(['middleware'  =>  ['auth']],function(){
 
+    Route::get('import-capacitaciones', [CapacitacionImportController::class, 'showImportForm'])->name('capacitaciones.import.form')->middleware(['can:ver-import-capacitaciones']);
+    Route::post('import-capacitaciones', [CapacitacionImportController::class, 'import'])->name('capacitaciones.import')->middleware(['can:ver-import-capacitaciones']);
+    Route::post('confirm-import-capacitaciones', [CapacitacionImportController::class, 'confirmImport'])->name('capacitaciones.confirm-import')->middleware(['can:ver-import-capacitaciones']);
+
+    Route::get('capacitaciones/importar-personal', [PersonalImportController::class, 'showImportForm'])->name('capacitaciones.personal.import.form')->middleware(['can:ver-import-capacitaciones']);
+    Route::post('capacitaciones/importar-personal', [PersonalImportController::class, 'import'])->name('capacitaciones.personal.import')->middleware(['can:ver-import-capacitaciones']);
+    Route::post('capacitaciones/confirmar-importacion-personal', [PersonalImportController::class, 'confirmImport'])->name('capacitaciones.personal.confirm-import')->middleware(['can:ver-import-capacitaciones']);
+    Route::get('capacitaciones/resultado-importacion-personal', [PersonalImportController::class, 'showResultImport'])->name('capacitaciones.personal.result-import')->middleware(['can:ver-import-capacitaciones']);
+
     Route::get('/download/{id}', [App\Http\Controllers\EvidenciaController::class,'download'])->name('download');
 
     Route::resource('roles',RolController::class);
 
+    Route::view('/home','home')->name('welcome');
     //Prueba domPDF
     // Route::get('/users/{user_id}/dompdf',[UserController::class,'dompdf'])->name('users.dompdf');
     Route::view('/dashboard','livewire.dashboard.index')->name('dashboard')->middleware(['can:ver-dashboard']);
+    Route::view('/configuracion-general','livewire.configuracion-general.index')->name('configuracion-general')->middleware(['can:ver-configuracion-general']);
     Route::view('/personal','livewire.personals.index')->name('personal')->middleware(['can:ver-personal']);
     Route::view('/areas','livewire.areas.index')->name('areas')->middleware(['can:ver-area']);
     Route::view('/capacitaciones','livewire.capacitaciones.index')->name('capacitaciones')->middleware(['can:ver-capacitacion']);
@@ -120,6 +133,8 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::get('/capacitaciones/{capacitacion_id}/asistencia', function ($capacitacion_id) {
         return view('livewire.asistenciums.index')->with('capacitacion_id', $capacitacion_id);
     })->name('capacitaciones.asistencia')->middleware(['can:ver-capacitacion']);
+
+    Route::view('/avance-por-personal','livewire.notas-por-personal.index')->name('avance-por-personal')->middleware('can:ver-avance-por-personal');
     
     Route::view('/cargos','livewire.cargos.index')->name('cargos')->middleware(['can:ver-cargo']);
     Route::view('/tipos_de_capacitaciones','livewire.tipo-de-capacitaciones.index')->name('tipo-de-capacitacion')->middleware(['can:ver-tipo-de-capacitacion']);//tipo_de_activos

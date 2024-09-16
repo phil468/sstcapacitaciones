@@ -16,7 +16,7 @@ class UsersTable extends LivewireDatatable
     {
         return [
             // Column::callback(['id'], function ($id) {
-            //     return '<a class="btn btn-primary btn-sm" href="'.route('users.edit',$id).'"><i class="fa fa-edit"></i></a>';
+            //     return '<a class="btn btn-vanguard btn-sm" href="'.route('users.edit',$id).'"><i class="fa fa-edit"></i></a>';
             Column::callback('id,name', function ($id,$name) {
                 return view('users.table-actions', ['id' => $id, 'name'=>$name]);
             })
@@ -52,9 +52,9 @@ class UsersTable extends LivewireDatatable
                 ->filterable()
                 ->searchable(),
                 
-            BooleanColumn::name('registrador')
-                ->label('Registrador')
-                ->filterable(),
+            // BooleanColumn::name('registrador')
+            //     ->label('Registrador')
+            //     ->filterable(),
 
             column::name('roles.name')
                 ->label('Roles')

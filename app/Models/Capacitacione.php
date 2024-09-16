@@ -43,6 +43,7 @@ class Capacitacione extends Model
         'intentos_de_evaluacion',
         'fecha_inicio',
         'fecha_fin',
+        'identificador_unico',
     ];
 
     // dates

@@ -78,7 +78,6 @@ class CapacitacionesTable extends LivewireDatatable
                 } else {
                     return view('livewire.capacitaciones.table-actions-aula-no-virtual', ['id' => $id]);
                 }
-                // return view('livewire.capacitaciones.table-actions', ['id' => $id]);
             })->unsortable()
             ->label('Acciones')
             ->excludeFromExport(),
@@ -90,6 +89,14 @@ class CapacitacionesTable extends LivewireDatatable
                 ->searchable()
                 ->hideable()
                 ->sortBy('id'),
+
+            Column::name('identificador_unico')
+                ->filterable()
+                ->label('identificador_unico')
+                ->defaultSort('DESC')
+                ->searchable()
+                ->hideable()
+                ->sortBy('identificador_unico'),
             
             Column::name('temas.name')
                 ->filterable()
@@ -99,7 +106,13 @@ class CapacitacionesTable extends LivewireDatatable
                 ->label('Tema'),
             
             NumberColumn::callback('id', function ($id) {
-                return Capacitacione::find($id)->sesiones->count();
+                // si es_aula_virtual es true
+                if (Capacitacione::find($id)->es_aula_virtual) {
+                    return Capacitacione::find($id)->sesiones->count();
+                } else {
+                    return Capacitacione::find($id)->cantidad_de_sesiones;
+                }
+                
             },[],'Sesiones')
                 ->label('Sesiones')
                 ->filterable()
@@ -116,6 +129,20 @@ class CapacitacionesTable extends LivewireDatatable
                 ->searchable()
                 ->hideable()
                 ->alignCenter(),
+            
+            DateColumn::name('fecha_inicio')
+                ->label('Fecha de inicio')->format('d/m/Y h:i:s a')
+                ->filterable()
+                ->searchable()
+                ->hideable()
+                ->sortBy('fecha_inicio'),
+            
+            DateColumn::name('fecha_fin')
+                ->label('Fecha de fin')->format('d/m/Y h:i:s a')
+                ->filterable()
+                ->searchable()
+                ->hideable()
+                ->sortBy('fecha_fin'),
 
             Column::name('tipo_de_capacitaciones.name')
                 ->filterable($this->tipo_de_capacitaciones)

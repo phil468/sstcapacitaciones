@@ -50,7 +50,11 @@ class MisCapacitaciones extends Component
 
     public function mount()
     {
-        $this->misCapacitaciones = CapacitacionHasPersonal::where('personal_id', auth()->user()->personal_id)->get();
+        $this->misCapacitaciones = CapacitacionHasPersonal::where('personal_id', auth()->user()->personal_id)
+        ->whereHas('capacitacion', function ($query) {
+            $query->where('es_aula_virtual', true);
+        })
+        ->get();
         $this->asignacion($this->asignacion_id??0);
         $this->sesion($this->sesion_id??0);
         $this->evaluacion($this->viewEvaluation??false);
@@ -69,7 +73,6 @@ class MisCapacitaciones extends Component
 
     public function asignacion($id)
     {
-        // dd($id);
         try {
             if ($id == 0) {
                 // redirect()->route('mis-capacitaciones');

@@ -155,7 +155,7 @@
 									Siguiente <i class="fas fa-angle-right"></i>
 								</a> 
 								@else
-								<a class="btn btn-primary" wire:click="notPdfMode()" >
+								<a class="btn btn-vanguard" wire:click="notPdfMode()" >
 									<i class="fas fa-angle-left"></i>
 									Anterior
 								</a>
@@ -168,7 +168,7 @@
 						@endif
 						@if ($updateMode)
 						@can('editar-devolucion')
-							<a class="btn btn-primary" wire:click="update()">
+							<a class="btn btn-vanguard" wire:click="update()">
 								<i class="fa fa-save"></i> Actualizar
 							</a> 
 						@endcan

@@ -25,7 +25,7 @@
                                 @error('valor_actualizado') <span class="error text-danger">{{ $message }}</span> @enderror
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                        <button type="submit" class="btn btn-vanguard">Actualizar</button>
                     </fieldset>
                 </form>
             </div>

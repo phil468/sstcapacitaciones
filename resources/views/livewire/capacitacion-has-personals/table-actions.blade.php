@@ -10,7 +10,7 @@
         </a>
     {{-- @endcan --}}
     {{-- @canany(['editar-capacitacion']) --}}
-        <a title="Quitar de lista" class="btn btn-outline-warning btn-lg" onclick="confirm('¿Confirma quitar de la lista {{$id}} - {{ $name ?? '' }}? \n ¡Se perderán todas las asistencias registradas!')
+        <a title="Quitar de lista" class="btn btn-outline-warning btn-lg" onclick="confirm('¿Confirma quitar de la lista {{$id}} - {{ $name ?? '' }}? \n ¡Se perderán todas las asistencias o avances registrados!')
             ||event.stopImmediatePropagation()" wire:click="destroy({{$id}})">
             <i class="fa fa-minus" aria-hidden="true"></i>
             {{-- <i class="fa fa-trash"></i> --}}

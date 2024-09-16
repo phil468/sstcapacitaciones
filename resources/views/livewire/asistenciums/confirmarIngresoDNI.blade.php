@@ -14,7 +14,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" wire:click.prevent="cancel_no_guardar_dni()" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" wire:click.prevent="ingresar_dni()" class="btn btn-primary close-modal">Guardar</button>
+                <button type="button" wire:click.prevent="ingresar_dni()" class="btn btn-vanguard close-modal">Guardar</button>
             </div>
        </div>
     </div>

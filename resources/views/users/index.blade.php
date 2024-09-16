@@ -63,7 +63,7 @@
                 <tr>
                   <td>
                     @can('editar-user')
-                        <a class="btn btn-primary btn-sm" href="{{ route('users.edit',$user->id) }}"><i class="fa fa-edit"></i></a>
+                        <a class="btn btn-vanguard btn-sm" href="{{ route('users.edit',$user->id) }}"><i class="fa fa-edit"></i></a>
                     @endcan
                     
                     @can('borrar-user')

@@ -57,7 +57,7 @@
 			{!! Form::select('personal_id', $personal,[], array('class' => 'form-control', 'placeholder' => 'Seleccione uno personal')) !!}
 			@error('personal_id')<div class="alert alert-danger">{{ $message }}</div>@enderror
 		</div>
-		<div class="mb-3">
+		{{-- <div class="mb-3">
                 <label for="registrador" class="form-label">Registrador</label>
 				
 			<div class="form-check">
@@ -67,7 +67,7 @@
 				</label>
 			</div>
 				@error('registrador') <span class="error text-danger">{{ $message }}</span> @enderror
-		</div>
+		</div> --}}
 		
 		<div class="mb-3">
 		  <label for="roles" class="form-label">Roles:</label>

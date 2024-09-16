@@ -100,7 +100,7 @@
 									wire:model.defer="fecha_final" type="date" class="form-control" id="fecha_final" placeholder="Fecha Final">@error('fecha_final') <span class="error text-danger">{{ $message }}</span> @enderror							
 							</div> --}}
 							{{-- <div class="form-group col-md-4 col-sm-4">
-								<button type="button" wire:click.prevent="generar_grafica()" class="align-bottom btn btn-primary close-modal w-100 h-100">Actualizar Gráfica</button>
+								<button type="button" wire:click.prevent="generar_grafica()" class="align-bottom btn btn-vanguard close-modal w-100 h-100">Actualizar Gráfica</button>
 							</div> --}}
 						</div>
 					@else

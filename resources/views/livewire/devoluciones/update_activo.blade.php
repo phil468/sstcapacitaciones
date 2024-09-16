@@ -50,7 +50,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" wire:click.prevent="cancel_activo()" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" wire:click.prevent="update_activo({{$selected_activo_index}})" class="btn btn-primary close-modal">Guardar</button>
+                <button type="button" wire:click.prevent="update_activo({{$selected_activo_index}})" class="btn btn-vanguard close-modal">Guardar</button>
             </div>
        </div>
     </div>

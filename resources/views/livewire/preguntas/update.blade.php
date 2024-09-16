@@ -35,14 +35,14 @@
                                     </div>                                
                                 </div>
                             @endforeach
-                            <button class="btn btn-primary" type="button" wire:click="addOpcion" @if(count($opciones) >= 5) disabled @endif>Añadir Opción</button>
+                            <button class="btn btn-vanguard" type="button" wire:click="addOpcion" @if(count($opciones) >= 5) disabled @endif>Añadir Opción</button>
                             @error('opciones') <span class="error text-danger">{{ $message }}</span> @enderror
 
                         </div>
                     
                         <div class="form-group">
                             <label for="solucion_id" class="form-label">Opción Correcta</label>
-                            <select id="solucion_id" wire:model="solucion_id" class="form-select">
+                            <select id="solucion_id" wire:model="solucion_id" class="form-select form-control">
                                 @foreach($opciones as $index => $opcion)
                                     <option value="{{ $index }}">{{ $opcion['opcion'] }}</option>
                                 @endforeach
@@ -57,9 +57,9 @@
 
                 @if ($this->selected_id == 0)
                     <button type="button" wire:click.prevent="store()"
-                        class="btn btn-primary close-modal">Guardar</button>
+                        class="btn btn-vanguard close-modal">Guardar</button>
                 @else
-                    <button type="button" wire:click.prevent="update()" class="btn btn-primary"
+                    <button type="button" wire:click.prevent="update()" class="btn btn-vanguard"
                         @if (!$this->updateMode) disabled @endif>Guardar</button>
                 @endif
             </div>

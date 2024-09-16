@@ -195,7 +195,7 @@
                                         <input type="text" name="activo_id" wire:model.defer="activo_id"
                                             wire:keydown.enter='agregar_asignados' id="activo_id" class="form-control"
                                             placeholder="Serial number / IMEI1 activo">
-                                        <a wire:click="agregar_asignados" type="button" class="btn btn-primary" id="button-addon2"><i class="fas fa-plus"></i></a>
+                                        <a wire:click="agregar_asignados" type="button" class="btn btn-vanguard" id="button-addon2"><i class="fas fa-plus"></i></a>
                                     </div>
 
                                     @error('activo_id')
@@ -212,7 +212,7 @@
                                         <input type="text" name="activo_precargado_id" wire:model.defer="activo_precargado_id"
                                             wire:keydown.enter='agregar' id="activo_precargado_id" class="form-control"
                                             placeholder="Serial number / IMEI1 activo">
-                                        <a wire:click="agregar" type="button" class="btn btn-primary" id="button-addon2"><i class="fas fa-check-square"></i></a>
+                                        <a wire:click="agregar" type="button" class="btn btn-vanguard" id="button-addon2"><i class="fas fa-check-square"></i></a>
                                     </div>
 
                                     @error('activo_precargado_id')

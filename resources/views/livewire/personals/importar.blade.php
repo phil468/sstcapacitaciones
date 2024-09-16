@@ -19,7 +19,7 @@
                         <input type="file" wire:model.defer="file" class="form-control-file" id="file" >
                         @error('file') <span class="error text-danger">{{ $message }}</span> @enderror
                     </div>
-                    <button wire:click="importar" wire:loading.attr="disabled" class="btn btn-primary close-modal">Importar</button>
+                    <button wire:click="importar" wire:loading.attr="disabled" class="btn btn-vanguard close-modal">Importar</button>
                 </form>
             </div>
        </div>

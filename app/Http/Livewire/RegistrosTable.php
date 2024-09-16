@@ -4,6 +4,9 @@ namespace App\Http\Livewire;
 
 use App\Models\CapacitacionHasPersonal;
 use App\Models\Personal;
+use App\Models\Prueba;
+use App\Models\Respuesta;
+use App\Models\SesionAccessLog;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\DateColumn;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
@@ -114,8 +117,30 @@ class RegistrosTable extends LivewireDatatable
     public function destroy($id)
     {
         if ($id) {
-            $record = CapacitacionHasPersonal::where('id', $id);
+            $record = CapacitacionHasPersonal::find($id);
+
+            SesionAccessLog::where('personal_id', $record->personal_id)
+            ->where('capacitacion_id', $record->capacitacion_id)
+            ->delete();
+
+            // eliminar pruebas
+            $pruebas = Prueba::where('personal_id', $record->personal_id)
+            ->where('capacitacion_id', $record->capacitacion_id)
+            ->get();
+
+            foreach ($pruebas as $prueba) {
+                // Eliminar respuestas asociadas a la prueba
+                Respuesta::where('prueba_id', $prueba->id)->delete();
+            }
+            
+            // Eliminar las pruebas
+            Prueba::where('personal_id', $record->personal_id)
+                ->where('capacitacion_id', $record->capacitacion_id)
+                ->delete();
+
             $record->delete();
+            
+            $this->emit('alert', ['type' => 'success', 'message' => 'Registro eliminado con éxito.']);
         }
     }
 }

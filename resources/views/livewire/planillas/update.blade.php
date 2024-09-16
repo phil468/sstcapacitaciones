@@ -58,9 +58,9 @@
             <div class="modal-footer">
                 <button type="button" wire:click.prevent="cancel()" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 @if ($this->selected_id == 0)                    
-                <button type="button" wire:click.prevent="store()" class="btn btn-primary close-modal">Guardar</button>
+                <button type="button" wire:click.prevent="store()" class="btn btn-vanguard close-modal">Guardar</button>
                 @else
-                    <button type="button" wire:click.prevent="update()" class="btn btn-primary" 
+                    <button type="button" wire:click.prevent="update()" class="btn btn-vanguard" 
                     @if (!$this->updateMode)                    
                         disabled
                     @endif >Guardar</button>

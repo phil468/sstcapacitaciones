@@ -70,7 +70,7 @@
                             </a>
                         </div> --}}
             <div class="text-center">
-                <h2 class="text-white h1">CAPACITACIONES <br> SST</h2>            
+                <h2 class="text-white h1">CAPACITACIONES</h2>            
             </div>
 
             {{-- Card Box --}}

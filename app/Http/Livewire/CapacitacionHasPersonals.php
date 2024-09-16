@@ -113,8 +113,17 @@ class CapacitacionHasPersonals extends Component
 		// Inicializa un array para almacenar los datos reorganizados
 		$resultArray = [];
 
+		$fecha_inicio = null;
+		$fecha_fin = null;
+
+		if ($capacitacion->es_aula_virtual) {
+			$fecha_inicio = $capacitacion->fecha_inicio ?? now()->setTime(10, 0, 0);
+			$fecha_fin = $capacitacion->fecha_fin ?? now()->addMonth()->endOfDay();
+		}
+		// dd($fecha_inicio,$fecha_fin);
+		
 		// Construye el array de datos reorganizados
-		$resultArray = $personalData->mapWithKeys(function ($personal) {
+		$resultArray = $personalData->mapWithKeys(function ($personal) use ($fecha_inicio, $fecha_fin) {
 			return [
 				$personal->id => [
 					'gerencia_id' => $personal->gerencia_id,
@@ -125,6 +134,8 @@ class CapacitacionHasPersonals extends Component
 					'tipo_de_trabajador_id' => $personal->tipo_de_trabajador_id,
 					'tipo_de_personal_id' => $personal->tipo_de_personal_id,
 					'empresa_id' => $personal->empresa_id,
+					'fecha_inicio' => $fecha_inicio??null,
+					'fecha_fin' => $fecha_fin??null,
 				],
 			];
 		})->toArray();
@@ -195,8 +206,8 @@ class CapacitacionHasPersonals extends Component
     public function store()
     {
         $this->validate([
-		'personal_id' => 'required',
-		'capacitacion_id' => 'required',
+			'personal_id' => 'required',
+			'capacitacion_id' => 'required',
         ]);
 
         CapacitacionHasPersonal::create([ 
@@ -278,8 +289,8 @@ class CapacitacionHasPersonals extends Component
 			$this->gerencia_id = null;
 			$this->area_id = null;
 			$this->sede_id = null;
-			$this->fecha_inicio = null;
-			$this->fecha_fin = null;
+			$this->fecha_inicio = $records[0]->fecha_inicio? date('Y-m-d\TH:i', strtotime($records[0]->fecha_inicio)) :null;
+			$this->fecha_fin = $records[0]->fecha_fin? date('Y-m-d\TH:i', strtotime($records[0]->fecha_fin)) :null;
 			$this->intentos_de_evaluacion = null;
 
 			$this->emit('openRegistroModal');
@@ -295,27 +306,28 @@ class CapacitacionHasPersonals extends Component
 			'capacitacion_id' => 'required',
         ]);
 
+		$personal = Personal::find($this->personal_id);
+
         if ($this->selected_id) {
 			$record = CapacitacionHasPersonal::find($this->selected_id);
             $record->update([ 
 			// 'personal_id' => $this-> personal_id,
 			// 'capacitacion_id' => $this-> capacitacion_id,
-			// 'active' => $this-> active,
+			'active' => true,
 			// 'observaciones' => $this-> observaciones,
 			// 'empresa_id' => $this-> empresa_id,
 			'gerencia_id' => $this-> gerencia_id,
 			'area_id' => $this-> area_id,
-			// 'cargo_id' => $this-> cargo_id,
-			// 'planilla_id' => $this-> planilla_id,
+			'cargo_id' => $personal-> cargo_id,
+			'planilla_id' => $personal-> planilla_id,
 			'sede_id' => $this-> sede_id,
-			'fecha_inicio' => $this-> fecha_inicio,
-			'fecha_fin' => $this-> fecha_fin,
+			'fecha_inicio' => $this-> fecha_inicio == "" ? null : $this-> fecha_inicio,
+			'fecha_fin' => $this-> fecha_fin == "" ? null : $this-> fecha_inicio,
 			'intentos_de_evaluacion' => $this-> intentos_de_evaluacion,
-			// 'tipo_de_trabajador_id' => $this-> tipo_de_trabajador_id,
-			// 'tipo_de_personal_id' => $this-> tipo_de_personal_id
+			'tipo_de_trabajador_id' => $personal-> tipo_de_trabajador_id,
+			'tipo_de_personal_id' => $personal-> tipo_de_personal_id
             ]);
 
-			$personal = Personal::find($this->personal_id);
 			$personal->update([
 				'gerencia_id' => $this-> gerencia_id,
 				'area_id' => $this-> area_id,
@@ -337,20 +349,26 @@ class CapacitacionHasPersonals extends Component
 	{
 		$rules = [];
 
-		if ($this->edit_gerencia) 		{ $rules['gerencia_id'] 	= 'required'; }
-		if ($this->edit_area) 			{ $rules['area_id'] 		= 'required'; }
-		if ($this->edit_sede) 			{ $rules['sede_id'] 		= 'required'; }
-		if ($this->edit_fecha_inicio) 	{ $rules['fecha_inicio'] 	= 'required'; }
-		if ($this->edit_fecha_fin) 		{ $rules['fecha_fin'] 		= 'required'; }
-		if ($this->edit_intentos_de_evaluacion) { $rules['intentos_de_evaluacion'] = 'required'; }
+		$rules['fecha_inicio'] 	= 'required';
+		$rules['fecha_fin'] 	= 'required';
+		
+		if ($this->edit_gerencia) 				{ $rules['gerencia_id'] 			= 'required'; }
+		if ($this->edit_area) 					{ $rules['area_id'] 				= 'required'; }
+		if ($this->edit_sede) 					{ $rules['sede_id'] 				= 'required'; }
+		// if ($this->edit_fecha_inicio) 		{ $rules['fecha_inicio'] 			= 'required'; }
+		// if ($this->edit_fecha_fin) 			{ $rules['fecha_fin'] 				= 'required'; }
+		if ($this->edit_intentos_de_evaluacion) { $rules['intentos_de_evaluacion'] 	= 'required'; }
 
-		// Validar que al menos uno de los checkboxes esté marcado
-		if (!$this->edit_gerencia && !$this->edit_area && !$this->edit_sede && !$this->edit_fecha_inicio && !$this->edit_fecha_fin && !$this->edit_intentos_de_evaluacion) {
-			// session()->flash('errorEdicionMasiva', 'Debe seleccionar al menos una opción para editar.');
-			$this->emit('alert', ['type' => 'success', 'message' => 'Debe seleccionar al menos una opción para editar.']);
+		// // Validar que al menos uno de los checkboxes esté marcado
+		// if (!$this->edit_gerencia && !$this->edit_area && !$this->edit_sede 
+		// // && !$this->edit_fecha_inicio && !$this->edit_fecha_fin 
+		// && !$this->edit_intentos_de_evaluacion) {
+		// 	// session()->flash('errorEdicionMasiva', 'Debe seleccionar al menos una opción para editar.');
+		// 	$this->emit('alert', ['type' => 'warning', 'message' => 'Debe seleccionar al menos una opción para editar.']);
+		// 	return;
+		// }
 
-			return;
-		}
+		// dd($rules);
 
 		$this->validate($rules);
 
@@ -361,7 +379,6 @@ class CapacitacionHasPersonals extends Component
 
 			if ($this->edit_gerencia) {
 				$updateData['gerencia_id'] = $this->gerencia_id;
-
 				$personalUpdateData['gerencia_id'] = $this->gerencia_id;
 			}
 			if ($this->edit_area) {
@@ -374,12 +391,13 @@ class CapacitacionHasPersonals extends Component
 
 				$personalUpdateData['sede_id'] = $this->sede_id;
 			}
-			if ($this->edit_fecha_inicio) {
+			// if ($this->edit_fecha_inicio) {
+				// dd($this->fecha_inicio);
 				$updateData['fecha_inicio'] = $this->fecha_inicio;
-			}
-			if ($this->edit_fecha_fin) {
+			// }
+			// if ($this->edit_fecha_fin) {
 				$updateData['fecha_fin'] = $this->fecha_fin;
-			}
+			// }
 			if ($this->edit_intentos_de_evaluacion) {
 				$updateData['intentos_de_evaluacion'] = $this->intentos_de_evaluacion;
 			}
@@ -391,6 +409,8 @@ class CapacitacionHasPersonals extends Component
 			// session()->flash('success', 'Registros actualizados correctamente.');
 			$this->emit('alert', ['type' => 'success', 'message' => 'Registros actualizados correctamente.']);
 
+			$this->emit('limpiarDatosP');
+            $this->resetValidation();
 
 			$this->resetInput();
 			$this->updateMode = false;

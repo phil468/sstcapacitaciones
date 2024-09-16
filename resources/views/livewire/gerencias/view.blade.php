@@ -65,7 +65,7 @@
 									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-vanguard rounded-xl" wire:click="edit({{$row->id}})">Editar </a>
 									@endcan
 									@can('borrar-gerencia')							 
-									<a class="btn btn-sm btn-danger" onclick="confirm('Confirma borrar Gerencia : {{$row->name}}? \nGerencias borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 
+									<a class="btn btn-sm btn-danger rounded-xl" onclick="confirm('Confirma borrar Gerencia : {{$row->name}}? \nGerencias borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 
 									@endcan  
 								</div>
 								</td>

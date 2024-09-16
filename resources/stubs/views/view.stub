@@ -18,7 +18,7 @@
 				</span>
 				<span>
 					<div class="btn-group">
-						<a data-toggle="modal" data-target="#updateModal" class="btn btn-primary" wire:click="edit({{$row->id}})"><i class="fa fa-edit"></i> Editar </a>							 
+						<a data-toggle="modal" data-target="#updateModal" class="btn btn-vanguard" wire:click="edit({{$row->id}})"><i class="fa fa-edit"></i> Editar </a>							 
 						<a class="btn btn-danger" onclick="confirm('Confirma Eliminar Bag id {{$row->id}}? \n {{modelName}} borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"><i class="fa fa-trash"></i> Borrar </a>   
 					</div>
 				</span>

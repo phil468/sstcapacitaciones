@@ -116,6 +116,20 @@
                         </div>
                         
                         @if ($es_aula_virtual)
+                        
+                            <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                                <label for="intentos_de_evaluacion">Cantidad de intentos de evaluacion*</label>
+                                <input wire:model="intentos_de_evaluacion" type="number" class="form-control" id="intentos_de_evaluacion" placeholder="Cantidad de intentos de evaluacion permitidos">
+                                @error('intentos_de_evaluacion')
+                                    <span class="error text-danger">{{ $message }}</span> 
+                                @enderror
+                            
+                                @if($editMasiva)
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" wire:model="edit_intentos_de_evaluacion"> Editar Intentos de Evaluación
+                                    </div>
+                                @endif
+                            </div>
                             
                             <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
                                 <label for="fecha_inicio">Fecha Inicio*</label>
@@ -126,7 +140,7 @@
 
                                 @if($editMasiva)
                                     <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" wire:model="edit_fecha_inicio"> Editar Fecha Inicio
+                                        {{-- <input type="checkbox" class="form-check-input" wire:model="edit_fecha_inicio"> Editar Fecha Inicio --}}
                                     </div>
                                 @endif
                                 
@@ -141,32 +155,19 @@
                             
                                 @if($editMasiva)
                                     <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" wire:model="edit_fecha_fin"> Editar Fecha Fin
+                                        {{-- <input type="checkbox" class="form-check-input" wire:model="edit_fecha_fin"> Editar Fecha Fin --}}
                                     </div>
                                 @endif
                             </div>
 
                             {{--campo intentos_de_evaluacion--}}
 
-                            <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
-                                <label for="intentos_de_evaluacion"></label>
-                                <input wire:model="intentos_de_evaluacion" type="number" class="form-control" id="intentos_de_evaluacion" placeholder="Cantidad de intentos de evaluacion permitidos">
-                                @error('fecha_fin')
-                                    <span class="error text-danger">{{ $message }}</span> 
-                                @enderror
-                            
-                                @if($editMasiva)
-                                    <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" wire:model="edit_intentos_de_evaluacion"> Editar Intentos de Evaluación
-                                    </div>
-                                @endif
-                            </div>
 
                         @endif
                         
                         @if (session()->has('errorEdicionMasiva'))
                             <div class="col-12">
-                                <div wire:poll.4s class="btn btn-sm btn-danger" style="margin-top:0px; margin-bottom:0px;"> {{ session('errorEdicionMasiva') }} </div>
+                                <div wire:poll.4s class="btn btn-sm btn-danger rounded-xl" style="margin-top:0px; margin-bottom:0px;"> {{ session('errorEdicionMasiva') }} </div>
                             </div>
                         @endif
                         
@@ -179,15 +180,15 @@
                 >Cerrar</button>
                 
                 @if ($editMasiva)
-                    <button type="button" wire:click.prevent="updateMasivo()" class="btn btn-primary" 
+                    <button type="button" wire:click.prevent="updateMasivo()" class="btn btn-vanguard" 
                     @if (!$this->updateMode)                    
                         disabled
                     @endif >Guardar</button>                     
                 @else
                     @if ($this->selected_id == 0)                    
-                        <button type="button" wire:click.prevent="store()" class="btn btn-primary close-modal">Guardar</button>
+                        <button type="button" wire:click.prevent="store()" class="btn btn-vanguard close-modal">Guardar</button>
                     @else
-                        <button type="button" wire:click.prevent="update()" class="btn btn-primary" 
+                        <button type="button" wire:click.prevent="update()" class="btn btn-vanguard" 
                         @if (!$this->updateMode)                    
                             disabled
                         @endif >Guardar</button>   

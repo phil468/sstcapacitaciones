@@ -14,9 +14,9 @@
 						@if (session()->has('message'))
 						<div wire:poll.4s class="btn btn-sm btn-success rounded-xl" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
 						@endif
-						<div>
+						{{-- <div>
 							<input wire:model='keyWord' type="text" class="form-control" name="search" id="search" placeholder="Buscar">
-						</div>
+						</div> --}}
 						@can('crear-configuracion-general')
 						<div class="btn btn-sm btn-default rounded-xl" data-toggle="modal" data-target="#createDataModal">
 						<i class="fa fa-plus"></i>  Nuevo
@@ -39,10 +39,10 @@
 								<th>#</th> 
 								<th>Name</th>
 								<th>Valor</th>
-								<th>Tipo De Dato Id</th>
+								{{-- <th>Tipo De Dato Id</th>
 								<th>Created By</th>
 								<th>Updated By</th>
-								<th>Deleted By</th>
+								<th>Deleted By</th> --}}
 																
 								@can('editar-configuracion-general','borrar-configuracion-general')
 								<th>ACCIONES</th>								
@@ -55,10 +55,10 @@
 								<td>{{ $loop->iteration }}</td> 
 								<td>{{ $row->name }}</td>
 								<td>{{ $row->valor }}</td>
-								<td>{{ $row->tipo_de_dato_id }}</td>
+								{{-- <td>{{ $row->tipo_de_dato_id }}</td>
 								<td>{{ $row->created_by }}</td>
 								<td>{{ $row->updated_by }}</td>
-								<td>{{ $row->deleted_by }}</td>
+								<td>{{ $row->deleted_by }}</td> --}}
 																
 								@can('editar-configuracion-general','borrar-configuracion-general')
 								<td width="90">

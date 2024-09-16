@@ -61,6 +61,11 @@
                                         <span class="error text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
+
+                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
+                            <label for="identificador_unico">Identificador *</label>
+                            <input wire:model.defer="identificador_unico" type="text" class="form-control" id="identificador_unico" placeholder="Identificador">@error('identificador_unico') <span class="error text-danger">{{ $message }}</span> @enderror
+                        </div>
                                 
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="empresa_id">Empresa *</label>
@@ -295,7 +300,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" wire:click.prevent="cancel()" class="btn btn-primary"
+                <button type="button" wire:click.prevent="cancel()" class="btn btn-vanguard"
                     data-dismiss="modal">Cerrar</button>
 
                 @if ($this->selected_id == 0)

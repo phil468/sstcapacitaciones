@@ -67,9 +67,9 @@
 
                 @if ($this->selected_id == 0)
                     <button type="button" wire:click.prevent="store()"
-                        class="btn btn-primary close-modal">Guardar</button>
+                        class="btn btn-vanguard close-modal">Guardar</button>
                 @else
-                    <button type="button" wire:click.prevent="update()" class="btn btn-primary"
+                    <button type="button" wire:click.prevent="update()" class="btn btn-vanguard"
                         @if (!$this->updateMode) disabled @endif>Guardar</button>
                 @endif
             </div>
