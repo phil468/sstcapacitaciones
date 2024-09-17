@@ -645,6 +645,7 @@ class Capacitaciones extends Component
 	public function notificar($id)
 	{
 		$capacitaciones = [];
+		$messages = [];
 
 		// 0: notificar todas las capacitaciones
 		// n: notificar solo la capacitacion con id = n
@@ -669,8 +670,8 @@ class Capacitaciones extends Component
 
 			if ($capacitacion->activo && $capacitacion->estado->name !== 'cancelada') {
 				$personal = CapacitacionHasPersonal::where('capacitacion_id', $capacitacion->id)
-					->whereDate('fecha_inicio', '<=', now())
-					->whereDate('fecha_fin', '>=', now())
+					->where('fecha_inicio', '<=', now())
+					->where('fecha_fin', '>=', now())
 					->get();
 
 				$notificacionesEnviadas = 0;
@@ -682,22 +683,41 @@ class Capacitaciones extends Component
 						->count();
 
 					if (!$sesionLog) {
-						Notification::send($persona->personal->user, new CapacitacionNotification($capacitacion));
-					
-						NotificacionEnviada::create([
-							'capacitacion_id' => $capacitacion->id,
-							'personal_id' => $persona->personal_id,
-						]);
+						if ($persona->personal->user) {
+							Notification::send($persona->personal->user, new CapacitacionNotification($capacitacion));
+						
+							NotificacionEnviada::create([
+								'capacitacion_id' => $capacitacion->id,
+								'personal_id' => $persona->personal_id,
+							]);
+							
+							$notificacionesEnviadas++;
 
-						$notificacionesEnviadas++;
+						} else {
+							$messages [] = [
+								'type' => 'danger',
+								'message' => 'El usuario ' . $persona->personal->name . ' no tiene un usuario asociado. No se ha enviado su notificación.'
+							];
+						}
+
 					}
 				}
 				
 				if ($notificacionesEnviadas > 0) {
-					$this->emit('alert', ['type' => 'success', 'message' => 'Notificaciones enviadas correctamente.']);
+					$message_notificacion = 'Notificaciones enviadas correctamente.'
+						. ' Se han enviado ' . $notificacionesEnviadas . ' notificaciones.';
+						foreach ($messages as $message) {
+							$message_notificacion .= '<br><br>' . $message['message'];
+						}
+					$this->emit('alert', ['type' => 'success', 'message' => $message_notificacion ]);
 				} else {
-					$this->emit('alert', ['type' => 'info', 'message' => 'No hay notificaciones nuevas para enviar.']);
+					$message_notificacion = 'No se han enviado notificaciones nuevas.';
+						foreach ($messages as $message) {
+							$message_notificacion .= '<br><br>' . $message['message'];
+						}
+					$this->emit('alert', ['type' => 'info', 'message' => $message_notificacion]);
 				}
+
 			}
 		}
 	}
