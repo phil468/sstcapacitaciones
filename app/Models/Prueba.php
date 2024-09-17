@@ -31,5 +31,11 @@ class Prueba extends Model
         return $this->belongsTo(Status::class,'status_id');
     }
 
+    public function preguntas() {
+        return $this->belongsToMany(Pregunta::class, 'respuestas', 'prueba_id', 'pregunta_id')
+            ->withPivot('personal_id','opcion_id','valor_numerico','valor_texto','capacitacion_id','opcion_correcta_id')
+            ->withTimestamps();
+    }
+
 
 }

@@ -50,11 +50,17 @@ class MisCapacitaciones extends Component
 
     public function mount()
     {
-        $this->misCapacitaciones = CapacitacionHasPersonal::where('personal_id', auth()->user()->personal_id)
+        $this->misCapacitaciones = 
+        CapacitacionHasPersonal::where('personal_id', auth()->user()->personal_id)
         ->whereHas('capacitacion', function ($query) {
-            $query->where('es_aula_virtual', true);
+            $query->where('es_aula_virtual', true)
+            ->whereHas('sesiones') // Filtra capacitaciones que tienen al menos una sesión
+            ->whereHas('preguntas', function ($query) {
+                $query->havingRaw('COUNT(*) >= capacitaciones.cantidad_de_preguntas_a_mostrar');
+            });
         })
         ->get();
+
         $this->asignacion($this->asignacion_id??0);
         $this->sesion($this->sesion_id??0);
         $this->evaluacion($this->viewEvaluation??false);
@@ -265,7 +271,28 @@ class MisCapacitaciones extends Component
 
                     if ($respuestas->isEmpty()) {
                         // Obtener preguntas aleatorias
-                        $preguntas = $this->asignacion->capacitacion->preguntas()->inRandomOrder()->limit($capacitacion->cantidad_de_preguntas_a_mostrar??5)->get();
+
+                        $prueba_anterior = 
+                            Prueba::where('capacitacion_id', $this->capacitacion_id)
+                            ->where('personal_id', auth()->user()->personal_id)
+                            ->where('intento',1)
+                            ->where('status_id', 2) // Asumiendo que 2 es el estado final
+                            ->first();
+
+                        if($prueba_anterior){
+                            $preguntas = $prueba_anterior->preguntas;
+                        } else {
+                            $preguntas = 
+                                Pregunta::where('capacitacion_id', $this->capacitacion_id)
+                                ->inRandomOrder()
+                                ->limit($capacitacion->cantidad_de_preguntas_a_mostrar??5)
+                                ->get();
+
+                            // $preguntas = 
+                            // $this->asignacion->capacitacion->preguntas()->inRandomOrder()->limit($capacitacion->cantidad_de_preguntas_a_mostrar??5)->get();
+
+                        }
+
 
                         // Crear respuestas con las preguntas aleatorias
                         foreach ($preguntas as $pregunta) {

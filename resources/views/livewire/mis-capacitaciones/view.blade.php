@@ -164,6 +164,8 @@
                                                 
                                                 @endif
                                             @endforeach
+
+                                            {{-- {{ dd($allSessionsCompleted , $intentosRegistrados , $intentosPermitidos) }} --}}
                                             
                                             @if ($allSessionsCompleted && $intentosRegistrados < $intentosPermitidos)
                                                 <div class="timeline-item">
@@ -185,19 +187,19 @@
                                                 </div>
                                             @else
                                                 <div class="timeline-item">
-                                                    <div class="text-white align-content-center timeline-icon bg-gray">{{ $asignacion->capacitacion->sesiones->count() + 1 }}</div>
-                                                    <div class="text-left align-content-center timeline-content bg-gray">
+                                                    <div class="text-white @if ($allSessionsCompleted) bg-vanguard @else bg-gray @endif align-content-center timeline-icon">{{ $asignacion->capacitacion->sesiones->count() + 1 }}</div>
+                                                    <div class="text-left  @if ($allSessionsCompleted) bg-vanguard @else bg-gray @endif align-content-center timeline-content ">
                                                         <h5 class="text-white timeline-title">
                                                             <i class="text-white far fa-circle fa-lg"></i>
-                                                            Evaluación - {{$intentosRegistrados}} intento(s) de {{$intentosPermitidos}}
+                                                            <strong> Evaluación - {{$intentosRegistrados}} intento(s) de {{$intentosPermitidos}} </strong>
                                                             @if ($puntaje)
                                                                 <br>
                                                                 <br>
                                                                 <h4 class="h4">
-                                                                    <span class="badge @if ($puntaje >= $nota_minima_aprobatoria) badge-primary @elseif ($puntaje > 0) badge-warning @else badge-danger @endif
+                                                                    <span class="badge @if ($puntaje >= $nota_minima_aprobatoria) badge-success @elseif ($puntaje > 0) badge-warning @else badge-danger @endif
                                                                         badge-pill ">Nota Intento #{{$intentosRegistrados}}: {{$puntaje}}</span>
                                                                         <br>
-                                                                <span class="badge badge-gray badge-pill">Intentos agotados</span>
+                                                                <span class="text-white badge badge-white badge-pill">Intentos agotados</span>
                                                                 </h4>
                                                             @endif
                                                         </h5>

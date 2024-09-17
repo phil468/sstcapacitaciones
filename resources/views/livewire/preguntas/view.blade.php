@@ -18,6 +18,15 @@
 							<input wire:model='keyWord' type="text" class="form-control" name="search" id="search" placeholder="Buscar">
 						</div> --}}
 						@can('crear-pregunta')
+							<div>
+								@if ($capacitacion)
+									@if ($capacitacion->cantidad_de_preguntas_a_mostrar > $preguntas->count())
+									<div class="btn btn-warning rounded-xl" style="margin-top:0px; margin-bottom:0px;">
+										Se necesita como mínimo {{ $capacitacion->cantidad_de_preguntas_a_mostrar }} preguntas
+									</div>
+									@endif
+								@endif
+							</div>
 							<div 
 							class="btn btn-default rounded-xl" 
 							wire:click="edit(0)" 
