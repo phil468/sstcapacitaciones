@@ -118,6 +118,9 @@ Route::group(['middleware'  =>  ['auth']],function(){
     // Route::get('/users/{user_id}/dompdf',[UserController::class,'dompdf'])->name('users.dompdf');
     Route::view('/dashboard','livewire.dashboard.index')->name('dashboard')->middleware(['can:ver-dashboard']);
     Route::view('/configuracion-general','livewire.configuracion-general.index')->name('configuracion-general')->middleware(['can:ver-configuracion-general']);
+    Route::view('/alertas','livewire.alertas.index')->name('alertas')->middleware(['can:ver-alertas']);
+    Route::view('/alertas-enviadas','livewire.alerta-enviadas.index')->name('alertas-enviadas')->middleware(['can:ver-alertas']);
+    Route::view('/notificaciones-enviadas','livewire.notificaciones-enviadas.index')->name('notificaciones-enviadas')->middleware(['can:ver-alertas']);
     Route::view('/personal','livewire.personals.index')->name('personal')->middleware(['can:ver-personal']);
     Route::view('/areas','livewire.areas.index')->name('areas')->middleware(['can:ver-area']);
     Route::view('/capacitaciones','livewire.capacitaciones.index')->name('capacitaciones')->middleware(['can:ver-capacitacion']);

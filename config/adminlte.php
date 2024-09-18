@@ -513,13 +513,31 @@ return [
                     'icon' => 'fas fa-clipboard-list',
                     'can'  => 'ver-avance-por-personal',
                     'classes' => 'rounded-xl',
-                ],                
+                ],
                 [
                     'text' => 'Configuración General - Aula Virtual',
                     'url'  => 'configuracion-general',
                     'icon' => 'fas fa-cog fa-xs',
                     'can'  => 'ver-configuracion-general',
                     'active' => ['regex:@^configuracion-general/[0-9]+/edit$@','configuracion-general/create','regex:@^configuracion-general/[0-9]+@']
+                ],
+                [
+                    'text' => 'Alertas',
+                    'url'  => 'alertas',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-alertas',
+                ],
+                [
+                    'text' => 'Alertas Enviadas',
+                    'url'  => 'alertas-enviadas',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-alertas-enviadas',
+                ],
+                [
+                    'text' => 'Notificaciones Enviadas',
+                    'url'  => 'notificaciones-enviadas',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-notificaciones-enviadas',
                 ],
                 // [
                 //     'text' => 'Evaluaciones',

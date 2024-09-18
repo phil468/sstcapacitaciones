@@ -26,7 +26,8 @@ class Respuesta extends Model
             'personal_id',
             'prueba_id',
             'capacitacion_id',
-            'opcion_correcta_id'
+            'opcion_correcta_id',
+            'intento'
         ];
 	
     // protected $casts = [

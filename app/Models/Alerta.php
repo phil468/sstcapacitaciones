@@ -15,6 +15,6 @@ class Alerta extends Model
 
     protected $table = 'alertas';
 
-    protected $fillable = ['name','estado'];
+    protected $fillable = ['name','estado','dias','condicion','campo'];
 	
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Alerta;
 use App\Models\Area;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -20,6 +21,7 @@ use App\Models\Tema;
 use App\Models\TipoDeCapacitacione;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\CapacitacionNotification;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class Capacitaciones extends Component
@@ -294,7 +296,31 @@ class Capacitaciones extends Component
 		$this->tema_id_add = null;
 	}
 
-	public function mount($id = null) {		
+	public function mount($id = null) {
+		
+		// $now = Carbon::now();
+        // $alertas = Alerta::where('estado', 1)->get();
+
+        // foreach ($alertas as $alerta) {
+        //     $dias = $alerta->dias;
+        //     $campo = $alerta->campo;
+        //     $condicion = $alerta->condicion;
+
+		// 	dd($now->copy()->addDays($dias)->toDateString());
+
+		// 	$capacitaciones = CapacitacionHasPersonal::where(function ($query) use ($now, $dias, $campo, $condicion) {
+		// 		if ($condicion == 'antes') {
+		// 			$query->whereDate($campo, '=', $now->copy()->addDays($dias)->toDateString());
+		// 		} elseif ($condicion == 'despues') {
+		// 			$query->whereDate($campo, '=', $now->copy()->subDays($dias)->toDateString());
+		// 		}
+		// 	})->get();
+
+		// 	dd($capacitaciones);
+
+		// }
+
+
 		$this->estado_realizado = Status::where('name', '=', 'REALIZADA')->first()->id ?? null;
 		if ($this->estado_realizado == null) {
 			session()->flash('message-danger', 'No se encuentra definido el estado "REALIZADA"

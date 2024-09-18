@@ -253,12 +253,8 @@ class CapacitacionHasPersonals extends Component
 			// $this->cargo_id = $record-> cargo_id;
 			// $this->planilla_id = $record-> planilla_id;
 			$this->sede_id = $record-> sede_id;
-			$this->fecha_inicio = $record->fecha_inicio ? 
-			date('Y-m-d\TH:i', strtotime($record->fecha_inicio)) 
-			: '';
-			$this->fecha_fin = $record->fecha_fin ? 
-			date('Y-m-d\TH:i', strtotime($record->fecha_fin)) 
-			: '';
+			$this->fecha_inicio = $record->fecha_inicio ? date('Y-m-d\TH:i', strtotime($record->fecha_inicio)) : '';
+			$this->fecha_fin = $record->fecha_fin ? date('Y-m-d\TH:i', strtotime($record->fecha_fin)) : '';
 			$this->intentos_de_evaluacion = $record->intentos_de_evaluacion;
 			// $this->tipo_de_trabajador_id = $record-> tipo_de_trabajador_id;
 			// $this->tipo_de_personal_id = $record-> tipo_de_personal_id;
@@ -322,7 +318,7 @@ class CapacitacionHasPersonals extends Component
 			'planilla_id' => $personal-> planilla_id,
 			'sede_id' => $this-> sede_id,
 			'fecha_inicio' => $this-> fecha_inicio == "" ? null : $this-> fecha_inicio,
-			'fecha_fin' => $this-> fecha_fin == "" ? null : $this-> fecha_inicio,
+			'fecha_fin' => $this-> fecha_fin == "" ? null : $this-> fecha_fin,
 			'intentos_de_evaluacion' => $this-> intentos_de_evaluacion,
 			'tipo_de_trabajador_id' => $personal-> tipo_de_trabajador_id,
 			'tipo_de_personal_id' => $personal-> tipo_de_personal_id

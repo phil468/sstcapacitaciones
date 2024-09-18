@@ -422,19 +422,19 @@ class MisCapacitaciones extends Component
         // $this->emit('alert', ['type' => 'success', 'message' => '¡Evaluación enviada con éxito!']);
         
         // evaluar cuantas evaluaciones se han realizado para luego incrementar el numero_de_evaluacion
-        $numero_de_evaluacion = SesionAccessLog::where('capacitacion_id', $this->capacitacion_id)
-            ->where('personal_id', auth()->user()->personal_id)
-            ->whereNotNull('numero_de_evaluacion')
-            ->count();
+        // $numero_de_evaluacion = SesionAccessLog::where('capacitacion_id', $this->capacitacion_id)
+        //     ->where('personal_id', auth()->user()->personal_id)
+        //     ->whereNotNull('numero_de_evaluacion')
+        //     ->count();
 
-        if ($numero_de_evaluacion < 2) {
+        // if ($numero_de_evaluacion < 2) {
             SesionAccessLog::create([
                 'capacitacion_id' => $this->capacitacion_id,
                 'personal_id' => auth()->user()->personal_id,
-                'numero_de_evaluacion' => $numero_de_evaluacion +1,
+                'numero_de_evaluacion' => $prueba->intento,
                 'accessed_at' => Carbon::now(),
             ]);
-        }
+        // }
 
         $this->emit('alert', ['type' => 'success', 'message' => 'Evaluación enviada exitosamente.']);
 
