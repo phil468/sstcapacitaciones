@@ -407,7 +407,15 @@ class MisCapacitaciones extends Component
         // Calcular la duración de la prueba
         $fecha_inicio = Carbon::parse($prueba->fecha_inicio);
         $fecha_fin = Carbon::now();
-        $duracion = $fecha_fin->diffInMinutes($fecha_inicio);
+        $duracion = $fecha_fin->diff($fecha_inicio);
+
+        // Formatear la duración en H:i:s
+        $duracion_formateada = sprintf('%02d:%02d:%02d', $duracion->h, $duracion->i, $duracion->s);
+
+        // Verificar si la duración excede el límite máximo
+        if ($duracion->h > 838 || ($duracion->h == 838 && ($duracion->i > 59 || $duracion->s > 59))) {
+            $duracion_formateada = sprintf('%02d:%02d:%02d', 838, 59, 59);
+        }
 
         // Actualizar el estado de la prueba
         $prueba->update([
@@ -416,7 +424,7 @@ class MisCapacitaciones extends Component
             'puntaje' => $puntaje,
             'correctas' => $correctas,
             'incorrectas' => $incorrectas,
-            'duracion' => $duracion,
+            'duracion' => $duracion_formateada,
         ]);
 
         // $this->emit('alert', ['type' => 'success', 'message' => '¡Evaluación enviada con éxito!']);
