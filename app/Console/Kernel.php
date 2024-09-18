@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Models\ConfiguracionGeneral;
 use App\Models\Evaluacione;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -56,9 +57,18 @@ class Kernel extends ConsoleKernel
         
         // $schedule->command('inspire')->hourly();
         // Programa el comando para que se ejecute todos los días a las 8:00 AM
-        $schedule->command('alerts:send-capacitacion')->daily();
-        $schedule->command('alerts:send-capacitacion')->dailyAt('06:00');
-        $schedule->command('alerts:send-capacitacion')->dailyAt('14:20');
+        // $schedule->command('alerts:send-capacitacion')->daily();
+        // $schedule->command('alerts:send-capacitacion')->dailyAt('06:00');
+        // $schedule->command('alerts:send-capacitacion')->dailyAt('14:20');
+        // Obtener la hora de envío de alerta desde la configuración
+        $horaEnvioAlerta = ConfiguracionGeneral::getValorByName('hora_de_envio_de_alerta');
+        // Verificar si se obtuvo una hora válida
+        if ($horaEnvioAlerta) {
+            $schedule->command('alerts:send-capacitacion')->dailyAt($horaEnvioAlerta);
+        } else {
+            // Si no se obtiene una hora válida, usar una hora por defecto
+            $schedule->command('alerts:send-capacitacion')->dailyAt('06:00');
+        }
     }
 
     /**

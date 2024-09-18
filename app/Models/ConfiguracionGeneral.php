@@ -17,4 +17,9 @@ class ConfiguracionGeneral extends Model
 
     protected $fillable = ['name','valor','tipo_de_dato_id','created_by','updated_by','deleted_by'];
 	
+    public static function getValorByName($name)
+    {
+        $config = self::where('name', $name)->first();
+        return $config ? $config->valor : null;
+    }
 }
