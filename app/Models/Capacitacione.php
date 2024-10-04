@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Capacitacione extends Model
 {
@@ -48,7 +49,18 @@ class Capacitacione extends Model
 
     // dates
     protected $dates = ['fecha_inicio','fecha_fin'];
-	    
+	
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->identificador_unico = (string) Str::uuid();
+            }
+        });
+    }
+
     public function empresa()
     {
         return $this->belongsTo(Empresa::class,'empresa_id','id');

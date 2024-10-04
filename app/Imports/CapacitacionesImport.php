@@ -15,6 +15,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class CapacitacionesImport implements ToModel, WithHeadingRow, WithValidation
 {
@@ -41,10 +42,14 @@ class CapacitacionesImport implements ToModel, WithHeadingRow, WithValidation
             $nombreExpositorExterno = $row['nombre_de_expositor_externo'];
         }
 
-        // Crear o actualizar la capacitación
-        return Capacitacione::updateOrCreate(
-            ['identificador_unico' => $row['identificador_unico']],
-            [
+        $uuid = $row['identificador_unico'] ?? $this->generateUniqueUuid();
+        
+        // Buscar el registro existente por UUID
+        $capacitacion = Capacitacione::where('uuid', $uuid)->first();
+
+        if ($capacitacion) {
+            // Actualizar el registro existente
+            $capacitacion->update([
                 'empresa' => $empresa,
                 'capacitaciones_tipo' => $tipoCapacitacion,
                 'tema_id' => $tema,
@@ -61,8 +66,53 @@ class CapacitacionesImport implements ToModel, WithHeadingRow, WithValidation
                 'status_id' => $estado->id,
                 'estado' => $estado->name,
                 'cantidad_de_sesiones' => $row['cantidad_de_sesiones'],
-            ]
-        );
+            ]);
+            return $capacitacion;
+        } else {
+            // Crear un nuevo registro
+            return new Capacitacione([
+                'identificador_unico' => $uuid,
+                'empresa' => $empresa,
+                'capacitaciones_tipo' => $tipoCapacitacion,
+                'tema_id' => $tema,
+                'sede_id' => $sede,
+                'fecha_inicio' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['fecha_de_inicio']),
+                'fecha_fin' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['fecha_de_fin']),
+                'modalidad_id' => $modalidad->id,
+                'modalidad' => $modalidad->name,
+                'expositor_id' => $expositorId,
+                'nombre_expositor_interno' => $row['modalidad'] == 'INTERNA'? $expositor->name : '',
+                'expositor_externo' => $row['modalidad'] == 'EXTERNA'? true : false,
+                'nombre_expositor_externo' => $nombreExpositorExterno,
+                'activo' => $row['habilitada'] == 'SI' ? 1 : 0,
+                'status_id' => $estado->id,
+                'estado' => $estado->name,
+                'cantidad_de_sesiones' => $row['cantidad_de_sesiones'],
+            ]);
+        }
+
+        // Crear o actualizar la capacitación
+        // return Capacitacione::updateOrCreate(
+        //     ['identificador_unico' => $row['identificador_unico']],
+        //     [
+        //         'empresa' => $empresa,
+        //         'capacitaciones_tipo' => $tipoCapacitacion,
+        //         'tema_id' => $tema,
+        //         'sede_id' => $sede,
+        //         'fecha_inicio' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['fecha_de_inicio']),
+        //         'fecha_fin' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['fecha_de_fin']),
+        //         'modalidad_id' => $modalidad->id,
+        //         'modalidad' => $modalidad->name,
+        //         'expositor_id' => $expositorId,
+        //         'nombre_expositor_interno' => $row['modalidad'] == 'INTERNA'? $expositor->name : '',
+        //         'expositor_externo' => $row['modalidad'] == 'EXTERNA'? true : false,
+        //         'nombre_expositor_externo' => $nombreExpositorExterno,
+        //         'activo' => $row['habilitada'] == 'SI' ? 1 : 0,
+        //         'status_id' => $estado->id,
+        //         'estado' => $estado->name,
+        //         'cantidad_de_sesiones' => $row['cantidad_de_sesiones'],
+        //     ]
+        // );
     }
 
     public function rules(): array
@@ -71,7 +121,7 @@ class CapacitacionesImport implements ToModel, WithHeadingRow, WithValidation
             // '*.identificador_unico' => 'required|max:10|unique:capacitaciones,identificador_unico',
             '*.identificador_unico' => [
                 'required',
-                'max:10',
+                // 'max:10',
                 Rule::unique('capacitaciones', 'identificador_unico')->ignore($this->getCurrentId())
             ],
             '*.empresa' => 'required|string',
@@ -94,5 +144,18 @@ class CapacitacionesImport implements ToModel, WithHeadingRow, WithValidation
         // Implementa la lógica para obtener el ID del registro actual si estás actualizando
         // Por ejemplo, podrías buscar el ID basado en el identificador_unico
         return Capacitacione::where('identificador_unico', request()->input('identificador_unico'))->value('id');
+    }
+
+    private function generateUniqueUuid()
+    {
+        do {
+            // Generar un nuevo UUID
+            $uuid = (string) Str::uuid();
+
+            // Verificar si el UUID ya existe en la base de datos
+            $exists = Capacitacione::where('uuid', $uuid)->exists();
+        } while ($exists);
+
+        return $uuid;
     }
 }
