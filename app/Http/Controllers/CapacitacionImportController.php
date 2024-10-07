@@ -28,8 +28,9 @@ class CapacitacionImportController extends Controller
             'file' => 'required|mimes:xls,xlsx'
         ]);
     
-        $path = $request->file('file')->getRealPath();
-        $data = Excel::toArray(new CapacitacionesImport, $path);
+        // $path = $request->file('file')->getRealPath();
+
+        $data = Excel::toArray(new CapacitacionesImport, $request->file('file'));
         $data = $this->trimArray($data);
 
         foreach ($data as &$sheet) {

@@ -50,7 +50,7 @@
                 name="file" 
                 required>
             </div>
-            <div class="alert alert-info " id="file-name">Ningún archivo seleccionado</div>
+            <div class="text-center alert alert-info" id="file-name">Ningún archivo seleccionado</div>
             <div class="row">
                 <div class="col-sm-6">
                     <button type="submit" class="btn btn-vanguard btn-lg btn-block col-xs-6" id="upload-button" disabled>
