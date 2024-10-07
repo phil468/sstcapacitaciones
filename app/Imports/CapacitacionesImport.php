@@ -42,6 +42,7 @@ class CapacitacionesImport implements ToModel, WithHeadingRow, WithValidation
             $nombreExpositorExterno = $row['nombre_de_expositor_externo'];
         }
 
+        // dd($row['identificador_unico']);
         $uuid = $row['identificador_unico'] ?? $this->generateUniqueUuid();
         
         // Buscar el registro existente por UUID
@@ -69,6 +70,7 @@ class CapacitacionesImport implements ToModel, WithHeadingRow, WithValidation
             ]);
             return $capacitacion;
         } else {
+            $uuid = $this->generateUniqueUuid();
             // Crear un nuevo registro
             return new Capacitacione([
                 'identificador_unico' => $uuid,

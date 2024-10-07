@@ -190,10 +190,14 @@ class PersonalImportController extends Controller
                                 'personal_id' => $personal->id
                             ],
                             [
-                                'empresa' => $empresa??null,
-                                'gerencia' => $gerencia??null,
-                                'sede' => $sede??null,
-                                'area' => $area??null,
+                                'empresa_id' => $empresa??null,
+                                'gerencia_id' => $gerencia??null,
+                                'sede_id' => $sede??null,
+                                'area_id' => $area??null,
+                                'cargo_id' => $personal->cargo_id??null,
+                                'planilla_id' => $personal->planilla_id??null,
+                                'tipo_de_trabajador_id' => $personal->tipo_de_trabajador_id??null,
+                                'tipo_de_personal_id' => $personal->tipo_de_personal_id??null,
                             ]
                         );
 

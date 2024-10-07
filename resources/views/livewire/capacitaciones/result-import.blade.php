@@ -56,13 +56,35 @@
                 <tbody>
                     @foreach($result as $res)
                         <tr>
-                            <td
-                            @if ($res['status'] == 'success')
-                                style="background-color: #d4edda;"                
-                            @endif
-                            @if ($res['status'] == 'error')
-                                style="background-color: #f8d7da;"                
-                            @endif>{{ $res['estado_importacion'] }} </td>
+                            <td>
+                                @if ($res['status'] == 'success')
+                                    <span class="badge badge-info">
+                                        <i class="fas fa-check"></i>
+                                        Importado
+                                    </span>
+                                
+                                    @if($res['estado_importacion'] == 'Editado' )
+                                        <span class="badge badge-warning">
+                                            <i class="fas fa-pen"></i>
+                                            Actualizado
+                                        </span>
+                                
+                                    @elseif($res['estado_importacion'] == 'Ingresado' )
+                                        <span class="badge badge-success">
+                                            <i class="fas fa-pen"></i>
+                                            Ingresado
+                                        </span>
+                                    @endif
+                            
+                                @endif
+                                @if ($res['status'] == 'error')
+                                    <span class="badge badge-danger">
+                                        <i class="fas fa-pen"></i>
+                                        Error
+                                    </span>
+                                    {{$res['message']}}
+                                @endif
+                            </td>
                             <td>{{ $res['message'] ?? '' }}</td>
                             <td>{{ $res['row']['identificador_unico'] }}</td>
                             <td>{{ ($row['es_aula_virtual'] ?? false) ? 'SI' : 'NO' }}</td>
@@ -85,14 +107,15 @@
                     @endforeach
                 </tbody>
             </table>
-
-            <a href="{{ route('capacitaciones') }}" class="btn btn-vanguard rounded-xl" title="Volver a Capacitaciones">
-                <i class="fas fa-sign-in-alt"></i> Ir a Capacitaciones
-            </a>
-            <a href="{{ route('capacitaciones.import.form') }}" class="btn btn-vanguard rounded-xl" title="Volver a Importar Capacitaciones">
-                <i class="fa fa-file-import"></i> Ir a Importación
-            </a>
         </div>
+
+        <a href="{{ route('capacitaciones') }}" class="btn btn-vanguard rounded-xl" title="Volver a Capacitaciones">
+            <i class="fas fa-sign-in-alt"></i> Ir a Capacitaciones
+        </a>
+        <a href="{{ route('capacitaciones.import.form') }}" class="btn btn-vanguard rounded-xl" title="Volver a Importar Capacitaciones">
+            <i class="fa fa-file-import"></i> Ir a Importación
+        </a>
+        
     </div>
 </div>
 

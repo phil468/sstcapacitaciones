@@ -52,12 +52,12 @@
             </div>
             <div class="text-center alert alert-info" id="file-name">Ningún archivo seleccionado</div>
             <div class="row">
-                <div class="col-sm-6">
+                <div class="pb-2 col-sm-6">
                     <button type="submit" class="btn btn-vanguard btn-lg btn-block col-xs-6" id="upload-button" disabled>
                         <i class="fa fa-check"></i> Cargar
                     </button>
                 </div>
-                <div class="col-sm-6">
+                <div class="pb-2 col-sm-6">
                     <button type="button" class="btn btn-default btn-lg btn-block col-xs-6" 
                     onclick="window.location='{{ route('capacitaciones') }}'">
                         <i class="fa fa-times"></i>

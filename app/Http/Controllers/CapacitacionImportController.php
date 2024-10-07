@@ -92,7 +92,12 @@ class CapacitacionImportController extends Controller
                 } elseif ($row['modalidad'] == 'EXTERNA') {
                     $nombreExpositorExterno = $row['nombre_de_expositor_externo'];
                 }
-    
+                // // dd($row['identificador_unico']);
+                // if (isset($row['identificador_unico'])) {
+                //     $identificador = $row['identificador_unico'];
+                // } else {
+                //     $identificador = $this->generateUniqueUuid();
+                // }
                 if(Capacitacione::where('identificador_unico', $row['identificador_unico'])->where(
                     'es_aula_virtual', $row['es_aula_virtual'] ?? false
                 ) ->exists()) {
@@ -101,7 +106,6 @@ class CapacitacionImportController extends Controller
                 else {
                     $edicion_creacion = 'Ingresado';
                 }
-
 
                 // Crear o actualizar la capacitación
                 Capacitacione::updateOrCreate(
