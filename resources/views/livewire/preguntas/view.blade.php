@@ -54,17 +54,17 @@
 								<th>Seccion</th>
 								<th>Evaluacion</th> --}}
 								{{-- <th>Qid</th> --}}
-								<th>Capacitación</th>
+																
+								@can('editar-pregunta','borrar-pregunta')
+								<th>ACCIONES</th>								
+								@endcan
+								{{-- <th>Capacitación</th> --}}
 								<th>Pregunta</th>
 								<th>Tipo</th>
 								<th>Opciones Requeridas</th>
 								<th>Opciones</th>
 								<th>Solución</th>
 								{{-- <th>Numero Orden</th> --}}
-																
-								@can('editar-pregunta','borrar-pregunta')
-								<th>ACCIONES</th>								
-								@endcan
 							</tr>
 						</thead>
 						<tbody>
@@ -76,24 +76,6 @@
 								<td>{{ $row->seccion->name }}</td>
 								<td>{{ $row->evaluacion->title }}</td>
 								<td>{{ $row->qid }}</td> --}}
-								<td>{{ $row->capacitacion->tema->name ?? '' }}</td>
-								<td>{{ $row->pregunta }}</td>
-								<td>{{ $row->tipo_de_pregunta->name }}</td>
-								<td>{{ $row->opciones_requeridas }}</td>
-								<td>
-									@if (count($row->opciones) > 0)
-										@foreach($row->opciones as $opcion)
-											{{ $opcion->opcion }}
-											@unless($loop->last)
-												<br>
-											@endunless
-										@endforeach
-									@endif
-								</td>
-								<td>
-									{{ $row->solucion->opcion->opcion ?? ''}}
-								</td>
-								{{-- <td>{{ $row->numero_orden }}</td> --}}
 																
 								@can('editar-pregunta','borrar-pregunta')
 								<td width="90">
@@ -111,6 +93,26 @@
 								</div>
 								</td>
 								@endcan
+								{{-- <td>{{ $row->capacitacion->tema->name ?? '' }}</td> --}}
+								<td>{{ $row->pregunta }}</td>
+								<td>{{ $row->tipo_de_pregunta->name }}</td>
+								<td>{{ $row->opciones_requeridas }}</td>
+								<td>
+									@if (count($row->opciones) > 0)
+										<ul class="opciones-list">
+											@foreach($row->opciones as $opcion)
+												<li class="opcion-item">{{ $opcion->opcion }}</li>
+												{{-- @unless($loop->last)
+													<br>
+												@endunless --}}
+											@endforeach
+										</ul>
+									@endif
+								</td>
+								<td>
+									{{ $row->solucion->opcion->opcion ?? ''}}
+								</td>
+								{{-- <td>{{ $row->numero_orden }}</td> --}}
 							@endforeach
 						</tbody>
 					</table>						
@@ -120,4 +122,16 @@
 			</div>
 		</div>
 	</div>
+@section('css')
+<style>
+    .opciones-list {
+        list-style-type: disc; /* Viñetas */
+        padding-left: 20px; /* Espaciado a la izquierda */
+    }
+
+    .opciones-list li {
+        margin-bottom: 10px; /* Espaciado entre elementos */
+    }
+</style>
+@endsection
 </div>

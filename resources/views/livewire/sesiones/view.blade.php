@@ -54,25 +54,42 @@
 						<thead class="thead">
 							<tr> 
 								{{-- <th>#</th>  --}}
-								<th>Capacitacion</th>
+								{{-- <th>Capacitacion</th> --}}
+								@can('editar-sesion','borrar-sesion')
+									<th>ACCIONES</th>								
+								@endcan
 								<th>Número De Sesión</th>
 								<th>Sesión</th>
 								<th>Vídeo</th>
 								{{-- <th>Fecha</th> --}}
 								{{-- <th>Hora Inicio</th> --}}
 								{{-- <th>Hora Fin</th> --}}
-																
-								@can('editar-sesion','borrar-sesion')
-								<th>ACCIONES</th>								
-								@endcan
 							</tr>
 						</thead>
 						<tbody>
 							@foreach($sesiones as $row)
 							<tr>
 								{{-- <td>{{ $loop->iteration }}</td>  --}}
-								<td>{{ $row->capacitacion->tema->name }}</td>
-								<td>{{ $row->numero_de_sesion }}</td>
+								{{-- <td>{{ $row->capacitacion->tema->name }}</td> --}}
+																
+								@can('editar-sesion','borrar-sesion')
+									<td width="90">
+										<div class="btn-group">
+											@can('editar-sesion')
+											<a data-toggle="modal" data-target="#updateSesionModal" class="btn btn-outline-vanguard rounded-xl" wire:click="edit({{$row->id}})">
+												<i class="fa fa-edit"></i>
+											</a>
+											@endcan
+											@can('borrar-sesion')							 
+											<a class="btn btn-outline-danger rounded-xl" onclick="confirm('Confirma borrar Sesione : {{$row->name}}? \nSesiones borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> 
+												<i class="fa fa-trash"></i>
+											</a> 
+											@endcan  
+										</div>
+									</td>
+								@endcan
+
+								<td class="text-center"  >{{ $row->numero_de_sesion }}</td>
 								<td>{{ $row->name }}</td>
 
 								<td>
@@ -97,23 +114,6 @@
 								{{-- <td>{{ $row->fecha }}</td> --}}
 								{{-- <td>{{ $row->hora_inicio }}</td> --}}
 								{{-- <td>{{ $row->hora_fin }}</td> --}}
-																
-								@can('editar-sesion','borrar-sesion')
-									<td width="90">
-										<div class="btn-group">
-											@can('editar-sesion')
-											<a data-toggle="modal" data-target="#updateSesionModal" class="btn btn-outline-vanguard rounded-xl" wire:click="edit({{$row->id}})">
-												<i class="fa fa-edit"></i>
-											</a>
-											@endcan
-											@can('borrar-sesion')							 
-											<a class="btn btn-outline-danger rounded-xl" onclick="confirm('Confirma borrar Sesione : {{$row->name}}? \nSesiones borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> 
-												<i class="fa fa-trash"></i>
-											</a> 
-											@endcan  
-										</div>
-									</td>
-								@endcan
 							@endforeach
 						</tbody>
 					</table>						

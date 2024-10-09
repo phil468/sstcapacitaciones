@@ -12,7 +12,7 @@ use App\Models\Cargo;
 use App\Models\ConfiguracionGeneral;
 use App\Models\Empresa;
 use App\Models\Modalidade;
-use App\Models\NotificacionEnviada;
+use App\Models\NotificacionesEnviada;
 use App\Models\Personal;
 use App\Models\Sede;
 use App\Models\SesionAccessLog;
@@ -712,7 +712,7 @@ class Capacitaciones extends Component
 						if ($persona->personal->user) {
 							Notification::send($persona->personal->user, new CapacitacionNotification($capacitacion));
 						
-							NotificacionEnviada::create([
+							NotificacionesEnviada::create([
 								'capacitacion_id' => $capacitacion->id,
 								'personal_id' => $persona->personal_id,
 							]);

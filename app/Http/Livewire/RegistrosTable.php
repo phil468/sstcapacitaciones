@@ -2,7 +2,10 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Alerta;
+use App\Models\AlertaEnviada;
 use App\Models\CapacitacionHasPersonal;
+use App\Models\NotificacionesEnviada;
 use App\Models\Personal;
 use App\Models\Prueba;
 use App\Models\Respuesta;
@@ -126,7 +129,7 @@ class RegistrosTable extends LivewireDatatable
             // eliminar pruebas
             $pruebas = Prueba::where('personal_id', $record->personal_id)
             ->where('capacitacion_id', $record->capacitacion_id)
-            ->get();
+            ->delete();
 
             foreach ($pruebas as $prueba) {
                 // Eliminar respuestas asociadas a la prueba
@@ -138,6 +141,13 @@ class RegistrosTable extends LivewireDatatable
                 ->where('capacitacion_id', $record->capacitacion_id)
                 ->delete();
 
+            AlertaEnviada::where('capacitacion_has_personal_id', $id)
+                ->delete();
+
+            NotificacionesEnviada::where('capacitacion_id', $record->capacitacion_id)
+                ->where('personal_id', $record->personal_id)
+                ->delete();
+            
             $record->delete();
             
             $this->emit('alert', ['type' => 'success', 'message' => 'Registro eliminado con éxito.']);
