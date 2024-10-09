@@ -207,6 +207,13 @@ class CapacitacionesTable extends LivewireDatatable
                 ->hideable()
                 ->label('Expositor externo'),
 
+            Column::name('areas.name')
+                ->filterable($this->areas)
+                ->searchable()
+                ->sortBy('areas.name')
+                ->hideable()
+                ->label('Área'),
+
             // Column::name('registradores.name')
             //     ->filterable($this->registradores)
             //     ->searchable()

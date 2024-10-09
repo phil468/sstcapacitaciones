@@ -153,11 +153,13 @@
                                 </td> --}}
                                 <td><input class="form-control" type="number" name="data[{{ $loop->index }}][cantidad_de_sesiones]" value="{{ $row['cantidad_de_sesiones'] }}"></td>
                                 <td>
-                                    <select class="form-control select2" name="data[{{ $loop->index }}][areas][]" multiple>
-                                        @foreach($row['all_areas'] as $area)
-                                            <option value="{{ $area }}" {{ in_array($area, $row['areas']) ? 'selected' : '' }}>{{ $area }}</option>
-                                        @endforeach
-                                    </select>
+                                    <div>
+                                        <select class="form-control chosen-select" name="data[{{ $loop->index }}][areas][]" multiple="multiple">
+                                            @foreach($row['all_areas'] as $area)
+                                                <option value="{{ $area }}" {{ in_array($area, $row['areas']) ? 'selected' : '' }}>{{ $area }}</option>
+                                            @endforeach
+                                        </select>                                        
+                                    </div>                                    
                                 </td>
                             </tr>
                         @endforeach
@@ -173,20 +175,29 @@
 @stop
 
 @section('css')
-    <!-- Incluir Select2 CSS desde CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Incluir Chosen CSS desde CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" rel="stylesheet" />
+    {{-- <style>
+        /* Ajustar el CSS para permitir múltiples líneas en las opciones seleccionadas */
+        .chosen-container-multi .chosen-choices li.search-choice {
+            white-space: normal !important;
+            word-wrap: break-word !important;
+        }
+    </style> --}}
 @stop
 
 @section('js')
-    <!-- Incluir Select2 JS desde CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Incluir Chosen JS desde CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
 
     <script>
         $(document).ready(function() {
-            $('.select2').select2({
-                placeholder: "Selecciona áreas",
-                allowClear: true,
-                tags: true // Habilitar la opción de agregar nuevas áreas
+            $('.chosen-select').chosen({
+                no_results_text: "No se encontraron resultados",
+                width: "100%",
+                allow_single_deselect: true,
+                placeholder_text_multiple: "Selecciona áreas",
+                placeholder_text_single: "Selecciona un área"
             });
         });
     </script>
