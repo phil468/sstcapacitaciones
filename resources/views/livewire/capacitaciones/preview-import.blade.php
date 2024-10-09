@@ -28,7 +28,7 @@
         <form action="{{ route('capacitaciones.confirm-import') }}" method="POST">
             @csrf
             <div class="table-responsive">
-                <table class="table table-borderless  table-sm">
+                <table class="table table-borderless table-sm">
                     <thead>
                         <tr>
                             <th style="min-width:100px">Acción</th>
@@ -47,6 +47,7 @@
                             <th>Habilitada</th>
                             <th style="min-width:120px">Estado</th>
                             <th>Cantidad de Sesiones</th>
+                            <th style="min-width:200px">Áreas</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -112,27 +113,52 @@
                                 <td><input class="form-control" type="datetime-local" name="data[{{ $loop->index }}][fecha_de_inicio]" value="{{ $row['fecha_de_inicio'] }}"></td>
                                 <td><input class="form-control" type="datetime-local" name="data[{{ $loop->index }}][fecha_de_fin]" value="{{ $row['fecha_de_fin'] }}"></td>
                                 <td>
+                                    <select class="form-control" name="data[{{ $loop->index }}][modalidad]">
+                                        <option value="INTERNA" {{ $row['modalidad'] == 'INTERNA' ? 'selected' : '' }}>INTERNA</option>
+                                        <option value="EXTERNA" {{ $row['modalidad'] == 'EXTERNA' ? 'selected' : '' }}>EXTERNA</option>
+                                    </select>
+                                </td>
+                                {{-- <td>
                                                                         
                                     <select class="form-control" name="data[{{ $loop->index }}][modalidad]">
                                         @foreach(App\Models\Modalidade::all() as $modalidad)
                                             <option value="{{ $modalidad->name }}" {{ $modalidad->name ==  strtoupper($row['modalidad']) ? 'selected' : '' }}>{{ $modalidad->name }}</option>
                                         @endforeach
                                     </select>
-                                </td>
+                                </td> --}}
                                     {{-- <input class="form-control" type="text" name="data[{{ $loop->index }}][modalidad]" value="{{ $row['modalidad'] }}"></td> --}}
                                 <td><input class="form-control" type="text" name="data[{{ $loop->index }}][dni_de_expositor_interno]" value="{{strtoupper($row['modalidad']) == 'INTERNA' ? $row['dni_de_expositor_interno'] : '' }}"></td>
                                 <td><input class="form-control" type="text" value="{{ strtoupper($row['modalidad']) == 'INTERNA' ? (App\Models\Personal::where('dni', $row['dni_de_expositor_interno'])->first()->name ?? '' ) : '' }}" readonly></td>
                                 <td><input class="form-control" type="text" name="data[{{ $loop->index }}][nombre_de_expositor_externo]" value="{{ strtoupper($row['modalidad']) == 'EXTERNA' ? $row['nombre_de_expositor_externo'] : '' }}"></td>
-                                <td><input class="form-control" type="text" name="data[{{ $loop->index }}][habilitada]" value="{{ $row['habilitada'] }}"></td>
+                                {{-- <td><input class="form-control" type="text" name="data[{{ $loop->index }}][habilitada]" value="{{ $row['habilitada'] }}"></td> --}}
                                 <td>
+                                    <select class="form-control" name="data[{{ $loop->index }}][habilitada]">
+                                        <option value="SI" {{ $row['habilitada'] == 'SI' ? 'selected' : '' }}>SI</option>
+                                        <option value="NO" {{ $row['habilitada'] == 'NO' ? 'selected' : '' }}>NO</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control" name="data[{{ $loop->index }}][estado]">
+                                        <option value="PENDIENTE" {{ $row['estado'] == 'PENDIENTE' ? 'selected' : '' }}>PENDIENTE</option>
+                                        <option value="CANCELADA" {{ $row['estado'] == 'CANCELADA' ? 'selected' : '' }}>CANCELADA</option>
+                                        <option value="REALIZADA" {{ $row['estado'] == 'REALIZADA' ? 'selected' : '' }}>REALIZADA</option>
+                                    </select>
+                                </td>
+                                {{-- <td>
                                     <select class="form-control" name="data[{{ $loop->index }}][estado]">
                                         @foreach(App\Models\Status::all() as $estado)
                                             <option value="{{ $estado->name }}" {{ $estado->name ==  strtoupper($row['estado']) ? 'selected' : '' }}>{{ $estado->name }}</option>
                                         @endforeach
                                     </select>
+                                </td> --}}
+                                <td><input class="form-control" type="number" name="data[{{ $loop->index }}][cantidad_de_sesiones]" value="{{ $row['cantidad_de_sesiones'] }}"></td>
+                                <td>
+                                    <select class="form-control select2" name="data[{{ $loop->index }}][areas][]" multiple>
+                                        @foreach($row['all_areas'] as $area)
+                                            <option value="{{ $area }}" {{ in_array($area, $row['areas']) ? 'selected' : '' }}>{{ $area }}</option>
+                                        @endforeach
+                                    </select>
                                 </td>
-                                <td><input class="form-control" type="text" name="data[{{ $loop->index }}][cantidad_de_sesiones]" value="{{ $row['cantidad_de_sesiones'] }}"></td>
-
                             </tr>
                         @endforeach
                     </tbody>
@@ -147,10 +173,21 @@
 @stop
 
 @section('css')
-    {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
+    <!-- Incluir Select2 CSS desde CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @stop
 
 @section('js')
-    <script type="text/javascript">
+    <!-- Incluir Select2 JS desde CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({
+                placeholder: "Selecciona áreas",
+                allowClear: true,
+                tags: true // Habilitar la opción de agregar nuevas áreas
+            });
+        });
     </script>
 @stop

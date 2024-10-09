@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Models\Area;
 use App\Models\Capacitacione;
 use App\Models\Empresa;
 use App\Models\TipoDeCapacitacione;
@@ -42,56 +43,47 @@ class CapacitacionesImport implements ToModel, WithHeadingRow, WithValidation
             $nombreExpositorExterno = $row['nombre_de_expositor_externo'];
         }
 
-        // dd($row['identificador_unico']);
         $uuid = $row['identificador_unico'] ?? $this->generateUniqueUuid();
-        
-        // Buscar el registro existente por UUID
         $capacitacion = Capacitacione::where('uuid', $uuid)->first();
-
+    
+        $capacitacionData = [
+            'identificador_unico' => $uuid,
+            'empresa' => $empresa,
+            'capacitaciones_tipo' => $tipoCapacitacion,
+            'tema_id' => $tema,
+            'sede_id' => $sede,
+            'fecha_inicio' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['fecha_de_inicio']),
+            'fecha_fin' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['fecha_de_fin']),
+            'modalidad_id' => $modalidad->id,
+            'modalidad' => $modalidad->name,
+            'expositor_id' => $expositorId,
+            'nombre_expositor_interno' => $row['modalidad'] == 'INTERNA' ? $expositor->name : '',
+            'expositor_externo' => $row['modalidad'] == 'EXTERNA' ? true : false,
+            'nombre_expositor_externo' => $nombreExpositorExterno,
+            'activo' => $row['habilitada'] == 'SI' ? 1 : 0,
+            'status_id' => $estado->id,
+            'estado' => $estado->name,
+            'cantidad_de_sesiones' => $row['cantidad_de_sesiones'],
+        ];
+    
         if ($capacitacion) {
-            // Actualizar el registro existente
-            $capacitacion->update([
-                'empresa' => $empresa,
-                'capacitaciones_tipo' => $tipoCapacitacion,
-                'tema_id' => $tema,
-                'sede_id' => $sede,
-                'fecha_inicio' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['fecha_de_inicio']),
-                'fecha_fin' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['fecha_de_fin']),
-                'modalidad_id' => $modalidad->id,
-                'modalidad' => $modalidad->name,
-                'expositor_id' => $expositorId,
-                'nombre_expositor_interno' => $row['modalidad'] == 'INTERNA'? $expositor->name : '',
-                'expositor_externo' => $row['modalidad'] == 'EXTERNA'? true : false,
-                'nombre_expositor_externo' => $nombreExpositorExterno,
-                'activo' => $row['habilitada'] == 'SI' ? 1 : 0,
-                'status_id' => $estado->id,
-                'estado' => $estado->name,
-                'cantidad_de_sesiones' => $row['cantidad_de_sesiones'],
-            ]);
-            return $capacitacion;
+            $capacitacion->update($capacitacionData);
         } else {
-            $uuid = $this->generateUniqueUuid();
-            // Crear un nuevo registro
-            return new Capacitacione([
-                'identificador_unico' => $uuid,
-                'empresa' => $empresa,
-                'capacitaciones_tipo' => $tipoCapacitacion,
-                'tema_id' => $tema,
-                'sede_id' => $sede,
-                'fecha_inicio' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['fecha_de_inicio']),
-                'fecha_fin' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['fecha_de_fin']),
-                'modalidad_id' => $modalidad->id,
-                'modalidad' => $modalidad->name,
-                'expositor_id' => $expositorId,
-                'nombre_expositor_interno' => $row['modalidad'] == 'INTERNA'? $expositor->name : '',
-                'expositor_externo' => $row['modalidad'] == 'EXTERNA'? true : false,
-                'nombre_expositor_externo' => $nombreExpositorExterno,
-                'activo' => $row['habilitada'] == 'SI' ? 1 : 0,
-                'status_id' => $estado->id,
-                'estado' => $estado->name,
-                'cantidad_de_sesiones' => $row['cantidad_de_sesiones'],
-            ]);
+            $capacitacion = Capacitacione::create($capacitacionData);
         }
+
+        // Procesar las áreas
+        if (isset($row['areas'])) {
+            $areas = explode(',', $row['areas']);
+            $areaIds = [];
+            foreach ($areas as $areaName) {
+                $area = Area::firstOrCreate(['name' => trim($areaName)]);
+                $areaIds[] = $area->id;
+            }
+            $capacitacion->areas()->sync($areaIds);
+        }
+
+        return $capacitacion;
 
         // Crear o actualizar la capacitación
         // return Capacitacione::updateOrCreate(

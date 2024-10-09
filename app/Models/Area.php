@@ -54,6 +54,11 @@ class Area extends Model
     {
         $this->attributes['name'] = mb_strtoupper(trim($value));
     }
+
+    public function getNameAttribute($value)
+    {
+        return mb_strtoupper($value);
+    }
     
     public function scopeActivo($query)
     {

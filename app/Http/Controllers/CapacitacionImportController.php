@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\CapacitacionesImport;
+use App\Models\Area;
 use App\Models\Capacitacione;
 use App\Models\Empresa;
 use App\Models\Modalidade;
@@ -41,9 +42,34 @@ class CapacitacionImportController extends Controller
                 }
                 if (isset($row['fecha_de_fin'])) {
                     $row['fecha_de_fin'] = $this->convertExcelDateToDatetimeLocal($row['fecha_de_fin']);
+                }                                       
+
+                if (isset($row['areas'])) {
+                    if (is_string($row['areas'])) {
+                        $row['areas'] = explode(',', $row['areas']);
+                    }
+    
+                    // Asegurarse de que $row['areas'] no esté vacío
+                    if (empty($row['areas'])) {
+                        $row['areas'] = [];
+                    }
+                } else {
+                    // Si 'areas' no está definido, inicializarlo como un array vacío
+                    $row['areas'] = [];
                 }
+    
+                // Obtener todas las áreas existentes
+                $existingAreas = Area::pluck('name')->toArray();
+    
+                // Encontrar las nuevas áreas que no están en la base de datos
+                $newAreas = array_diff($row['areas'], $existingAreas);
+    
+                // Combinar las áreas existentes con las nuevas áreas
+                $row['all_areas'] = array_merge($existingAreas, $newAreas);
             }
         }
+
+        // dd($data[0]);
     
         // Pasar los datos a la vista para la vista previa
         return view('livewire.capacitaciones.preview-import', ['data' => $data[0]]);
@@ -108,7 +134,7 @@ class CapacitacionImportController extends Controller
                 }
 
                 // Crear o actualizar la capacitación
-                Capacitacione::updateOrCreate(
+                $capacitacion = Capacitacione::updateOrCreate(
                     [
                         'identificador_unico' => $row['identificador_unico'],
                         'es_aula_virtual' => $row['es_aula_virtual'] ?? false,
@@ -129,6 +155,21 @@ class CapacitacionImportController extends Controller
                         'cantidad_de_sesiones' => $row['cantidad_de_sesiones'],
                     ]
                 );
+
+                // Procesar las áreas
+                if (isset($row['areas'])) {
+                    if (is_string($row['areas'])) {
+                        $areas = explode(',', $row['areas']);
+                    } else {
+                        $areas = $row['areas']; // Asume que ya es un array
+                    }
+                    $areaIds = [];
+                    foreach ($areas as $areaName) {
+                        $area = Area::firstOrCreate(['name' => trim($areaName)]);
+                        $areaIds[] = $area->id;
+                    }
+                    $capacitacion->areas()->sync($areaIds);
+                }
     
                 $result[] = ['row' => $row, 'estado_importacion' =>$edicion_creacion, 'status' => 'success', 'message' => 'Capacitación importada correctamente'];
             } catch (\Exception $e) {

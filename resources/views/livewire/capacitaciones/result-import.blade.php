@@ -51,6 +51,7 @@
                         <th>Habilitada</th>
                         <th>Estado</th>
                         <th>Cantidad de Sesiones</th>
+                        <th>Áreas</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -103,6 +104,13 @@
                             <td>{{ $res['row']['habilitada'] }}</td>
                             <td>{{ $res['row']['estado'] }}</td>
                             <td>{{ $res['row']['cantidad_de_sesiones'] }}</td>
+                            <td>
+                                @if(isset($res['row']['areas']) && is_array($res['row']['areas']))
+                                    {{ implode(', ', $res['row']['areas']) }}
+                                @else
+                                    
+                                @endif
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
