@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Asignacione;
 use App\Models\Capacitacione;
 use App\Models\CapacitacionHasPersonal;
+use App\Models\ConfiguracionGeneral;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\EvaluadorHasEvaluado;
@@ -41,6 +42,7 @@ class MisCapacitaciones extends Component
     public $respuestas = [];
     public $puntaje;
     public $nota_minima_aprobatoria;
+    public $nuevas_preguntas_aleatorias_por_examen;
 
     protected $queryString = [
         'asignacion_id' => ['as' => 'a', 'except'=>0],
@@ -60,6 +62,8 @@ class MisCapacitaciones extends Component
             });
         })
         ->get();
+
+        $this->nuevas_preguntas_aleatorias_por_examen = ConfiguracionGeneral::getValorByName('nuevas_preguntas_aleatorias_por_examen')??'SI';
 
         $this->asignacion($this->asignacion_id??0);
         $this->sesion($this->sesion_id??0);
@@ -275,13 +279,16 @@ class MisCapacitaciones extends Component
                         $prueba_anterior = 
                             Prueba::where('capacitacion_id', $this->capacitacion_id)
                             ->where('personal_id', auth()->user()->personal_id)
-                            ->where('intento',1)
+                            // ->where('intento',1)
                             ->where('status_id', 2) // Asumiendo que 2 es el estado final
+                            ->orderBy('intento', 'desc')
                             ->first();
 
-                        if($prueba_anterior){
+                        if($prueba_anterior && strtolower(trim($this->nuevas_preguntas_aleatorias_por_examen)) == 'no') {
+                            // dd('no',$prueba_anterior, strtolower(trim($this->nuevas_preguntas_aleatorias_por_examen)),strtolower(trim($this->nuevas_preguntas_aleatorias_por_examen)) == 'no');
                             $preguntas = $prueba_anterior->preguntas;
                         } else {
+                            // dd('si',$prueba_anterior, $this->nuevas_preguntas_aleatorias_por_examen);
                             $preguntas = 
                                 Pregunta::where('capacitacion_id', $this->capacitacion_id)
                                 ->inRandomOrder()
@@ -292,7 +299,6 @@ class MisCapacitaciones extends Component
                             // $this->asignacion->capacitacion->preguntas()->inRandomOrder()->limit($capacitacion->cantidad_de_preguntas_a_mostrar??5)->get();
 
                         }
-
 
                         // Crear respuestas con las preguntas aleatorias
                         foreach ($preguntas as $pregunta) {
