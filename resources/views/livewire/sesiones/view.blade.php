@@ -96,10 +96,10 @@
 									@if($row->video)
 										<a wire:click='download({{$row->id}})' 
 											{{-- href="{{ asset('storage/' . $row->video) }}" download  --}}
-											class="btn btn-link">
+											class="btn btn-outline-vanguard">
 											<i class="fa fa-download"></i> Descargar
 										</a>
-										<a class="btn btn-link" data-toggle="modal" data-target="#videoModal" wire:click="showVideo({{$row->id}})">
+										<a class="btn btn-outline-vanguard" data-toggle="modal" data-target="#videoModal" wire:click="showVideo({{$row->id}})">
 											<i class="fa fa-eye"></i> Ver
 										</a>
 									@endif
