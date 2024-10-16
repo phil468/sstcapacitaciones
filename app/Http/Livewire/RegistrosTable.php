@@ -128,8 +128,7 @@ class RegistrosTable extends LivewireDatatable
 
             // eliminar pruebas
             $pruebas = Prueba::where('personal_id', $record->personal_id)
-            ->where('capacitacion_id', $record->capacitacion_id)
-            ->delete();
+            ->where('capacitacion_id', $record->capacitacion_id);
 
             foreach ($pruebas as $prueba) {
                 // Eliminar respuestas asociadas a la prueba
