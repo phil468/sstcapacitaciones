@@ -4,6 +4,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Controllers\Api\EmpresaController;
+use App\Http\Controllers\Api\sst\inspecciones\InspeccionLuzEmergenciaController;
+use App\Http\Controllers\Api\sst\inspecciones\ParteLuzEmergenciaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +45,10 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('asistencias/updates', [App\Http\Controllers\Api\ws\AsistenciasController::class, 'getUpdatesFromServer'])->name('asistencias.getUpdatesFromServer');
     // Route::post('refresh-token', [App\Http\Controllers\Api\ws\CapacitacionesController::class, 'refreshToken']);
 
+    Route::apiResource('empresas', EmpresaController::class);    
+    Route::apiResource('inspeccion-luces-emergencia', InspeccionLuzEmergenciaController::class);
+    // Route::apiResource('inspeccion-luces-emergencia', InspeccionLuzEmergenciaController::class);
+    Route::apiResource('parte-luces-emergencia', ParteLuzEmergenciaController::class);
     /*AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT*/
     // return $request->user();
 });
@@ -57,7 +64,7 @@ Route::post('/refresh-token', function (Request $request) {
 });
 
 
-Route::get('login', [App\Http\Controllers\Api\ws\CapacitacionesController::class, 'login'])->name('login');
+Route::post('login', [App\Http\Controllers\Api\AuthController::class, 'login'])->name('login');
 //FALTA MODIFICAR
 
 // Route::post('/login', CapacitacionesController::class->login());

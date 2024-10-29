@@ -62,17 +62,25 @@ class CapacitacionesController extends Controller
         $response = [];
         try {
 
-            $datamodel = [];
-            
+                    // Verificar los roles del usuario
+            $user = User::find($user_id);
+            $hasPermission = $user->permissions()->where('name', 'ver-capacitacion')->exists();
+            $isActive = $user->estado; // Asumiendo que hay una columna 'active' en la tabla de usuarios
+    
+            if ($hasPermission && $isActive) {
                 $datamodel = DB::select("call sp_get_capacitaciones ('$tipo_user')");
-
-            $data = [];
-            foreach ($datamodel as $item) {
-                $data[] = $item;
+    
+                $data = [];
+                foreach ($datamodel as $item) {
+                    $data[] = $item;
+                }
+    
+                $response = $data;
+            } else {
+                $response["success"] = "false";
+                $response["message"] = "No autorizado";
+                $response["error"] = array("code" => "1", "message" => "El usuario no tiene permisos para acceder a esta información o no está activo", "errors" => []);
             }
-
-            $response = $data;
-            // $response["privilegies"] = $this->showprivilegies($id);
         } catch (Exception $ex) {
             $response["success"] = "false";
             $response["message"] = "";

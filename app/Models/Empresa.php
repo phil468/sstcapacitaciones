@@ -15,8 +15,16 @@ class Empresa extends Model
 
     protected $table = 'empresas';
 
-    protected $fillable = ['name','estado','idempresa_nisira'];
-	
+    protected $fillable = [
+        'name',
+        'razon_social',
+        'ruc',
+        'domicilio',
+        'actividad_economica',
+        'estado',
+        'idempresa_nisira'
+    ];
+    	
     public function setNameAttribute($value)
     {
         $this->attributes['name'] = mb_strtoupper(trim($value));

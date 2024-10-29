@@ -113,4 +113,8 @@ class User extends Authenticatable implements JWTSubject
         return 'users/'.auth()->user()->id.'';
     }
     
+    // public function permissions()
+    // {
+    //     return $this->roles()->with('permissions')->get()->pluck('permissions')->flatten()->pluck('name')->unique();
+    // }
 }
