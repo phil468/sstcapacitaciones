@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AlertaLevantamientoController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -7,6 +8,9 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Api\EmpresaController;
 use App\Http\Controllers\Api\sst\inspecciones\InspeccionLuzEmergenciaController;
 use App\Http\Controllers\Api\sst\inspecciones\ParteLuzEmergenciaController;
+use App\Http\Controllers\Api\InspeccionController;
+use App\Http\Controllers\Api\ResultadoInspeccionController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -45,7 +49,10 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('asistencias/updates', [App\Http\Controllers\Api\ws\AsistenciasController::class, 'getUpdatesFromServer'])->name('asistencias.getUpdatesFromServer');
     // Route::post('refresh-token', [App\Http\Controllers\Api\ws\CapacitacionesController::class, 'refreshToken']);
 
-    Route::apiResource('empresas', EmpresaController::class);    
+    Route::apiResource('empresas', EmpresaController::class);
+    Route::apiResource('inspecciones', InspeccionController::class);
+    Route::apiResource('resultados_inspeccion', ResultadoInspeccionController::class);
+    Route::apiResource('alertas_levantamiento', AlertaLevantamientoController::class);
     Route::apiResource('inspeccion-luces-emergencia', InspeccionLuzEmergenciaController::class);
     // Route::apiResource('inspeccion-luces-emergencia', InspeccionLuzEmergenciaController::class);
     Route::apiResource('parte-luces-emergencia', ParteLuzEmergenciaController::class);

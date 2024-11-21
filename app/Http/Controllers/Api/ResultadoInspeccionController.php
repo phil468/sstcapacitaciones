@@ -1,21 +1,23 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
+
 use App\Http\Controllers\Controller;
-use App\Models\Empresa;
+use App\Models\ResultadosInspeccion;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
-class EmpresaController extends Controller
+class ResultadoInspeccionController extends Controller
 {
     public function index()
     {
-        return Empresa::all();
+        return ResultadosInspeccion::all();
     }
 
     public function store(Request $request)
     {
-        $empresa = Empresa::create($request->all());        
+        $empresa = ResultadosInspeccion::create($request->all());        
         if($request->has('created_at')){
             $empresa->created_at = $request->created_at;
         }
@@ -31,12 +33,12 @@ class EmpresaController extends Controller
 
     public function show($id)
     {
-        return Empresa::findOrFail($id);
+        return ResultadosInspeccion::findOrFail($id);
     }
 
     public function update(Request $request, $id)
     {
-        $empresa = Empresa::find($id);
+        $empresa = ResultadosInspeccion::find($id);
 
         if (!$empresa) {
             return response()->json(['error' => 'Empresa not found'], 404);
@@ -78,7 +80,7 @@ class EmpresaController extends Controller
 
     public function destroy($id)
     {
-        Empresa::destroy($id);
+        ResultadosInspeccion::destroy($id);
         return response()->json(null, 204);
     }
 }
