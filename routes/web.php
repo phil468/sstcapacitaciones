@@ -13,6 +13,9 @@ use App\Models\User;
 use Laravel\Socialite\Facades\Socialite;
 use Livewire\Livewire;
 use GuzzleHttp\Client;
+use App\Http\Livewire\UploadVideo;
+use App\Http\Livewire\VideoPlayer;
+
 
 
 /*
@@ -97,6 +100,12 @@ Route::get('/tipodepersonal/importar/{empresa}/{val}', [App\Http\Controllers\Tip
 Route::get('/tipodetrabajador/importar/{empresa}/{val}', [App\Http\Controllers\TipoDeTrabajadorController::class,'upsert'])->name('tipodetrabajador.upsert');
 //Rutas de autenticación
 Auth::routes();
+
+// Route::get('/upload', UploadVideo::class);
+Route::view('/upload','livewire.index_upload')->name('index_upload');
+Route::view('/video/{videoId}/{part}','livewire.index_video')->name('index_video');
+
+// Route::get('/video/{videoId}/{part}', VideoPlayer::class)->name('video');
 
 Route::group(['middleware'  =>  ['auth']],function(){
 

@@ -25,12 +25,12 @@ class InspeccionLuzEmergencia extends Model
 
     public function inspectores()
     {
-        return $this->belongsToMany(User::class, 'inspeccion_inspectores', 'inspeccion_id', 'user_id');
+        return $this->belongsToMany(User::class, 'inspeccion_luz_inspectores', 'inspeccion_id', 'user_id');
     }
 
     public function responsables()
     {
-        return $this->belongsToMany(User::class, 'inspeccion_responsables', 'inspeccion_id', 'user_id')->withPivot('cargo');
+        return $this->belongsToMany(User::class, 'inspeccion_luz_responsables', 'inspeccion_id', 'user_id')->withPivot('cargo');
     }
 
     public function detalles()

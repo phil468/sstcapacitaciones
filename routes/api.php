@@ -10,7 +10,10 @@ use App\Http\Controllers\Api\sst\inspecciones\InspeccionLuzEmergenciaController;
 use App\Http\Controllers\Api\sst\inspecciones\ParteLuzEmergenciaController;
 use App\Http\Controllers\Api\InspeccionController;
 use App\Http\Controllers\Api\ResultadoInspeccionController;
-
+use App\Http\Controllers\Api\AreaController;
+use App\Http\Controllers\Api\CargoController;
+use App\Http\Controllers\Api\InspectorController;
+use App\Http\Controllers\Api\PersonalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,12 +53,16 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     // Route::post('refresh-token', [App\Http\Controllers\Api\ws\CapacitacionesController::class, 'refreshToken']);
 
     Route::apiResource('empresas', EmpresaController::class);
+    Route::apiResource('cargos', CargoController::class);
     Route::apiResource('inspecciones', InspeccionController::class);
     Route::apiResource('resultados_inspeccion', ResultadoInspeccionController::class);
     Route::apiResource('alertas_levantamiento', AlertaLevantamientoController::class);
     Route::apiResource('inspeccion-luces-emergencia', InspeccionLuzEmergenciaController::class);
+    Route::apiResource('areas', AreaController::class);
+    Route::apiResource('inspectores', InspectorController::class);
+    Route::apiResource('personal', PersonalController::class);
     // Route::apiResource('inspeccion-luces-emergencia', InspeccionLuzEmergenciaController::class);
-    Route::apiResource('parte-luces-emergencia', ParteLuzEmergenciaController::class);
+    Route::apiResource('partes-luces-emergencia', ParteLuzEmergenciaController::class);
     /*AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT*/
     // return $request->user();
 });

@@ -15,16 +15,16 @@ class EmpresaController extends Controller
 
     public function store(Request $request)
     {
+        $data = $request->all();
+
+        // Convertir la fecha updated_at a UTC-5 si está presente en el request
+        if ($request->has('updated_at')) {
+            $data['created_at'] = Carbon::parse($request->updated_at)->setTimezone('UTC')->subHours(5);
+            $data['updated_at'] = Carbon::parse($request->updated_at)->setTimezone('UTC')->subHours(5);
+        }
+
         $empresa = Empresa::create($request->all());        
-        if($request->has('created_at')){
-            $empresa->created_at = $request->created_at;
-        }
-        if($request->has('updated_at')){
-            $empresa->updated_at = $request->updated_at;
-        }
-        if($request->has('deleted_at')){
-            $empresa->deleted_at = $request->deleted_at;
-        }
+
         $empresa->save();
         return response()->json($empresa, 201);
     }
@@ -43,26 +43,39 @@ class EmpresaController extends Controller
         }
 
         // Convertir las fechas a instancias de Carbon
-        $requestDate = Carbon::parse($request->updated_at);
-        $empresaDate = Carbon::parse($empresa->updated_at);
+        // $requestDate = Carbon::parse($request->updated_at)->setTimezone('UTC')->subHours(5);
+        // $empresaDate = Carbon::parse($empresa->updated_at);
+        // dd($requestDate, $empresaDate);
         // Convertir las fechas a timestamps para comparar
-        // $requestUpdatedAt = Carbon::parse($request->updated_at)->timestamp;
-        // $empresaUpdatedAt = $empresa->updated_at->timestamp;
+        // $requestUpdatedAt = Carbon::parse($request->updated_at)->setTimezone('America/Lima');
+        // $empresaUpdatedAt = $empresa->updated_at;
 
+        // Convertir la fecha del request a America/Lima
+        $requestDate = Carbon::parse($request->updated_at)->setTimezone('America/Lima');
+        $empresaDate = Carbon::parse($empresa->updated_at);
+        // dd(
+        //     Carbon::parse($request->updated_at)->setTimezone('UTC')->subHours(5)->toDate(),
+        //     $requestUpdatedAt, 
+        //     $empresaUpdatedAt);
         // Comparar timestamps para resolver conflictos
         // return response()->json([$request->updated_at , $empresa->updated_at]);
         // return response()->json([$requestUpdatedAt , $empresaUpdatedAt]);
         // return response()->json([$requestDate > $empresaDate]);
         // Comparar timestamps para resolver conflictos
         if ($requestDate->greaterThanOrEqualTo($empresaDate)) {
-            
-            $empresa->update($request->all());
-            if($request->has('updated_at')){
-                $empresa->updated_at = $request->updated_at;
+            $data = $request->all();
+
+            // Convertir la fecha updated_at a UTC-5 si está presente en el request
+            if ($request->has('updated_at')) {
+                $data['updated_at'] = Carbon::parse($request->updated_at)->setTimezone('America/Lima');
             }
-            if($request->has('deleted_at')){
-                $empresa->deleted_at = $request->deleted_at;
+
+            if ($request->has('deleted_at')) {
+                $data['deleted_at'] = Carbon::parse($request->updated_at)->setTimezone('America/Lima');
             }
+
+            $empresa->update($data);
+
             $empresa->save();
 
             return response()->json($empresa, 200);
@@ -70,8 +83,8 @@ class EmpresaController extends Controller
             return response()->json([
                 'error' => 'Conflict detected',
                 'message' => 'The provided updated_at is older than the current updated_at in the database.',
-                'provided_updated_at' => $request->updated_at,
-                'current_updated_at' => $empresa->updated_at
+                'provided_updated_at' => $requestDate,
+                'current_updated_at' => $empresaDate
             ], 409);
         }
     }
