@@ -347,12 +347,12 @@ class CapacitacionesTable extends LivewireDatatable
     public function destroy($id)
     {
         if ($id) {
-            $record = Devolucion::where('id', $id);
-            $record->timestamps = false;
-            $record->first()->update([ 
-                'deleted_by' => auth()->user()->id
-                ]);
-            $record->timestamps = true;
+            $record = Capacitacione::where('id', $id);
+            // $record->timestamps = false;
+            // $record->first()->update([ 
+            //     'deleted_by' => auth()->user()->id
+            //     ]);
+            // $record->timestamps = true;
             $record->delete();
         }
     }
