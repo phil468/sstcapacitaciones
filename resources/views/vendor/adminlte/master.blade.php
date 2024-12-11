@@ -98,8 +98,8 @@
 
     <style>
         .body-bg {
-            /* background-color: #6ECBC9; */
-            background-image: url('{{asset('img/evaluacion/login-10s.mp4')}}');
+            background-color: #568BA5;
+            /* background-image: url('{{asset('img/evaluacion/login-10s.mp4')}}'); */
             /* url('/img/evaluacion/login-10s.mp4'); */
 
             /* background-image: url('{{asset('img/evaluacion/login-10s.mp4')}}'); */
