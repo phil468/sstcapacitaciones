@@ -113,8 +113,13 @@
 
 								@error('photo') <span class="error text-danger">{{ $message }}</span> @enderror
 								
+								<!-- Botón para tomar foto -->
+								<button type="button" class="btn btn-primary mt-2" data-toggle="modal" data-target="#cameraModal">
+									Tomar Foto
+								</button>
+
 								<div wire:loading wire:target="photo">
-									<div class="progress">
+									<div class="progress" style="height: 25px;">
 										<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">Cargando foto...</div>
 									</div>
 								</div>
@@ -288,6 +293,28 @@
 		</div>
 	</div>
 
+	<!-- Modal para tomar foto -->
+<div id="cameraModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="cameraModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cameraModalLabel">Tomar Foto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <video id="video" width="100%" autoplay></video>
+                <button id="snap" class="btn btn-primary mt-2">Capturar</button>
+                <canvas id="canvas" style="display: none;"></canvas>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="savePhoto()">Guardar Foto</button>
+            </div>
+        </div>
+    </div>
+</div>
 	
 
 	<!-- Modal -->
@@ -322,8 +349,52 @@
 			document.getElementById('photoModal').style.display = 'flex';
 		}
 		
-		function closeModal() {
-			document.getElementById('photoModal').style.display = 'none';
+		// function closeModal() {
+		// 	document.getElementById('photoModal').style.display = 'none';
+		// }
+
+		// Configurar la cámara
+		const video = document.getElementById('video');
+		const canvas = document.getElementById('canvas');
+		const snap = document.getElementById('snap');
+
+		navigator.mediaDevices.getUserMedia({ video: true })
+			.then(stream => {
+				video.srcObject = stream;
+			})
+			.catch(err => {
+				console.error("Error accessing the camera: " + err);
+			});
+
+		snap.addEventListener('click', () => {
+			const context = canvas.getContext('2d');
+			canvas.width = video.videoWidth;
+			canvas.height = video.videoHeight;
+			context.drawImage(video, 0, 0, canvas.width, canvas.height);
+			canvas.style.display = 'block';
+		});
+
+		function savePhoto() {
+			const dataUrl = canvas.toDataURL('image/png');
+			const blob = dataURLtoBlob(dataUrl);
+			const file = new File([blob], 'photo.png', { type: 'image/png' });
+
+			@this.upload('photo', file, (uploadedFilename) => {
+				console.log('File uploaded successfully: ' + uploadedFilename);
+			}, () => {
+				console.error('File upload failed.');
+			});
+		}
+
+		function dataURLtoBlob(dataUrl) {
+			const arr = dataUrl.split(','), mime = arr[0].match(/:(.*?);/)[1];
+			const bstr = atob(arr[1]);
+			let n = bstr.length;
+			const u8arr = new Uint8Array(n);
+			while (n--) {
+				u8arr[n] = bstr.charCodeAt(n);
+			}
+			return new Blob([u8arr], { type: mime });
 		}
 	</script>
 	
