@@ -74,7 +74,7 @@
 						</table>						
 					</div>
 
-					<div class="row">
+					<div class="mx-0 row">
 						<div class="form-group col-sm-8 col-md-6 col-lg-6 col-xl-4">
 							<label class="" for="numero_de_sesion">Sesión</label>
 							<div class="input-group">
@@ -104,11 +104,52 @@
 								<label for="hora_fin">Hora Fin</label>
 								<input wire:model.defer="hora_fin" type="time" class="form-control" id="hora_fin" placeholder="Hora Fin">@error('hora_fin') <span class="error text-danger">{{ $message }}</span> @enderror
 							</div>
+                            <div class="form-group col-sm-8 col-md-6 col-lg-6 col-xl-4">
+                                <label for="photo">Foto (Asistencia)</label>
+								<div class="custom-file">
+									<input wire:model="photo" type="file" class="custom-file-input" id="photo" placeholder="Foto" style="display: none;">
+									<label class="custom-upload-button btn btn-outline-vanguard" for="photo">Seleccionar archivo</label>
+								</div>
+
+								@error('photo') <span class="error text-danger">{{ $message }}</span> @enderror
+								
+								<div wire:loading wire:target="photo">
+									<div class="progress">
+										<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">Cargando foto...</div>
+									</div>
+								</div>
+
+								<!-- Vista previa de la imagen -->
+    							<div wire:loading.remove wire:target="photo" class="mt-2">
+									@if ($photo)
+										<div style="position: relative; display: inline-block;">
+											<img src="{{ $photo->temporaryUrl() }}" alt="Foto de la sesión" width="200" style="cursor: pointer;">
+											<a onclick="openModal('{{ $photo->temporaryUrl() }}')" data-toggle="modal" data-target="#photoModal" style="position: absolute; top: 0; left: 0; width: 100%; height: 75%; background: rgba(0, 0, 0, 0.5); color: white; display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">
+												<i class="fa fa-eye"></i>
+											</a>
+											<a href="{{ $photo->temporaryUrl() }}" download style="position: absolute; top: 75%; left: 0; width: 100%; height: 25%; background: rgba(0, 0, 0, 0.5); color: white; display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">
+												<i class="fa fa-download"></i>
+											</a>
+										</div>
+									@elseif ($sesion->photo)
+										<div style="position: relative; display: inline-block;">
+											<img src="{{ asset('' . $sesion->photo) }}" alt="Foto de la sesión" width="200" style="cursor: pointer;">
+											<a onclick="openModal('{{ asset('' . $sesion->photo) }}')" data-toggle="modal" data-target="#photoModal" style="position: absolute; top: 0; left: 0; width: 100%; height: 75%; background: rgba(0, 0, 0, 0.5); color: white; display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">
+												<i class="fa fa-eye"></i>
+											</a>
+											<a href="{{ asset('' . $sesion->photo) }}" download style="position: absolute; top: 75%; left: 0; width: 100%; height: 25%; background: rgba(0, 0, 0, 0.5); color: white; display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">
+												<i class="fa fa-download"></i>
+											</a>
+										</div>
+									@endif
+								</div>
+
+                            </div>
 						@endif
 					</div>
+					<div class="mx-0 row">
 					@if ($numero_sesion_id>0)
-							<div class="row">
-							<div class="form-group col-xs-12">
+						<div class="form-group col-xs-12">
 								<label for="dni_search">Buscar por DNI</label>
 								<div>
 									<div class="input-group">
@@ -126,9 +167,9 @@
 									</div>								
 								</div>
 								@error('dni_search') <span class="error text-danger">{{ $message }}</span> @enderror
-							</div>
+						</div>
 
-							<div class="form-group col-sm-4 col-md-3 col-lg-3 col-xl-2">
+						<div class="form-group col-sm-4 col-md-3 col-lg-3 col-xl-2">
 								<label for="">Filtro Asistencia</label>
 								<div class="form-row">
 									<a type="" class="btn btn-md {{$filtro_asistencia ? 'btn-success text-white' : 'btn-default text-success' }}" wire:click="filtro_asistencia()">
@@ -138,9 +179,9 @@
 										<i class="far fa-circle"></i>
 									</a>
 								</div>
-							</div>
-							
-							<div class="table-responsive">
+						</div>
+						
+						<div class="table-responsive">
 								<table class="table table-striped table-hover table-sm">
 									<thead class="thead">
 										<tr>
@@ -225,8 +266,8 @@
 										@endforeach
 									</tbody>
 								</table>
-							</div>
-						@endif
+						</div>
+					@endif
 					</div>
 					
 						{{-- @can('crear-asistencia')
@@ -236,7 +277,7 @@
 						@include('livewire.asistencia.update')
 						@endcan --}}					
 						{{-- @can('editar-asistencia') --}}
-							@include('livewire.asistenciums.confirmarIngresoDNI')
+					@include('livewire.asistenciums.confirmarIngresoDNI')
 						{{-- @endcan --}}
 				</div>
 			
@@ -246,4 +287,47 @@
 			</div>
 		</div>
 	</div>
+
+	
+
+	<!-- Modal -->
+	<div class="modal fade" id="photoModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="videoModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl" role="document">
+		<div class="rounded-2xl modal-content">
+			<div class="text-white modal-header bg-vanguard rounded-t-2xl">                
+			<h5 class="modal-title" id="videoModalLabel">Ver Foto</h5>
+				<button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body container">  
+				<img id="modalImage" class="mx-auto" src="" style="max-width: 90%; max-height: 90%;">
+			</div>
+		</div>
+		</div>
+	</div>
+
+	@push('js')
+
+	<script>
+
+    document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+        var fileName = document.getElementById("photo").files[0].name;
+        var nextSibling = e.target.nextElementSibling
+        nextSibling.innerText = fileName
+    });
+
+		function openModal(url) {
+			document.getElementById('modalImage').src = url;
+			document.getElementById('photoModal').style.display = 'flex';
+		}
+		
+		function closeModal() {
+			document.getElementById('photoModal').style.display = 'none';
+		}
+	</script>
+	
+	@endpush
+
+
 </div>

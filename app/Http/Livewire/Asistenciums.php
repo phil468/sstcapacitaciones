@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Http\Controllers\PersonalController;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 use App\Models\Asistencium;
 use App\Models\Capacitacione;
 use App\Models\Personal;
@@ -13,6 +14,7 @@ use App\Models\Sesione;
 class Asistenciums extends Component
 {
     use WithPagination;
+    use WithFileUploads;
 
 	protected $paginationTheme = 'bootstrap';
     public $selected_id, $keyWord, 
@@ -23,9 +25,13 @@ class Asistenciums extends Component
 	$filtro_asistencia = false,
 	$filtro_no_asistencia = false,
 	$numero_de_sesion,$dni_search,
-	$fecha,$hora_inicio,$hora_fin;
+	$fecha,$hora_inicio,$hora_fin
+	, $photo; // Agregar la propiedad photo
 	// public $areas,
 	// ;
+	
+    public $progress = 0;
+	public $sesion;
     public $updateMode = false;
 
 	public $capacitacion=[];
@@ -49,6 +55,7 @@ class Asistenciums extends Component
 		if($value)
 		{
 			$sesion = Capacitacione::find($this->capacitacion_id)->sesiones()->where('numero_de_sesion', $value)->first();
+			$this->sesion = Capacitacione::find($this->capacitacion_id)->sesiones()->where('numero_de_sesion', $value)->first();
 			if(!$sesion)
 			{
 				$this->crear_sesion_asistencia($value);
@@ -59,9 +66,11 @@ class Asistenciums extends Component
 			$this->fecha = $sesion->fecha;
 			$this->hora_inicio = $sesion->hora_inicio;
 			$this->hora_fin = $sesion->hora_fin;
+            $this->photo = null; // Asignar la foto
 
 		} else {		
 			$this->sesion_id = null;
+			$this->sesion = null;
 		}
 	}
 
@@ -112,8 +121,22 @@ class Asistenciums extends Component
 		$sesion->hora_fin = $value;
 		$sesion->save();
 		session()->flash('message', 'Hora de Fin Actualizada');
-
 	}
+
+    public function updatedPhoto()
+    {
+		// dd('entro');
+        $this->validate([
+            'photo' => 'image|max:6144', // Validar que sea una imagen y no mayor a 1MB
+        ]);
+
+        $sesion = Sesione::find($this->sesion_id);
+        $path = $this->photo->store('photos');
+        $sesion->photo = $path;
+        $sesion->save();
+
+        session()->flash('message', 'Foto Actualizada');
+    }
 
 	public function agregarSesion(){
 		$capacitacion = Capacitacione::find($this->capacitacion_id);

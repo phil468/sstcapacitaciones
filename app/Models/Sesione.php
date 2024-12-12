@@ -15,7 +15,18 @@ class Sesione extends Model
 
     protected $table = 'sesiones';
 
-    protected $fillable = ['capacitacion_id','numero_de_sesion','fecha','hora_inicio','hora_fin','active','synced', 'name', 'video'];
+    protected $fillable = [
+        'capacitacion_id',
+        'numero_de_sesion',
+        'fecha',
+        'hora_inicio',
+        'hora_fin',
+        'active',
+        'synced',
+        'name',
+        'video',
+        'photo' // Agregar el nuevo campo aquí
+        ];
 	
     public function capacitacion()
     {
