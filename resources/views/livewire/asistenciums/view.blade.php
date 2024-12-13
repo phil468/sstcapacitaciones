@@ -354,24 +354,28 @@
 		// }
 
 		// Configurar la cámara
-		const video = document.getElementById('video');
-		const canvas = document.getElementById('canvas');
-		const snap = document.getElementById('snap');
+		
+		// Configurar la cámara cuando se abre el modal
+		$('#cameraModal').on('shown.bs.modal', function () {
+			const video = document.getElementById('video');
+			const canvas = document.getElementById('canvas');
+			const snap = document.getElementById('snap');
 
-		navigator.mediaDevices.getUserMedia({ video: true })
-			.then(stream => {
-				video.srcObject = stream;
-			})
-			.catch(err => {
-				console.error("Error accessing the camera: " + err);
+			navigator.mediaDevices.getUserMedia({ video: true })
+				.then(stream => {
+					video.srcObject = stream;
+				})
+				.catch(err => {
+					console.error("Error accessing the camera: " + err);
+				});
+
+			snap.addEventListener('click', () => {
+				const context = canvas.getContext('2d');
+				canvas.width = video.videoWidth;
+				canvas.height = video.videoHeight;
+				context.drawImage(video, 0, 0, canvas.width, canvas.height);
+				canvas.style.display = 'block';
 			});
-
-		snap.addEventListener('click', () => {
-			const context = canvas.getContext('2d');
-			canvas.width = video.videoWidth;
-			canvas.height = video.videoHeight;
-			context.drawImage(video, 0, 0, canvas.width, canvas.height);
-			canvas.style.display = 'block';
 		});
 
 		function savePhoto() {
