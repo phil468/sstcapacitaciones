@@ -114,9 +114,9 @@
 								@error('photo') <span class="error text-danger">{{ $message }}</span> @enderror
 								
 								<!-- Botón para tomar foto -->
-								<button type="button" class="btn btn-primary mt-2" data-toggle="modal" data-target="#cameraModal">
+								{{-- <button type="button" class="btn btn-primary mt-2" data-toggle="modal" data-target="#cameraModal">
 									Tomar Foto
-								</button>
+								</button> --}}
 
 								<div wire:loading wire:target="photo">
 									<div class="progress" style="height: 25px;">
@@ -346,7 +346,8 @@
 
 		function openModal(url) {
 			document.getElementById('modalImage').src = url;
-			document.getElementById('photoModal').style.display = 'flex';
+			$('#photoModal').modal('show');
+			// document.getElementById('photoModal').style.display = 'flex';
 		}
 		
 		// function closeModal() {
@@ -379,6 +380,7 @@
 		});
 
 		function savePhoto() {
+			const canvas = document.getElementById('canvas');
 			const dataUrl = canvas.toDataURL('image/png');
 			const blob = dataURLtoBlob(dataUrl);
 			const file = new File([blob], 'photo.png', { type: 'image/png' });
