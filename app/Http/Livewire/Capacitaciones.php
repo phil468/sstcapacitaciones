@@ -101,7 +101,7 @@ class Capacitaciones extends Component
 		'tema_id' => 'required|exists:temas,id',
 		'fecha_inicio' => 'required|date|before_or_equal:fecha_fin',
 		'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
-		'identificador_unico' => 'required|max:10|unique:capacitaciones,identificador_unico',
+		// 'identificador_unico' => 'required|max:10|unique:capacitaciones,identificador_unico',
 
         'es_aula_virtual' => 'required|boolean',
         'es_onboarding' => 'required_if:es_aula_virtual,true|exclude_unless:es_aula_virtual,true',
@@ -419,6 +419,7 @@ class Capacitaciones extends Component
     public function store()
     {
 		if ($this->expositor_externo != 1) {
+			
 			$this->expositor_externo = 0;
 		}
 		
