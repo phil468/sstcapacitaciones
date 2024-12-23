@@ -19,6 +19,14 @@ class InspeccioneFactory extends Factory
 			'vigencia_inicio' => $this->faker->name,
 			'vigencia_fin' => $this->faker->name,
 			'comentario' => $this->faker->name,
+			'razon_social' => $this->faker->name,
+			'ruc' => $this->faker->name,
+			'domicilio' => $this->faker->name,
+			'actividad_economica' => $this->faker->name,
+			'numero_registro' => $this->faker->name,
+			'tipo_inspeccion_otro' => $this->faker->name,
+			'fecha_inspeccion' => $this->faker->name,
+			'hora_inspeccion' => $this->faker->name,
         ];
     }
 }

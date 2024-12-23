@@ -14,7 +14,6 @@ class ResultadoInspeccionController extends Controller
     {
         return ResultadosInspeccion::all();
     }
-
     public function store(Request $request)
     {
         $empresa = ResultadosInspeccion::create($request->all());        

@@ -5,82 +5,141 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Inspeccione;
+use App\Models\Inspectore;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Exports\InspeccionExport;
+use Illuminate\Support\Facades\Response;
+use Maatwebsite\Excel\Facades\Excel;
 
 class InspeccionController extends Controller
 {
     public function index()
     {
-        return Inspeccione::all();
+        return Inspeccione::with([
+            'areas',
+            'empresa',
+            'responsables_inspeccion',
+            'responsables_area',
+            'detalles',
+            'responsables_registro',
+            ])->get();
     }
-
     public function store(Request $request)
     {
-        $empresa = Inspeccione::create($request->all());        
-        if($request->has('created_at')){
-            $empresa->created_at = $request->created_at;
+        $data = $request->all();
+
+        if ($request->has('created_at')) {
+            $data['created_at'] = Carbon::parse($request->created_at)->setTimezone('UTC')->subHours(5);
         }
-        if($request->has('updated_at')){
-            $empresa->updated_at = $request->updated_at;
+        if ($request->has('updated_at')) {
+            $data['updated_at'] = Carbon::parse($request->updated_at)->setTimezone('UTC')->subHours(5);
         }
-        if($request->has('deleted_at')){
-            $empresa->deleted_at = $request->deleted_at;
+        if ($request->has('deleted_at')) {
+            $data['deleted_at'] = Carbon::parse($request->deleted_at)->setTimezone('UTC')->subHours(5);
         }
-        $empresa->save();
-        return response()->json($empresa, 201);
+
+        $inspeccion = Inspeccione::create($data);
+
+        // Manejar las relaciones
+        if ($request->has('areas')) {
+            // foreach ($request->areas as $area_id) {
+                $inspeccion->areas()->attach($request->areas);
+            // }
+        }
+
+        if ($request->has('responsables_inspeccion')) {
+            $inspeccion->responsables_inspeccion()->attach($request->responsables_inspeccion);
+        }
+
+        if ($request->has('responsables_area')) {
+            $inspeccion->responsables_area()->attach($request->responsables_area);
+        }
+
+        if ($request->has('responsables_registro')) {
+            foreach ($request->responsables_registro as $responsable) {
+                $inspeccion->responsables_registro()->create($responsable);
+            }
+        }
+
+        if ($request->has('detalles')) {
+            foreach ($request->detalles as $detalle) {
+                $inspeccion->detalles()->create($detalle);
+            }
+        }
+
+        return response()->json($inspeccion->load(['areas', 'empresa', 'responsables_inspeccion', 'responsables_area', 'detalles']), 201);
     }
 
     public function show($id)
     {
-        return Inspeccione::findOrFail($id);
+        return Inspeccione::with(['areas', 'responsables_inspeccion', 'responsables_area', 'detalles'])->findOrFail($id);
     }
 
     public function update(Request $request, $id)
     {
-        $empresa = Inspeccione::find($id);
+        $inspeccion = Inspeccione::find($id);
 
-        if (!$empresa) {
-            return response()->json(['error' => 'Empresa not found'], 404);
+        if (!$inspeccion) {
+            return response()->json(['error' => 'Inspeccion not found'], 404);
         }
 
-        // Convertir las fechas a instancias de Carbon
-        $requestDate = Carbon::parse($request->updated_at);
-        $empresaDate = Carbon::parse($empresa->updated_at);
-        // Convertir las fechas a timestamps para comparar
-        // $requestUpdatedAt = Carbon::parse($request->updated_at)->timestamp;
-        // $empresaUpdatedAt = $empresa->updated_at->timestamp;
+        $data = $request->all();
 
-        // Comparar timestamps para resolver conflictos
-        // return response()->json([$request->updated_at , $empresa->updated_at]);
-        // return response()->json([$requestUpdatedAt , $empresaUpdatedAt]);
-        // return response()->json([$requestDate > $empresaDate]);
-        // Comparar timestamps para resolver conflictos
-        if ($requestDate->greaterThanOrEqualTo($empresaDate)) {
-            
-            $empresa->update($request->all());
-            if($request->has('updated_at')){
-                $empresa->updated_at = $request->updated_at;
-            }
-            if($request->has('deleted_at')){
-                $empresa->deleted_at = $request->deleted_at;
-            }
-            $empresa->save();
-
-            return response()->json($empresa, 200);
-        } else {
-            return response()->json([
-                'error' => 'Conflict detected',
-                'message' => 'The provided updated_at is older than the current updated_at in the database.',
-                'provided_updated_at' => $request->updated_at,
-                'current_updated_at' => $empresa->updated_at
-            ], 409);
+        if ($request->has('updated_at')) {
+            $data['updated_at'] = Carbon::parse($request->updated_at)->setTimezone('UTC')->subHours(5);
         }
+        if ($request->has('deleted_at')) {
+            $data['deleted_at'] = Carbon::parse($request->deleted_at)->setTimezone('UTC')->subHours(5);
+        }
+
+        $inspeccion->update($data);
+
+        // Manejar las relaciones
+        if ($request->has('areas')) {
+            $inspeccion->areas()->sync($request->areas);
+        }
+
+        if ($request->has('responsables_inspeccion')) {
+            $inspeccion->responsables_inspeccion()->sync($request->responsables_inspeccion);
+        }
+
+        if ($request->has('responsables_area')) {
+            $inspeccion->responsables_area()->sync($request->responsables_area);
+        }
+
+        if ($request->has('responsables_registro')) {
+            $inspeccion->responsables_registro()->delete();
+            foreach ($request->responsables_registro as $responsable) {
+                $inspeccion->responsables_registro()->create($responsable);
+            }
+        }
+
+        if ($request->has('detalles')) {
+            $inspeccion->detalles()->delete();
+            foreach ($request->detalles as $detalle) {
+                $inspeccion->detalles()->create($detalle);
+            }
+        }
+
+        return response()->json($inspeccion->load(['areas', 'empresa', 'responsables_inspeccion', 'responsables_area', 'detalles']), 200);
     }
 
     public function destroy($id)
     {
         Inspeccione::destroy($id);
         return response()->json(null, 204);
+    }
+
+    public function descargarReporte($id)
+    {
+        $inspeccion = Inspeccione::findOrFail($id);
+        // return Excel::download(new InspeccionExport($inspeccion), 'reporte_inspeccion.xlsx');
+
+        $exporter = new InspeccionExport($inspeccion);
+        $filePath = $exporter->export();
+
+        return Response::download($filePath, 'inspecciones.xlsx')->deleteFileAfterSend(true);
+
     }
 }

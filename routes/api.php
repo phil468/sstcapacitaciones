@@ -57,6 +57,8 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::apiResource('inspecciones', InspeccionController::class);
     Route::apiResource('resultados_inspeccion', ResultadoInspeccionController::class);
     Route::apiResource('alertas_levantamiento', AlertaLevantamientoController::class);
+    Route::get('/inspecciones/{id}/reporte', [InspeccionController::class, 'descargarReporte'])->name('inspecciones.reporte');
+
     Route::apiResource('inspeccion-luces-emergencia', InspeccionLuzEmergenciaController::class);
     Route::apiResource('areas', AreaController::class);
     Route::apiResource('inspectores', InspectorController::class);

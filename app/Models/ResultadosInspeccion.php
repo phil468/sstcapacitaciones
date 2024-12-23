@@ -15,6 +15,26 @@ class ResultadosInspeccion extends Model
 
     protected $table = 'resultados_inspeccion';
 
-    protected $fillable = ['inspeccion_id','descripcion','nivel_riesgo','registro_fotografico','accion_a_tomar','responsable_id','estado','fecha_ejecucion'];
+    protected $fillable = [
+            'inspeccion_id',
+            'descripcion',
+            'nivel_riesgo',
+            'registro_fotografico',
+            'accion_a_tomar',
+            'responsable_id',
+            'cargo_id',
+            'estado',
+            'fecha_ejecucion'
+        ];
 	
+    public function inspeccion()
+    {
+        return $this->belongsTo(Inspeccione::class, 'inspeccion_id');
+    }
+
+    public function responsable()
+    {
+        return $this->belongsTo(Personal::class, 'responsable_id');
+    }
+    
 }

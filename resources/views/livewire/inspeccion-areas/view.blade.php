@@ -1,4 +1,4 @@
-@section('title', __('Inspecciones'))
+@section('title', __('Inspeccion Areas'))
 <div class="container-fluid">
 	<div class="row justify-content-center">
 		<div class="col-md-12">
@@ -7,7 +7,7 @@
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
 							<h4><i class="bi-house-fill text-info"></i>
-							Inspeccione Listing </h4>
+							Inspeccion Area Listing </h4>
 						</div>
 						<div wire:poll.60s>
 							<code><h5>{{ now()->format('H:i:s') }} UTC</h5></code>
@@ -16,57 +16,33 @@
 						<div wire:poll.4s class="btn btn-sm btn-success" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
 						@endif
 						<div>
-							<input wire:model='keyWord' type="text" class="form-control" name="search" id="search" placeholder="Search Inspecciones">
+							<input wire:model='keyWord' type="text" class="form-control" name="search" id="search" placeholder="Search Inspeccion Areas">
 						</div>
 						<div class="btn btn-sm btn-info" data-toggle="modal" data-target="#createDataModal">
-						<i class="bi-plus-lg"></i>  Add Inspecciones
+						<i class="bi-plus-lg"></i>  Add Inspeccion Areas
 						</div>
 					</div>
 				</div>
 				
 				<div class="card-body">
-						@include('livewire.inspecciones.create')
-						@include('livewire.inspecciones.update')
+						@include('livewire.inspeccionAreas.create')
+						@include('livewire.inspeccionAreas.update')
 				<div class="table-responsive">
 					<table class="table table-bordered table-sm">
 						<thead class="thead">
 							<tr> 
 								<td>#</td> 
-								<th>Empresa Id</th>
+								<th>Inspeccion Id</th>
 								<th>Area Id</th>
-								<th>Tipo Inspeccion</th>
-								<th>Vigencia Inicio</th>
-								<th>Vigencia Fin</th>
-								<th>Comentario</th>
-								<th>Razon Social</th>
-								<th>Ruc</th>
-								<th>Domicilio</th>
-								<th>Actividad Economica</th>
-								<th>Numero Registro</th>
-								<th>Tipo Inspeccion Otro</th>
-								<th>Fecha Inspeccion</th>
-								<th>Hora Inspeccion</th>
 								<td>ACTIONS</td>
 							</tr>
 						</thead>
 						<tbody>
-							@foreach($inspecciones as $row)
+							@foreach($inspeccionAreas as $row)
 							<tr>
 								<td>{{ $loop->iteration }}</td> 
-								<td>{{ $row->empresa_id }}</td>
+								<td>{{ $row->inspeccion_id }}</td>
 								<td>{{ $row->area_id }}</td>
-								<td>{{ $row->tipo_inspeccion }}</td>
-								<td>{{ $row->vigencia_inicio }}</td>
-								<td>{{ $row->vigencia_fin }}</td>
-								<td>{{ $row->comentario }}</td>
-								<td>{{ $row->razon_social }}</td>
-								<td>{{ $row->ruc }}</td>
-								<td>{{ $row->domicilio }}</td>
-								<td>{{ $row->actividad_economica }}</td>
-								<td>{{ $row->numero_registro }}</td>
-								<td>{{ $row->tipo_inspeccion_otro }}</td>
-								<td>{{ $row->fecha_inspeccion }}</td>
-								<td>{{ $row->hora_inspeccion }}</td>
 								<td width="90">
 								<div class="btn-group">
 									<button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -74,14 +50,14 @@
 									</button>
 									<div class="dropdown-menu dropdown-menu-right">
 									<a data-toggle="modal" data-target="#updateModal" class="dropdown-item" wire:click="edit({{$row->id}})"><i class="bi-pencil-fill"></i> Edit </a>							 
-									<a class="dropdown-item" onclick="confirm('Confirm Delete Inspeccione id {{$row->id}}? \nDeleted Inspecciones cannot be recovered!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"><i class="bi-trash3-fill"></i> Delete </a>   
+									<a class="dropdown-item" onclick="confirm('Confirm Delete Inspeccion Area id {{$row->id}}? \nDeleted Inspeccion Areas cannot be recovered!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"><i class="bi-trash3-fill"></i> Delete </a>   
 									</div>
 								</div>
 								</td>
 							@endforeach
 						</tbody>
 					</table>						
-					{{ $inspecciones->links() }}
+					{{ $inspeccionAreas->links() }}
 					</div>
 				</div>
 			</div>
