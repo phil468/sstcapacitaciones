@@ -43,9 +43,7 @@ class InspeccionController extends Controller
 
         // Manejar las relaciones
         if ($request->has('areas')) {
-            // foreach ($request->areas as $area_id) {
-                $inspeccion->areas()->attach($request->areas);
-            // }
+            $inspeccion->areas()->attach($request->areas);
         }
 
         if ($request->has('responsables_inspeccion')) {

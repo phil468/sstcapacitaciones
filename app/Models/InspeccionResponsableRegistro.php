@@ -22,4 +22,14 @@ class InspeccionResponsableRegistro extends Model
     {
         return $this->belongsTo(Inspeccione::class, 'inspeccion_id');
     }
+
+    public function personal()
+    {
+        return $this->belongsTo(Personal::class, 'personal_id');
+    }
+
+    public function cargo()
+    {
+        return $this->belongsTo(Cargo::class, 'cargo_id');
+    }
 }

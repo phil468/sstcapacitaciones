@@ -36,5 +36,10 @@ class ResultadosInspeccion extends Model
     {
         return $this->belongsTo(Personal::class, 'responsable_id');
     }
+
+    public function cargo()
+    {
+        return $this->belongsTo(Cargo::class, 'cargo_id');
+    }
     
 }

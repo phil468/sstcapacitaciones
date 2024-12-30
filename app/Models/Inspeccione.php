@@ -13,7 +13,8 @@ class Inspeccione extends Model
 
     protected $table = 'inspecciones';
 
-    protected $fillable = ['empresa_id',
+    protected $fillable = [
+        'empresa_id',
         'tipo_inspeccion',
         'vigencia_inicio',
         'vigencia_fin',
@@ -25,7 +26,11 @@ class Inspeccione extends Model
         'numero_registro',
         'tipo_inspeccion_otro',
         'fecha_inspeccion',
-        'hora_inspeccion'
+        'hora_inspeccion',
+        'objetivo',
+        'descripcion_causa',
+        'conclusiones_recomendaciones',
+        'adjuntar'
     ];
     
     public function areas()
