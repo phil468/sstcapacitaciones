@@ -9,8 +9,10 @@ use App\Models\Inspectore;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Exports\InspeccionExport;
+use App\Notifications\DetallePendienteNotificacion;
 use Illuminate\Support\Facades\Response;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Notifications\InspeccionAsignada;
 
 class InspeccionController extends Controller
 {
@@ -65,6 +67,11 @@ class InspeccionController extends Controller
                 $inspeccion->detalles()->create($detalle);
             }
         }
+        
+        // Enviar notificación a los inspectores
+        $this->notificarInspectores($inspeccion);
+        // Enviar notificación para detalles pendientes
+        $this->notificarDetallesPendientes($inspeccion);
 
         return response()->json($inspeccion->load(['areas', 'empresa', 'responsables_inspeccion', 'responsables_area', 'detalles']), 201);
     }
@@ -120,6 +127,12 @@ class InspeccionController extends Controller
             }
         }
 
+        // Enviar notificación a los inspectores
+        $this->notificarInspectores($inspeccion);
+
+        // Enviar notificación para detalles pendientes
+        $this->notificarDetallesPendientes($inspeccion);
+
         return response()->json($inspeccion->load(['areas', 'empresa', 'responsables_inspeccion', 'responsables_area', 'detalles']), 200);
     }
 
@@ -138,6 +151,29 @@ class InspeccionController extends Controller
         $filePath = $exporter->export();
 
         return Response::download($filePath, 'inspecciones.xlsx')->deleteFileAfterSend(true);
-
     }
+    
+    private function notificarInspectores(Inspeccione $inspeccion)
+    {
+        if ($inspeccion->detalles()->count() == 0 && is_null($inspeccion->fecha_inspeccion) && is_null($inspeccion->hora_inspeccion)) {
+            foreach ($inspeccion->responsables_inspeccion as $inspector) {
+                $inspector->user->notify(new InspeccionAsignada($inspeccion,'Inspecciones Internas','inspecciones-internas'));
+            }
+        }
+    }
+    
+    private function notificarDetallesPendientes(Inspeccione $inspeccion)
+    {
+        if (!is_null($inspeccion->fecha_inspeccion) && !is_null($inspeccion->hora_inspeccion)) {
+            foreach ($inspeccion->detalles as $detalle) {
+                if ($detalle->estado == 'Pendiente') {
+                    $responsable = $detalle->responsable->user ?? $detalle->responsable->personal;
+                    if ($responsable) {
+                        $responsable->notify(new DetallePendienteNotificacion($detalle));
+                    }
+                }
+            }
+        }
+    }
+
 }
