@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\AreaController;
 use App\Http\Controllers\Api\CargoController;
 use App\Http\Controllers\Api\InspectorController;
 use App\Http\Controllers\Api\PersonalController;
+use App\Http\Controllers\Api\LevantamientoController;
+use App\Http\Controllers\Api\RevisarLevantamientoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,7 +69,12 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::apiResource('partes-luces-emergencia', ParteLuzEmergenciaController::class);
     /*AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT*/
     // return $request->user();
+    Route::get('/revisar-levantamiento', [RevisarLevantamientoController::class, 'index']);
+    Route::post('/revisar-levantamiento/{id}', [RevisarLevantamientoController::class, 'update']);
+
 });
+
+Route::post('/levantamiento/{uuid}', [LevantamientoController::class, 'store']);
 
 // Middleware para verificar si el token ha expirado
 Route::post('/refresh-token', function (Request $request) {

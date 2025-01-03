@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-
 use App\Http\Controllers\Controller;
 use App\Models\Inspeccione;
 use App\Models\Inspectore;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Exports\InspeccionExport;
+use App\Models\ResultadosInspeccion;
 use App\Notifications\DetallePendienteNotificacion;
 use Illuminate\Support\Facades\Response;
 use Maatwebsite\Excel\Facades\Excel;
@@ -121,9 +121,21 @@ class InspeccionController extends Controller
         }
 
         if ($request->has('detalles')) {
-            $inspeccion->detalles()->delete();
+            // Obtener los UUIDs de los detalles enviados en la solicitud
+            $detallesUUIDs = array_column($request->detalles, 'uuid');
+
+            // Eliminar los detalles que no están en la solicitud
+            $inspeccion->detalles()->whereNotIn('uuid', $detallesUUIDs)->delete();
+
+            // Actualizar o crear los detalles
             foreach ($request->detalles as $detalle) {
-                $inspeccion->detalles()->create($detalle);
+                $existingDetalle = 
+                ResultadosInspeccion::where('uuid', $detalle['uuid'])->first();
+                if ($existingDetalle) {
+                    $existingDetalle->update($detalle);
+                } else {
+                    $inspeccion->detalles()->create($detalle);
+                }
             }
         }
 
@@ -169,7 +181,7 @@ class InspeccionController extends Controller
                 if ($detalle->estado == 'Pendiente') {
                     $responsable = $detalle->responsable->user ?? $detalle->responsable->personal;
                     if ($responsable) {
-                        $responsable->notify(new DetallePendienteNotificacion($detalle));
+                        $responsable->notify(new DetallePendienteNotificacion($detalle, 'Inpecciones Internas', 'inspecciones-internas','notificar-detalle'));
                     }
                 }
             }

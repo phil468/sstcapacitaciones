@@ -16,16 +16,18 @@ class ResultadosInspeccion extends Model
     protected $table = 'resultados_inspeccion';
 
     protected $fillable = [
-            'inspeccion_id',
-            'descripcion',
-            'nivel_riesgo',
-            'registro_fotografico',
-            'accion_a_tomar',
-            'responsable_id',
-            'cargo_id',
-            'estado',
-            'fecha_ejecucion'
-        ];
+        'uuid',
+        'inspeccion_id',
+        'descripcion',
+        'nivel_riesgo',
+        'registro_fotografico',
+        'accion_a_tomar',
+        'responsable_id',
+        'cargo_id',
+        'estado',
+        'fecha_ejecucion',
+        'notificado'
+    ];
 	
     public function inspeccion()
     {
@@ -40,6 +42,11 @@ class ResultadosInspeccion extends Model
     public function cargo()
     {
         return $this->belongsTo(Cargo::class, 'cargo_id');
+    }
+
+    public function levantamiento()
+    {
+        return $this->hasMany(AlertasLevantamiento::class, 'resultado_inspeccion_uuid', 'uuid');
     }
     
 }

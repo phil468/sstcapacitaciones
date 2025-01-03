@@ -14,16 +14,22 @@ class DetallePendienteNotificacion extends Notification
 
     protected $detalle;
     protected $inspeccion;
+    protected $nombreInspeccion;
+    protected $urlTipoInspeccion;
+    protected $tipo;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(ResultadosInspeccion $detalle)
+    public function __construct(ResultadosInspeccion $detalle, $nombreInspeccion = null, $urlTipoInspeccion = null, $tipo = null)
     {
         $this->detalle = $detalle;
         $this->inspeccion = $detalle->inspeccion;
+        $this->nombreInspeccion = $nombreInspeccion;
+        $this->urlTipoInspeccion = $urlTipoInspeccion;
+        $this->tipo = $tipo;
     }
 
     /**
@@ -49,27 +55,88 @@ class DetallePendienteNotificacion extends Notification
             ? env('APP_URL_PRODUCTION') 
             : env('APP_URL_LOCAL');
 
-        $plazoCorreccion = $this->getPlazoCorreccion($this->detalle->nivel_riesgo);
-
-        return (new MailMessage)
+        if($this->tipo == 'notificar-detalle') {
+            if ($this->detalle->estado == 'Pendiente') {
+                
+                return (new MailMessage)
                     ->subject('Observación Pendiente de Inspección')
-                    ->line('Se le ha asignado una nueva observación pendiente de inspección.')
-                    ->line('Descripción: ' . $this->detalle->descripcion)
-                    ->line('Nivel de Riesgo: ' . $this->detalle->nivel_riesgo)
-                    // ->line('Registro Fotográfico: ' . $this->detalle->registro_fotografico)
-                    ->line('Acción a Tomar: ' . $this->detalle->accion_a_tomar)
-                    ->line('Cargo: ' . $this->detalle->cargo->name)
-                    ->line('Estado: ' . $this->detalle->estado)
-                    ->line('Fecha de Ejecución: ' . $this->detalle->fecha_ejecucion)
+
+                    ->salutation('Saludos, ' . $notifiable->name)
+
+                    // ->line($this->detalle->notificado == 0 ? '(Reenvío de notificación)': '')
+                    
+                    ->line('Datos de la inspección.')
                     ->line('Número de Registro: ' . $this->inspeccion->numero_registro)
                     ->line('Empresa: ' . $this->inspeccion->empresa->razon_social)
                     ->line('Fecha de Inspección: ' . $this->inspeccion->fecha_inspeccion)
                     ->line('Hora de Inspección: ' . $this->inspeccion->hora_inspeccion)
-                    ->line('Objetivo: ' . $this->inspeccion->objetivo)
-                    ->line('Debe subsanar la observación en el plazo de corrección: ' . $plazoCorreccion)
+
+                    ->line('Se le ha asignado una nueva observación pendiente de inspección.')
+                    ->line('Descripción: ' . $this->detalle->descripcion)
                     ->line(new \Illuminate\Support\HtmlString('<img src="' . $this->detalle->registro_fotografico . '" alt="Registro Fotográfico" />'))
-                    ->action('Ver Inspección', $url . '/' . 'inspecciones/' . $this->inspeccion->id)
-                    ->line('Gracias por usar nuestra aplicación!');
+                    ->line('Nivel de Riesgo: ' . $this->detalle->nivel_riesgo)
+                    ->line('Acción a Tomar: ' . $this->detalle->accion_a_tomar)
+
+                    ->line('Estado: ' . $this->detalle->estado)
+                    ->line('Fecha de Ejecución: ' . $this->detalle->fecha_ejecucion)
+                    ->line('Debe subsanar la observación en el plazo de corrección: ' . $this->detalle->fecha_ejecucion)
+                    ->action('Ver Inspección', $url . '/' . 'inspecciones/' . ($this->urlTipoInspeccion??'')."/".'levantamiento/'.$this->detalle->uuid)
+                    ->line('¡Gracias por usar nuestra aplicación!');
+            }
+        }
+        
+        if($this->tipo == 'levantamiento') {
+            if ($this->detalle->levantamiento) {
+                if ($this->detalle->levantamiento->levantado) {
+                    return (new MailMessage)
+                        ->subject('Observación Levantada')
+
+                        ->salutation('Saludos, ' . $notifiable->name)
+
+                        ->line('Datos de la inspección.')
+                        ->line('Número de Registro: ' . $this->inspeccion->numero_registro)
+                        ->line('Empresa: ' . $this->inspeccion->empresa->razon_social)
+                        ->line('Fecha de Inspección: ' . $this->inspeccion->fecha_inspeccion)
+                        ->line('Hora de Inspección: ' . $this->inspeccion->hora_inspeccion)
+                        
+                        ->line('Se ha levantado la observación pendiente de inspección.')
+                        ->line('Descripción: ' . $this->detalle->descripcion)
+                        ->line(new \Illuminate\Support\HtmlString('<img src="' . $this->detalle->registro_fotografico . '" alt="Registro Fotográfico" />'))
+                        ->line('Nivel de Riesgo: ' . $this->detalle->nivel_riesgo)
+                        
+                        ->line('Acción a Tomar: ' . $this->detalle->accion_a_tomar)
+                        ->line('Estado: ' . $this->detalle->estado)
+                        ->line('Fecha de Ejecución: ' . $this->detalle->fecha_ejecucion)
+                        ->line('Evidencia de levantamiento:')
+                        ->line(new \Illuminate\Support\HtmlString('<img src="' . $this->detalle->levantamiento->registro_fotografico . '" alt="Registro Fotográfico" />'))
+                        // ->line('Fecha de Ejecución: ' . $this->detalle->fecha_ejecucion)
+                        // ->line('Debe subsanar la observación en el plazo de corrección: ' .  $this->detalle->fecha_ejecucion)
+                        // ->action('Ver Inspección', $url . '/' . 'inspecciones/' . $this->urlTipoInspeccion??'')
+                        ->line('Gracias por usar nuestra aplicación!');
+                } else {
+                    return (new MailMessage)
+                        ->subject('Observación Rechazada')
+    
+                        ->line('Datos de la inspección.')
+                        ->line('Número de Registro: ' . $this->inspeccion->numero_registro)
+                        ->line('Empresa: ' . $this->inspeccion->empresa->razon_social)
+                        ->line('Fecha de Inspección: ' . $this->inspeccion->fecha_inspeccion)
+                        ->line('Hora de Inspección: ' . $this->inspeccion->hora_inspeccion)
+    
+                        ->line('Se ha rechazado la observación pendiente de inspección.')
+                        ->line('Descripción: ' . $this->detalle->descripcion)
+                        ->line(new \Illuminate\Support\HtmlString('<img src="' . $this->detalle->registro_fotografico . '" alt="Registro Fotográfico" />'))
+                        ->line('Nivel de Riesgo: ' . $this->detalle->nivel_riesgo)
+                        ->line('Acción a Tomar: ' . $this->detalle->accion_a_tomar)
+
+                        ->line('Estado: ' . $this->detalle->estado)
+                        ->line('Fecha de Ejecución: ' . $this->detalle->fecha_ejecucion)
+                        ->line('Debe subsanar la observación en el plazo de corrección: ' .  $this->detalle->fecha_ejecucion)
+                        ->action('Ver Inspección', $url . '/' . 'inspecciones/' . ($this->urlTipoInspeccion??'')."/".'levantamiento/'.$this->detalle->uuid)
+                        ->line('Gracias por usar nuestra aplicación!');
+                }
+            }
+        }        
     }
 
     /**

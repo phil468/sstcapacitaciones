@@ -15,6 +15,11 @@ class AlertasLevantamiento extends Model
 
     protected $table = 'alertas_levantamiento';
 
-    protected $fillable = ['resultado_inspeccion_id','registro_fotografico','levantado'];
+    protected $fillable = ['resultado_inspeccion_id','resultado_inspeccion_uuid','registro_fotografico','levantado','notificado'];
+
+    public function resultado_inspeccion()
+    {
+        return $this->belongsTo(ResultadosInspeccion::class, 'resultado_inspeccion_uuid', 'uuid');
+    }
 	
 }
