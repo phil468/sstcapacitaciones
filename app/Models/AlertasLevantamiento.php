@@ -21,5 +21,7 @@ class AlertasLevantamiento extends Model
     {
         return $this->belongsTo(ResultadosInspeccion::class, 'resultado_inspeccion_uuid', 'uuid');
     }
+
+    
 	
 }

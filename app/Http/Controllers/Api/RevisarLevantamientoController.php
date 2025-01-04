@@ -11,7 +11,7 @@ class RevisarLevantamientoController extends Controller
 {
     public function index()
     {
-        $alertas = AlertasLevantamiento::where('levantado', null)->get();
+        $alertas = AlertasLevantamiento::where('levantado', null)->with('resultado_inspeccion','resultado_inspeccion.responsable','resultado_inspeccion.inspeccion','resultado_inspeccion.inspeccion.empresa')->get();
         return response()->json($alertas);
     }
 
