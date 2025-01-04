@@ -44,9 +44,16 @@ class ResultadosInspeccion extends Model
         return $this->belongsTo(Cargo::class, 'cargo_id');
     }
 
-    public function levantamiento()
+    public function levantamientos()
     {
         return $this->hasMany(AlertasLevantamiento::class, 'resultado_inspeccion_uuid', 'uuid');
+    }
+
+    public function levantamiento()
+    {
+        // el ultimo levantamiento ingresado
+        return $this->hasOne(AlertasLevantamiento::class, 'resultado_inspeccion_uuid', 'uuid')->latest();
+        
     }
     
 }

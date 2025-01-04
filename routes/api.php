@@ -75,6 +75,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 });
 
 Route::post('/levantamiento/{uuid}', [LevantamientoController::class, 'store']);
+Route::get('/resultados-inspeccion/{uuid}', [ResultadoInspeccionController::class, 'showUuid']);
 
 // Middleware para verificar si el token ha expirado
 Route::post('/refresh-token', function (Request $request) {

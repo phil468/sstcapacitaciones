@@ -32,7 +32,12 @@ class ResultadoInspeccionController extends Controller
 
     public function show($id)
     {
-        return ResultadosInspeccion::findOrFail($id);
+        return ResultadosInspeccion::findOrFail($id)->with('inspeccion')->get();
+    }
+
+    public function showUuid($uuid)
+    {
+        return ResultadosInspeccion::where('uuid', $uuid)->with('inspeccion','inspeccion.empresa','responsable','levantamientos')->get();
     }
 
     public function update(Request $request, $id)

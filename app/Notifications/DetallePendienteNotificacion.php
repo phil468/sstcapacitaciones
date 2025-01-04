@@ -87,7 +87,7 @@ class DetallePendienteNotificacion extends Notification
         
         if($this->tipo == 'levantamiento') {
             if ($this->detalle->levantamiento) {
-                if ($this->detalle->levantamiento->levantado) {
+                if ($this->detalle->levantamiento->levantado == 1) {
                     return (new MailMessage)
                         ->subject('Observación Levantada')
 
@@ -113,7 +113,7 @@ class DetallePendienteNotificacion extends Notification
                         // ->line('Debe subsanar la observación en el plazo de corrección: ' .  $this->detalle->fecha_ejecucion)
                         // ->action('Ver Inspección', $url . '/' . 'inspecciones/' . $this->urlTipoInspeccion??'')
                         ->line('Gracias por usar nuestra aplicación!');
-                } else {
+                } elseif ($this->detalle->levantamiento->levantado == 0) {
                     return (new MailMessage)
                         ->subject('Observación Rechazada')
     
