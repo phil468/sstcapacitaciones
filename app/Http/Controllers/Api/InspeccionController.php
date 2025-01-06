@@ -24,7 +24,12 @@ class InspeccionController extends Controller
             'responsables_inspeccion',
             'responsables_area',
             'detalles',
+            'detalles.responsable',
+            'detalles.cargo',
             'responsables_registro',
+            'responsables_registro.personal',
+            'responsables_registro.cargo',
+            'detalles.levantamiento_ejecutado'
             ])->get();
     }
     public function store(Request $request)

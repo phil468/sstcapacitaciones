@@ -53,7 +53,10 @@ class ResultadosInspeccion extends Model
     {
         // el ultimo levantamiento ingresado
         return $this->hasOne(AlertasLevantamiento::class, 'resultado_inspeccion_uuid', 'uuid')->latest();
-        
+    }
+
+    public function levantamiento_ejecutado() {
+        return $this->hasOne(AlertasLevantamiento::class, 'resultado_inspeccion_uuid', 'uuid')->where('levantado', true)->latest();
     }
     
 }

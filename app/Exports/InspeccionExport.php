@@ -108,16 +108,16 @@ class InspeccionExport
                 $sheet->insertNewRowBefore($row, 1);
                 $sheet->getRowDimension($row)->setRowHeight(150);
 
-                $sheet->setCellValue("A$row", $detalle->descripcion);           // Descripción
+                $sheet->setCellValue("A$row", $detalle->descripcion);                                   // Descripción
                 $sheet->mergeCells("A$row:B$row");
                 $sheet->mergeCells("C$row:D$row");
-                // $sheet->setCellValue("C$row", $detalle->registro_fotografico); // Registro Fotográfico
-                $sheet->setCellValue("E$row", $detalle->nivel_riesgo);       // Acción a Tomar
-                $sheet->setCellValue("F$row", $detalle->acciones_tomar);       // Acción a Tomar
-                $sheet->setCellValue("G$row", $detalle->responsable->name);          // Responsable
-                $sheet->setCellValue("H$row", $detalle->cargo->name);          // Responsable
-                $sheet->setCellValue("I$row", $detalle->estado);               // Estado
-                $sheet->setCellValue("J$row", Carbon::parse($detalle->fecha_cierre)->format('d/m/Y'));         // Fecha de Cierre
+                // $sheet->setCellValue("C$row", $detalle->registro_fotografico);                       // Registro Fotográfico
+                $sheet->setCellValue("E$row", $detalle->nivel_riesgo);                                  // Acción a Tomar
+                $sheet->setCellValue("F$row", $detalle->acciones_tomar);                                // Acción a Tomar
+                $sheet->setCellValue("G$row", $detalle->responsable->name);                             // Responsable
+                $sheet->setCellValue("H$row", $detalle->cargo->name);                                   // Responsable
+                $sheet->setCellValue("I$row", $detalle->estado);                                        // Estado
+                $sheet->setCellValue("J$row", Carbon::parse($detalle->fecha_cierre)->format('d/m/Y'));  // Fecha de Cierre
                     
                 if ($detalle->registro_fotografico) {
                     $drawing = new Drawing();
@@ -125,9 +125,21 @@ class InspeccionExport
                     $drawing->setDescription('Registro');
                     $drawing->setPath($this->saveBase64Image($detalle->registro_fotografico));
                     $drawing->setCoordinates("C$row");
-                    $drawing->setOffsetX(5); // Mover un poquito a la derecha
-                    $drawing->setOffsetY(5); // Mover un poquito abajo
-                    $drawing->setHeight(150); // Ajusta el tamaño según sea necesario
+                    $drawing->setOffsetX(5);    // Mover un poquito a la derecha
+                    $drawing->setOffsetY(5);    // Mover un poquito abajo
+                    $drawing->setHeight(150);   // Ajusta el tamaño según sea necesario
+                    $drawing->setWorksheet($sheet);
+                }
+
+                if ($detalle->levantamiento_ejecutado) {
+                    $drawing = new Drawing();
+                    $drawing->setName('Levantamiento');
+                    $drawing->setDescription('Levantamiento');
+                    $drawing->setPath($this->saveBase64Image($detalle->levantamiento_ejecutado->registro_fotografico));
+                    $drawing->setCoordinates("K$row");
+                    $drawing->setOffsetX(5);    // Mover un poquito a la derecha
+                    $drawing->setOffsetY(5);    // Mover un poquito abajo
+                    $drawing->setHeight(150);   // Ajusta el tamaño según sea necesario
                     $drawing->setWorksheet($sheet);
                 }
                 $row++;
