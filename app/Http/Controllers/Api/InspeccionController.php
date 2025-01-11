@@ -193,4 +193,63 @@ class InspeccionController extends Controller
         }
     }
 
+    public function exportJson()
+    {
+        $inspecciones = Inspeccione::with([
+            'empresa',
+            'areas',
+            'responsables_inspeccion',
+            'responsables_area',
+            'detalles',
+            'detalles.responsable',
+            'detalles.cargo',
+            'responsables_registro',
+            'responsables_registro.personal',
+            'responsables_registro.cargo',
+            'detalles.levantamiento_ejecutado'
+        ])->get();
+
+        $data = [];
+
+        foreach ($inspecciones as $inspeccion) {
+            foreach ($inspeccion->detalles as $detalle) {
+                $data[] = [
+                    'Código de Inspección' => $inspeccion->numero_registro,
+                    'Razón Social' => $inspeccion->empresa->razon_social,
+                    'Fundo/Sede' => $inspeccion->fundo_sede,
+                    'Gerencia' => $inspeccion->gerencia,
+                    'Área Inspeccionada' => $inspeccion->area_inspeccionada,
+                    'Apellidos y nombres del responsable del área inspeccionada' => $inspeccion->responsables_area->pluck('name')->join(', '),
+                    'Cargo del responsable del área inspeccionada' => $inspeccion->responsables_area->pluck('cargo.name')->join(', '),
+                    'Zona Inspeccionada' => $inspeccion->zona_inspeccionada,
+                    'Responsable de Inspección' => $inspeccion->responsables_inspeccion->pluck('name')->join(', '),
+                    'Fecha de la Inspección' => $inspeccion->fecha_inspeccion,
+                    'Cantidad de personas afectadas' => $inspeccion->cantidad_personas_afectadas,
+                    'Monto de la multa' => $inspeccion->monto_multa,
+                    'Observaciones no levantadas' => $inspeccion->observaciones_no_levantadas,
+                    'Multa efectiva' => $inspeccion->multa_efectiva,
+                    'Tipo de Inspección' => $inspeccion->tipo_inspeccion,
+                    'Observaciones de la Inspección' => $inspeccion->observaciones_inspeccion,
+                    'Detalle de Inspección' => $detalle->detalle,
+                    'Causa Inmediata' => $detalle->causa_inmediata,
+                    'Nivel de Riesgo' => $detalle->nivel_riesgo,
+                    'Acción a tomar' => $detalle->accion_a_tomar,
+                    'Área responsable del levantamiento de las observaciones' => $detalle->area_responsable_levantamiento,
+                    'Apellidos y Nombres del responsable del levantamiento de las observaciones' => $detalle->responsable->name,
+                    'Cargo del Responsable del levantamiento de la observaciones' => $detalle->cargo->name,
+                    '¿Se notificó a las áreas involucradas vía E-mail?' => $detalle->notificado ? 'Sí' : 'No',
+                    'Estado de la observación' => $detalle->estado,
+                    'Fecha de Cierre' => $detalle->fecha_ejecucion,
+                    'Observaciones adicionales' => $detalle->observaciones_adicionales,
+                    'Mes' => $detalle->mes,
+                    'Año' => $detalle->año,
+                    'Campaña' => $detalle->campaña,
+                    'Fecha de Cierre estimada' => $detalle->fecha_cierre_estimada
+                ];
+            }
+        }
+
+        return response()->json($data);
+    }
+
 }

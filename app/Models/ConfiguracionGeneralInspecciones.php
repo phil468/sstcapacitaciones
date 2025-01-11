@@ -1,0 +1,25 @@
+<?php 
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class ConfiguracionGeneralInspecciones extends Model
+{
+	use HasFactory;
+    use SoftDeletes;
+	
+    public $timestamps = true;
+
+    protected $table = 'configuracion_general_inspecciones';
+
+    protected $fillable = ['name','valor','tipo_de_dato_id','created_by','updated_by','deleted_by'];
+	
+    public static function getValorByName($name)
+    {
+        $config = self::where('name', $name)->first();
+        return $config ? $config->valor : null;
+    }
+}

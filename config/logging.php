@@ -113,6 +113,12 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'sst_alerts' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/sst_alerts.log'),
+            'level' => 'info',
+        ],
     ],
 
 ];

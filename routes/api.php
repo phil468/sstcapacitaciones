@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AlertaEnviadaInspeccionController;
 use App\Http\Controllers\Api\AlertaLevantamientoController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Api\InspeccionController;
 use App\Http\Controllers\Api\ResultadoInspeccionController;
 use App\Http\Controllers\Api\AreaController;
 use App\Http\Controllers\Api\CargoController;
+use App\Http\Controllers\Api\ConfiguracionAlertaInspeccionController;
 use App\Http\Controllers\Api\InspectorController;
 use App\Http\Controllers\Api\PersonalController;
 use App\Http\Controllers\Api\LevantamientoController;
@@ -71,11 +73,15 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     // return $request->user();
     Route::get('/revisar-levantamiento', [RevisarLevantamientoController::class, 'index']);
     Route::post('/revisar-levantamiento/{id}', [RevisarLevantamientoController::class, 'update']);
+    
+    Route::apiResource('config-alertas-inspecciones', ConfiguracionAlertaInspeccionController::class);
+    Route::apiResource('alertas-enviadas-inspeccion', AlertaEnviadaInspeccionController::class);
 
 });
 
 Route::post('/levantamiento/{uuid}', [LevantamientoController::class, 'store']);
 Route::get('/resultados-inspeccion/{uuid}', [ResultadoInspeccionController::class, 'showUuid']);
+Route::get('/inspecciones/export/json', [InspeccionController::class, 'exportJson']);
 
 // Middleware para verificar si el token ha expirado
 Route::post('/refresh-token', function (Request $request) {
