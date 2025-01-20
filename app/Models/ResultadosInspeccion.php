@@ -59,4 +59,14 @@ class ResultadosInspeccion extends Model
         return $this->hasOne(AlertasLevantamiento::class, 'resultado_inspeccion_uuid', 'uuid')->where('levantado', true)->latest();
     }
     
+    public function getPendientesCountAttribute()
+    {
+        return 
+        $this
+        ->resultados()
+        ->where('estado', 'Pendiente')
+        ->where('deleted_at', null)
+        ->count();
+    }
+    
 }

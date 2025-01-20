@@ -12,6 +12,6 @@ class ParteLuzEmergencia extends Model
     protected $table = 'partes_luces_emergencia';
 
     protected $fillable = [
-        'nombre'
+        'name'
     ];
 }

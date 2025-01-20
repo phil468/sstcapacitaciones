@@ -28,8 +28,9 @@
     <p><strong>Estado:</strong> {{ $resultado->estado }}</p>
     <p><strong>Fecha de Ejecución:</strong> {{ $resultado->fecha_ejecucion }}</p>
     <p><strong>Debe subsanar la observación en el plazo de corrección:</strong> {{ $resultado->fecha_ejecucion }}</p>
-    <p><a href="{{ $link }}">
+    {{-- <p><a href="{{ $link }}">
         <button class="button button1">Ver Inspección</button>
-    </a></p>
+    </a></p> --}}
+    <p><a href="{{ $link }}" class="button button1">Ver Inspección</a></p>
 </body>
 </html>

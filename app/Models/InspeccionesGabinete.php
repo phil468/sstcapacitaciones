@@ -14,15 +14,30 @@ class InspeccionesGabinete extends Model
     public $timestamps = true;
 
     protected $table = 'inspecciones_gabinetes';
+    protected $keyType = 'string';
 
-    protected $fillable = ['fecha_inspeccion','hora_inspeccion','inspector','lugar'];
-	
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function gabinetes()
+    protected $fillable = [
+        'fecha_inspeccion',
+        'hora_inspeccion',
+        'inspector_id',
+        'area_id',
+        'lugar',
+        'resultado',
+        'firma'
+    ];
+
+    public function detalles()
     {
-        return $this->hasMany('App\Models\Gabinete', 'inspeccion_id', 'id');
+        return $this->hasMany(DetalleInspeccionGabinete::class, 'inspeccion_id');
     }
-    
+
+    public function inspector()
+    {
+        return $this->belongsTo(Personal::class, 'inspector_id');
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class, 'area_id');
+    }
 }

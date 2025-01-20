@@ -15,14 +15,15 @@ class Gabinete extends Model
 
     protected $table = 'gabinetes';
 
-    protected $fillable = ['numero_gabinete','ubicacion','inspeccion_id','enrollada_correctamente','acoples_estado','limpieza_manguera','empaques_estado','pintura_gabinete','limpieza_gabinete','vidrio_estado','senalizacion','piton_obstruido','piton_estado','valvula_principal_estado','valvula_principal_abierta','manometro_estado','valvula_angular_estado','observaciones'];
-	
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function inspeccionesGabinete()
+    protected $fillable = [
+        'name',
+        'estado',
+        'codigo'
+    ];
+
+    public function detalles()
     {
-        return $this->hasOne('App\Models\InspeccionesGabinete', 'id', 'inspeccion_id');
+        return $this->hasMany(DetalleInspeccionGabinete::class, 'gabinete_id');
     }
     
 }

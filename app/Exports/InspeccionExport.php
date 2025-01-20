@@ -42,7 +42,7 @@ class InspeccionExport
         $sheet = $spreadsheet->getActiveSheet();
 
         // Obtener los datos desde la base de datos
-        $inspecciones = Inspeccione::all();
+        // $inspecciones = Inspeccione::all();
 
         // Llenar datos en las celdas correspondientes
             // Ajustar las celdas de acuerdo al formato
@@ -54,7 +54,7 @@ class InspeccionExport
             $sheet->setCellValue('A14', $this->inspeccion->areas()->pluck('name')->implode(', '));
             $sheet->setCellValue('D14', Carbon::parse($this->inspeccion->fecha_inspeccion)->format('d/m/Y'));
             $sheet->setCellValue('G14', $this->inspeccion->responsables_area()->pluck('name')->implode(', '));
-            $sheet->setCellValue('G14', $this->inspeccion->responsables_inspeccion()->pluck('name')->implode(', '));            
+            $sheet->setCellValue('J14', $this->inspeccion->responsables_inspeccion()->pluck('name')->implode(', '));            
             $sheet->setCellValue('A17', $this->inspeccion->hora_inspeccion);
 
             if($this->inspeccion->tipo_inspeccion == 'Otro'){
@@ -113,7 +113,7 @@ class InspeccionExport
                 $sheet->mergeCells("C$row:D$row");
                 // $sheet->setCellValue("C$row", $detalle->registro_fotografico);                       // Registro Fotográfico
                 $sheet->setCellValue("E$row", $detalle->nivel_riesgo);                                  // Acción a Tomar
-                $sheet->setCellValue("F$row", $detalle->acciones_tomar);                                // Acción a Tomar
+                $sheet->setCellValue("F$row", $detalle->accion_a_tomar);                                // Acción a Tomar
                 $sheet->setCellValue("G$row", $detalle->responsable->name);                             // Responsable
                 $sheet->setCellValue("H$row", $detalle->cargo->name);                                   // Responsable
                 $sheet->setCellValue("I$row", $detalle->estado);                                        // Estado

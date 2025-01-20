@@ -14,6 +14,9 @@ use App\Http\Controllers\Api\ResultadoInspeccionController;
 use App\Http\Controllers\Api\AreaController;
 use App\Http\Controllers\Api\CargoController;
 use App\Http\Controllers\Api\ConfiguracionAlertaInspeccionController;
+use App\Http\Controllers\Api\GabineteController;
+use App\Http\Controllers\Api\InspeccionExtintorController;
+use App\Http\Controllers\Api\InspeccionGabineteController;
 use App\Http\Controllers\Api\InspectorController;
 use App\Http\Controllers\Api\PersonalController;
 use App\Http\Controllers\Api\LevantamientoController;
@@ -63,6 +66,13 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::apiResource('alertas_levantamiento', AlertaLevantamientoController::class);
     Route::get('/inspecciones-internas/{id}/reporte', [InspeccionController::class, 'descargarReporte'])->name('inspecciones.reporte');
 
+    Route::apiResource('inspecciones_gabinetes', InspeccionGabineteController::class);
+    Route::apiResource('gabinetes', GabineteController::class);
+    Route::get('/inspecciones_gabinetes/{id}/reporte', [InspeccionGabineteController::class, 'descargarReporte'])->name('inspecciones-gabinetes.reporte');
+
+    Route::apiResource('inspecciones-extintores', InspeccionExtintorController::class);
+    Route::get('/inspecciones-extintores/{id}/reporte', [InspeccionExtintorController::class, 'descargarReporte'])->name('inspecciones-extintores.reporte');
+
     Route::apiResource('inspeccion-luces-emergencia', InspeccionLuzEmergenciaController::class);
     Route::apiResource('areas', AreaController::class);
     Route::apiResource('inspectores', InspectorController::class);
@@ -87,8 +97,7 @@ Route::get('/inspecciones/export/json', [InspeccionController::class, 'exportJso
 Route::post('/refresh-token', function (Request $request) {
     // $token = JWTAuth::getToken();
     $user = User::find($request->id);
-
-        $token = JWTAuth::fromUser($user);
+    $token = JWTAuth::fromUser($user);
         // $response['token'] = $token;
     return response()->json(['token' => $token]);
 });
