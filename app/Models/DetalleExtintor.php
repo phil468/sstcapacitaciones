@@ -10,8 +10,12 @@ class DetalleExtintor extends Model
     use HasFactory;
 
     protected $table = 'detalles_extintores';
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
+        'id',
         'inspeccion_id',
         'numero_extintor',
         'ubicacion',
@@ -36,6 +40,7 @@ class DetalleExtintor extends Model
         'manija_transporte',
         'palanca',
         'tarjeta_control',
+        'colgador',
         'gabinete',
         'observaciones'
     ];
@@ -44,4 +49,5 @@ class DetalleExtintor extends Model
     {
         return $this->belongsTo(InspeccionExtintor::class, 'inspeccion_id');
     }
+    
 }

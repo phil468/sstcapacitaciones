@@ -10,17 +10,47 @@ class InspeccionExtintor extends Model
     use HasFactory;
 
     protected $table = 'inspecciones_extintores';
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
-        'inspector',
+        'id',
+        'empresa_id',
+        // 'razon_social',
+        // 'ruc',
+        // 'domicilio',
+        // 'actividad_economica',
+        'num_trabajadores',
+        'fecha_hora_inspeccion',
+        'inspector_id',
+        'area_id',
         'firma',
-        'fecha',
-        'hora',
-        'lugar'
+        'lugar',
+        'resultado'
     ];
+
+    protected $dates = [
+        'fecha_hora_inspeccion'
+    ];    
 
     public function detalles()
     {
         return $this->hasMany(DetalleExtintor::class, 'inspeccion_id');
+    }
+
+    public function inspector()
+    {
+        return $this->belongsTo(Personal::class, 'inspector_id');
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class, 'area_id');
+    }
+
+    public function empresa()
+    {
+        return $this->belongsTo(Empresa::class, 'empresa_id');
     }
 }

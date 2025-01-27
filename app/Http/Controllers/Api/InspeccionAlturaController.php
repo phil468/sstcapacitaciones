@@ -1,42 +1,38 @@
 <?php
-namespace App\Http\Controllers\Api\sst\inspecciones;
+namespace App\Http\Controllers\Api;
 
 use App\Exports\InspeccionLucesExport;
 use App\Http\Controllers\Controller;
-use App\Models\Inspecciones\Luces\DetalleInspeccionLuz;
+use App\Models\DetalleInspeccionAltura;
 // use App\Models\Inspecciones\Luces\ParteLuzEmergencia;
-use App\Models\Inspecciones\Luces\InspeccionLuzEmergencia;
-use App\Models\Inspecciones\Luces\InspeccionLuzResponsable;
+use App\Models\InspeccionAltura;
+// use App\Models\Inspecciones\Luces\InspeccionLuzResponsable;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
-class InspeccionLuzEmergenciaController extends Controller
+class InspeccionAlturaController extends Controller
 {
     public function index()
     {
         return response()->json(
-            InspeccionLuzEmergencia::with(
+            InspeccionAltura::with(
                 'detalles',
                 'inspector', 
-                'responsables',
                 'area',
                 'empresa',
                 'detalles.area',
-                'detalles.partes'
                 )->get(), 200);
     }
 
     public function show($id)
     {
-        $inspeccion = InspeccionLuzEmergencia::with(
+        $inspeccion = InspeccionAltura::with(
                 'detalles', 
                 'inspector', 
-                'responsables',
                 'area',
                 'empresa',
                 'detalles.area',
-                'detalles.partes'
                 )->findOrFail($id);
         return response()->json($inspeccion, 200);
     }
@@ -59,27 +55,27 @@ class InspeccionLuzEmergenciaController extends Controller
             return response()->json(['message' => 'El campo id es obligatorio'], 422);
         }
 
-        $inspeccion = InspeccionLuzEmergencia::create($data);
+        $inspeccion = InspeccionAltura::create($data);
 
         if ($request->has('detalles')) {
             foreach ($request->detalles as $detalle) {
                 $detalleModel = $inspeccion->detalles()->create($detalle);
                 
-                if (isset($detalle['partes'])) {
-                    $detalleModel->partes()->sync($detalle['partes']);
-                }
+                // if (isset($detalle['partes'])) {
+                //     $detalleModel->partes()->sync($detalle['partes']);
+                // }
             }
         }        
 
-        if ($request->has('responsables')) {
-            foreach ($request->responsables as $responsable) {
-                $inspeccion->responsables()->create($responsable);
-            }
-        }
+        // if ($request->has('responsables')) {
+        //     foreach ($request->responsables as $responsable) {
+        //         $inspeccion->responsables()->create($responsable);
+        //     }
+        // }
 
         return response()->json($inspeccion->load([
             'empresa','area','inspector',
-            'detalles','detalles.partes','responsables'
+            'detalles','detalles.area'
 
         ]), 201);
 
@@ -87,7 +83,7 @@ class InspeccionLuzEmergenciaController extends Controller
 
     public function update(Request $request, $id)
     {
-        $inspeccion = InspeccionLuzEmergencia::find($id);
+        $inspeccion = InspeccionAltura::find($id);
         
         if (!$inspeccion) {
             $this->store($request);
@@ -111,70 +107,68 @@ class InspeccionLuzEmergenciaController extends Controller
             $detallesUUIDs = array_column($request->detalles, 'id');
 
             // Eliminar los detalles que no están en la solicitud
-            // DetalleInspeccionLuz::whereNotIn('id', $detallesUUIDs)->delete();
+            // DetalleInspeccionAltura::whereNotIn('id', $detallesUUIDs)->delete();
             $inspeccion->detalles()->whereNotIn('id', $detallesUUIDs)->delete();
 
             // Actualizar o crear los detalles
             foreach ($request->detalles as $detalle) {
                 $existingDetalle = 
-                DetalleInspeccionLuz::where('id', $detalle['id'])->first();
+                DetalleInspeccionAltura::where('id', $detalle['id'])->first();
                 if ($existingDetalle) {
                     $existingDetalle->update($detalle);
-                    if (isset($detalle['partes'])) {
-                        $existingDetalle->partes()->sync($detalle['partes']);
-                    }
+                    // if (isset($detalle['partes'])) {
+                    //     $existingDetalle->partes()->sync($detalle['partes']);
+                    // }
                 } else {
                     $detalleModel = $inspeccion->detalles()->create($detalle);
-                    if (isset($detalle['partes'])) {
-                        $detalleModel->partes()->sync($detalle['partes']);
-                    }
+                    // if (isset($detalle['partes'])) {
+                    //     $detalleModel->partes()->sync($detalle['partes']);
+                    // }
                 }
             }
         }
 
-        if ($request->has('responsables')) {
-            // Obtener los UUIDs de los detalles enviados en la solicitud
-            $UUIDs = array_column($request->responsables, 'id');
+        // if ($request->has('responsables')) {
+        //     // Obtener los UUIDs de los detalles enviados en la solicitud
+        //     $UUIDs = array_column($request->responsables, 'id');
 
-            // Eliminar los detalles que no están en la solicitud
-            // InspeccionLuzResponsable::whereNotIn('id', $UUIDs)->delete();
-            $inspeccion->responsables()->whereNotIn('id', $UUIDs)->delete();
+        //     // Eliminar los detalles que no están en la solicitud
+        //     InspeccionLuzResponsable::whereNotIn('id', $UUIDs)->delete();
 
-            // Actualizar o crear los detalles
-            foreach ($request->responsables as $responsable) {
-                $existingResponsable = 
-                InspeccionLuzResponsable::where('id', $responsable['id'])->first();
-                if ($existingDetalle) {
-                    $existingResponsable->update($responsable);
-                } else {
-                    $responsableModel = $inspeccion->responsables()->create($responsable);
-                }
-            }
-        }
-
+        //     // Actualizar o crear los detalles
+        //     foreach ($request->responsables as $responsable) {
+        //         $existingResponsable = 
+        //         InspeccionLuzResponsable::where('id', $responsable['id'])->first();
+        //         if ($existingDetalle) {
+        //             $existingResponsable->update($responsable);
+        //         } else {
+        //             $responsableModel = $inspeccion->responsables()->create($responsable);
+        //         }
+        //     }
+        // }
         return response()->json($inspeccion->load(
             [
                 'empresa','area','inspector',
-            'detalles','detalles.partes','responsables'
+            'detalles','detalles.area'
             ]
         ), 200);
     }
 
     public function destroy($id)
     {
-        $inspeccion = InspeccionLuzEmergencia::findOrFail($id);
+        $inspeccion = InspeccionAltura::findOrFail($id);
         $inspeccion->delete();
 
         return response()->json(null, 204);
     }   
 
-    public function descargarReporte($id)
-    {
-        $inspeccion = InspeccionLuzEmergencia::findOrFail($id);
-        $exporter = new InspeccionLucesExport($inspeccion);
-        $filePath = $exporter->export();
+    // public function descargarReporte($id)
+    // {
+    //     $inspeccion = InspeccionAltura::findOrFail($id);
+    //     $exporter = new InspeccionAlturaExport($inspeccion);
+    //     $filePath = $exporter->export();
 
-        return Response::download($filePath, 'inspecciones_luces.xlsx')->deleteFileAfterSend(true);
-    }
+    //     return Response::download($filePath, 'inspecciones_luces.xlsx')->deleteFileAfterSend(true);
+    // }
 
 }

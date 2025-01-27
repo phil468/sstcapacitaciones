@@ -1,19 +1,20 @@
 <?php
-namespace App\Models\Inspecciones\Luces;
+namespace App\Models;
 
 use App\Models\Area;
 use App\Models\Empresa;
+use App\Models\DetalleInspeccionAltura;
 use App\Models\Personal;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class InspeccionLuzEmergencia extends Model
+class InspeccionDuchasLavaojos extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'inspeccion_luces_emergencia';
+    protected $table = 'inspecciones_duchas_lavaojos';
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -26,25 +27,19 @@ class InspeccionLuzEmergencia extends Model
         'domicilio',
         'actividad_economica',
         'num_trabajadores',
-        'fecha_hora_inspeccion',
-        'lugar',
+        'fecha',
+        'hora',
         'inspector_id',
-        'area_id',
-        'firma'
+        'area_id'
     ];
 
-    protected $dates = [
-        'fecha_hora_inspeccion'
-    ];    
-
-    public function responsables()
-    {
-        return $this->hasMany(InspeccionLuzResponsable::class, 'inspeccion_id');
-    }
+    // protected $dates = [
+    //     'fecha_hora_inspeccion'
+    // ];    
 
     public function detalles()
     {
-        return $this->hasMany(DetalleInspeccionLuz::class, 'inspeccion_id');
+        return $this->hasMany(DetalleInspeccionDuchasLavaojos::class, 'inspeccion_id');
     }
 
     public function inspector()

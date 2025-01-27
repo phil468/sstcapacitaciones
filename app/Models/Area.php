@@ -27,13 +27,6 @@ class Area extends Model
         'empresa_id',
         'centro_costo'
     ];
-	
-
-    // idccosto_nisira
-    // empresa_id
-    // name
-    // centro_costo
-    // estado
 
     public function gerencia()
     {

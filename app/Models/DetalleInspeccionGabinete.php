@@ -10,6 +10,8 @@ class DetalleInspeccionGabinete extends Model
     use HasFactory;
 
     protected $table = 'detalles_inspecciones_gabinetes';
+    protected $primaryKey = 'id';
+    public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [

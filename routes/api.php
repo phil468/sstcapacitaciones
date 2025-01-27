@@ -15,12 +15,20 @@ use App\Http\Controllers\Api\AreaController;
 use App\Http\Controllers\Api\CargoController;
 use App\Http\Controllers\Api\ConfiguracionAlertaInspeccionController;
 use App\Http\Controllers\Api\GabineteController;
+use App\Http\Controllers\Api\InspeccionAlturaController;
+use App\Http\Controllers\Api\InspeccionCheckListController;
+use App\Http\Controllers\Api\InspeccionDuchasLavaojosController;
+use App\Http\Controllers\Api\InspeccionEppController;
 use App\Http\Controllers\Api\InspeccionExtintorController;
 use App\Http\Controllers\Api\InspeccionGabineteController;
+use App\Http\Controllers\Api\InspeccionTransporteController;
 use App\Http\Controllers\Api\InspectorController;
 use App\Http\Controllers\Api\PersonalController;
 use App\Http\Controllers\Api\LevantamientoController;
 use App\Http\Controllers\Api\RevisarLevantamientoController;
+use App\Models\InspeccionCheckList;
+use App\Models\InspeccionesEpp;
+use App\Models\InspeccionTransporte;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,10 +78,26 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::apiResource('gabinetes', GabineteController::class);
     Route::get('/inspecciones_gabinetes/{id}/reporte', [InspeccionGabineteController::class, 'descargarReporte'])->name('inspecciones-gabinetes.reporte');
 
-    Route::apiResource('inspecciones-extintores', InspeccionExtintorController::class);
-    Route::get('/inspecciones-extintores/{id}/reporte', [InspeccionExtintorController::class, 'descargarReporte'])->name('inspecciones-extintores.reporte');
+    Route::apiResource('inspecciones_extintores', InspeccionExtintorController::class);
+    Route::get('/inspecciones_extintores/{id}/reporte', [InspeccionExtintorController::class, 'descargarReporte'])->name('inspecciones-extintores.reporte');
+
+    Route::apiResource('inspecciones_epp', InspeccionEppController::class);
+    Route::get('/inspecciones_epp/{id}/reporte', [InspeccionEppController::class, 'descargarReporte'])->name('inspecciones-extintores.reporte');
 
     Route::apiResource('inspeccion-luces-emergencia', InspeccionLuzEmergenciaController::class);
+    Route::get('/inspeccion-luces-emergencia/{id}/reporte', [InspeccionLuzEmergenciaController::class, 'descargarReporte'])->name('inspecciones-luz.reporte');
+        
+    Route::apiResource('check_list_inspecciones_sst', InspeccionCheckListController::class);
+    Route::get('/check_list_inspecciones_sst/{id}/reporte', [InspeccionCheckListController::class, 'descargarReporte'])->name('inspecciones-check-list.reporte');
+    
+    Route::apiResource('inspeccion_transporte', InspeccionTransporteController::class);
+    Route::get('/inspeccion_transporte/{id}/reporte', [InspeccionTransporteController::class, 'descargarReporte'])->name('inspecciones-transporte.reporte');
+    
+    Route::apiResource('inspecciones-altura', InspeccionAlturaController::class);
+    // Route::get('/inspeccion-altura/{id}/reporte', [InspeccionAlturaController::class, 'descargarReporte'])->name('inspecciones-altura.reporte');
+
+    Route::apiResource('inspeccion-duchas-lavaojos', InspeccionDuchasLavaojosController::class);
+
     Route::apiResource('areas', AreaController::class);
     Route::apiResource('inspectores', InspectorController::class);
     Route::apiResource('personal', PersonalController::class);

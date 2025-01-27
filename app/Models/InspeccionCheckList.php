@@ -1,36 +1,43 @@
-<?php 
+<?php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class InspeccionesEpp extends Model
+class InspeccionCheckList extends Model
 {
-	use HasFactory;
-    use SoftDeletes;
-    protected $table = 'inspecciones_epp';
+    use HasFactory;
+
+    protected $table = 'check_list_inspecciones_sst';
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
         'id',
-        'numero_inspeccion',
-        'inspector_id',
-        'firma',
-        'turno',
-        'condicion',
-        'riesgo',
-        'actividad',
-        'fecha',
-        'resultado',
-        'area_id',
         'empresa_id',
-        'resultado',
-        'actividad',
+        'razon_social',
+        'ruc',
+        'domicilio',
+        'actividad_economica',
+        'num_trabajadores',
+        'fecha_hora_inspeccion',
+        'inspector_id',
+        'area_id',
+        'firma',
+        'observaciones',
+        'lugar',
     ];
+
+    protected $dates = [
+        'fecha_hora_inspeccion'
+    ];    
+
+    public function detalles()
+    {
+        return $this->hasOne(DetallesCheckList::class, 'inspeccion_id');
+    }
 
     public function inspector()
     {
@@ -46,15 +53,4 @@ class InspeccionesEpp extends Model
     {
         return $this->belongsTo(Empresa::class, 'empresa_id');
     }
-
-    public function detalles()
-    {
-        return $this->hasMany(DetallesEpp::class, 'inspeccion_id');
-    }
-
-    public function otros()
-    {
-        return $this->hasMany(InspeccionEppOtros::class, 'inspeccion_epp_id');
-    }
-	
 }

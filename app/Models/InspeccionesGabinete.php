@@ -14,6 +14,8 @@ class InspeccionesGabinete extends Model
     public $timestamps = true;
 
     protected $table = 'inspecciones_gabinetes';
+    protected $primaryKey = 'id';
+    public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -28,7 +30,7 @@ class InspeccionesGabinete extends Model
 
     public function detalles()
     {
-        return $this->hasMany(DetalleInspeccionGabinete::class, 'inspeccion_id');
+        return $this->hasMany(DetalleExtintor::class, 'inspeccion_id');
     }
 
     public function inspector()

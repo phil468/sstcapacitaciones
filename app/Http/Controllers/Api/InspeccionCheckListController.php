@@ -2,27 +2,26 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Exports\InspeccionExtintoresExport;
+use App\Exports\InspeccionCheckListExport;
+use App\Exports\InspeccionEppExport;
 use App\Http\Controllers\Controller;
-use App\Models\InspeccionExtintor;
+use App\Models\DetallesCheckList;
+use App\Models\InspeccionCheckList;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Exports\InspeccionExtintorExport;
-use App\Models\DetalleExtintor;
 use Illuminate\Support\Facades\Response;
-use Maatwebsite\Excel\Facades\Excel;
 
-class InspeccionExtintorController extends Controller
+class InspeccionCheckListController extends Controller
 {
     public function index()
     {
         return response()->json(
-            InspeccionExtintor::with(
-                'detalles',
+            InspeccionCheckList::with([
+                'detalles', 
                 'inspector', 
                 'area',
-                'empresa'
-                )->get(), 200);
+                'empresa',
+            ])->get(), 200);
     }
 
     public function store(Request $request)
@@ -39,40 +38,46 @@ class InspeccionExtintorController extends Controller
             $data['deleted_at'] = Carbon::parse($request->deleted_at)->setTimezone('UTC')->subHours(5);
         }
 
-        $inspeccion = InspeccionExtintor::create($data);
+        // Asegúrate de que el campo 'id' esté presente y sea único
+        if (!$request->has('id')) {
+            return response()->json(['message' => 'El campo id es obligatorio'], 422);
+        }
+
+        $inspeccion = InspeccionCheckList::create($data);
 
         if ($request->has('detalles')) {
-            foreach ($request->detalles as $detalle) {
-                $inspeccion->detalles()->create($detalle);
-            }
+            // foreach ($request->detalles as $detalle) {
+                $detalleModel = $inspeccion->detalles()->create($request->detalles);
+            // }
         }
 
         return response()->json($inspeccion->load([
-            'detalles',
+            'detalles', 
             'inspector', 
             'area',
             'empresa',
-    ]), 201);
+        ]), 201);
     }
 
     public function show($id)
     {
-        $inspeccion = InspeccionExtintor::with(
-                'detalles', 
-                'inspector', 
-                'area',
-                'empresa',
-                )->findOrFail($id);
+        $inspeccion = InspeccionCheckList::with([
+            'detalles', 
+            'inspector', 
+            'area',
+            'empresa',
+            ]
+        )->findOrFail($id);
+    
         return response()->json($inspeccion, 200);
     }
 
     public function update(Request $request, $id)
     {
-        $inspeccion = InspeccionExtintor::find($id);
+        $inspeccion = InspeccionCheckList::find($id);
 
         if (!$inspeccion) {
-            $this->store($request);
-            return;
+            return $this->store($request);
             // return response()->json(['error' => 'Inspeccion not found'], 404);
         }
 
@@ -92,47 +97,46 @@ class InspeccionExtintorController extends Controller
             $detallesUUIDs = array_column($request->detalles, 'id');
 
             // Eliminar los detalles que no están en la solicitud
-            // DetalleExtintor::whereNotIn('id', $detallesUUIDs)->delete();
             $inspeccion->detalles()->whereNotIn('id', $detallesUUIDs)->delete();
 
             // Actualizar o crear los detalles
-            foreach ($request->detalles as $detalle) {
-                $existingDetalle = 
-                DetalleExtintor::where('id', $detalle['id'])->first();
+            // foreach ($request->detalles as $detalle) {
+                $existingDetalle =  DetallesCheckList::where('id', $request->detalles['id'])->first();
                 if ($existingDetalle) {
-                    $existingDetalle->update($detalle);
-                    // if (isset($detalle['partes'])) {
-                    //     $existingDetalle->partes()->sync($detalle['partes']);
-                    // }
+                    $existingDetalle->update($request->detalles);
                 } else {
-                    $detalleModel = $inspeccion->detalles()->create($detalle);
-                    // if (isset($detalle['partes'])) {
-                    //     $detalleModel->partes()->sync($detalle['partes']);
-                    // }
+                    // $detalle['id'] = (string) \Illuminate\Support\Str::uuid();
+                    $detalleModel = $inspeccion->detalles()->create($request->detalles);
+
+
                 }
-            }
+            // }
         }
 
-        return response()->json($inspeccion->load([
-            'detalles', 
+        return response()->json($inspeccion->load(
+            [
+                'detalles', 
                 'inspector', 
                 'area',
-                'empresa', 
-        ]), 200);
+                'empresa',
+            ]
+
+        ), 200);
     }
 
     public function destroy($id)
     {
-        InspeccionExtintor::destroy($id);
+        InspeccionCheckList::destroy($id);
         return response()->json(null, 204);
     }
-
+    
     public function descargarReporte($id)
     {
-        $inspeccion = InspeccionExtintor::findOrFail($id);
-        $exporter = new InspeccionExtintoresExport($inspeccion);
+        $inspeccion = InspeccionCheckList::findOrFail($id);
+        $exporter = new InspeccionCheckListExport($inspeccion);
         $filePath = $exporter->export();
 
-        return Response::download($filePath, 'inspecciones_extintores.xlsx')->deleteFileAfterSend(true);
+        return Response::download($filePath, 'inspeccion_check_list_'.$inspeccion->id.'.xlsx')->deleteFileAfterSend(true);
     }
+
 }

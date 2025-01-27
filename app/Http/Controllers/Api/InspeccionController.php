@@ -162,7 +162,6 @@ class InspeccionController extends Controller
     public function descargarReporte($id)
     {
         $inspeccion = Inspeccione::findOrFail($id);
-        // return Excel::download(new InspeccionExport($inspeccion), 'reporte_inspeccion.xlsx');
 
         $exporter = new InspeccionExport($inspeccion);
         $filePath = $exporter->export();

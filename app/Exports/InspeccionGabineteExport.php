@@ -49,6 +49,15 @@ class InspeccionGabineteExport
             $sheet->setCellValue('O7', 'Lugar: '.$this->inspeccion->area->name ?? $this->inspeccion->lugar);
             $sheet->setCellValue('A7', 'Fecha y Hora de la inspección: '.Carbon::parse($this->inspeccion->fecha_inspeccion)->format('d/m/Y').' '.Carbon::parse($this->inspeccion->hora_inspeccion)->format('h:i a'));
             $sheet->setCellValue('A6', 'Inspector: '.$this->inspeccion->inspector->name);
+            if ($this->inspeccion->firma) {
+                $drawing = new Drawing();
+                $drawing->setName('Firma');
+                $drawing->setDescription('Firma');
+                $drawing->setPath($this->saveBase64Image($this->inspeccion->firma));
+                $drawing->setCoordinates("O6");
+                $drawing->setHeight(70); // Ajusta el tamaño según sea necesario
+                $drawing->setWorksheet($sheet);
+            }
             // $sheet->setCellValue('G14', $this->inspeccion->responsables_inspeccion()->pluck('name')->implode(', '));            
             // $sheet->setCellValue('A17', $this->inspeccion->hora_inspeccion);
 

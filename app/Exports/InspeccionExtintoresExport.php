@@ -47,127 +47,72 @@ class InspeccionExtintoresExport
         // Llenar datos en las celdas correspondientes
             // Ajustar las celdas de acuerdo al formato
             
-            // $sheet->setCellValue('B8',  $this->inspeccion->numero_registro);
-            $sheet->setCellValue('A9', $this->inspeccion->empresa->razon_social);
-            $sheet->setCellValue('H9', $this->inspeccion->empresa->ruc);
-            $sheet->setCellValue('L9', $this->inspeccion->empresa->domicilio);
-            $sheet->setCellValue('T9', $this->inspeccion->empresa->actividad_economica);
+            
+            $sheet->setCellValue('AF8', $this->inspeccion->area->name ?? $this->inspeccion->lugar);
+            $sheet->setCellValue('E8', Carbon::parse($this->inspeccion->fecha_inspeccion)->format('d/m/Y').' '.Carbon::parse($this->inspeccion->hora_inspeccion)->format('h:i a'));
+            $sheet->setCellValue('E7', $this->inspeccion->inspector->name);
+            // $sheet->mergeCells('E7','AB7');
 
-            $sheet->setCellValue('Q11', 'Lugar: '.$this->inspeccion->area->name ?? $this->inspeccion->lugar);
-            $sheet->setCellValue('A11', 'Fecha y Hora de la inspección: '.Carbon::parse($this->inspeccion->fecha_inspeccion)->format('d/m/Y').' '.Carbon::parse($this->inspeccion->hora_inspeccion)->format('h:i a'));
-            $sheet->setCellValue('A10', 'Inspector: '.$this->inspeccion->inspector->name);
-            // $sheet->setCellValue('G14', $this->inspeccion->responsables_inspeccion()->pluck('name')->implode(', '));            
-            // $sheet->setCellValue('A17', $this->inspeccion->hora_inspeccion);
+            if ($this->inspeccion->firma) {
+                $drawing = new Drawing();
+                $drawing->setName('Firma');
+                $drawing->setDescription('Firma');
+                $drawing->setPath($this->saveBase64Image($this->inspeccion->firma));
+                $drawing->setCoordinates("AF7");
+                $drawing->setHeight(70); // Ajusta el tamaño según sea necesario
+                $drawing->setWorksheet($sheet);
+            }
+            
+            $sheet->setCellValue('F15', $this->inspeccion->resultado);
+            $sheet->mergeCells("F15:AJ15");
 
-            // if($this->inspeccion->tipo_inspeccion == 'Otro'){
-            //     $sheet->setCellValue('I17', $this->inspeccion->tipo_inspeccion_otro);
-            // }elseif ($this->inspeccion->tipo_inspeccion == 'Planeada') {
-            //     $sheet->setCellValue('D17', 'X');
-            // }elseif ($this->inspeccion->tipo_inspeccion == 'No Planeada') {
-            //     $sheet->setCellValue('F17', 'X');
-            // }
-
-            // $sheet->setCellValue('A19', $this->inspeccion->objetivo);
-            // $sheet->setCellValue('A26', $this->inspeccion->descripcion_causa);
-
-            // $sheet->setCellValue('A29', $this->inspeccion->conclusiones_recomendaciones);
-
-            // $sheet->setCellValue('F12', $this->inspeccion->resultado);
-            // $sheet->mergeCells("F12:T12");
-
-            $row = 15; // Comienza a llenar desde la fila 35 (según tu plantilla)
+            $row = 13; // Comienza a llenar desde la fila 35 (según tu plantilla)
             $order = 1;
             foreach ($this->inspeccion->detalles as $detalle) {
                 // Insertar una nueva fila antes de la fila actual
                 $sheet->insertNewRowBefore($row, 1);
                 // $sheet->getRowDimension($row)->setRowHeight(150);
 
-                $sheet->setCellValue("B$row", $order.'');//ITEM
-                $sheet->setCellValue("B$row", $detalle->area->name??$detalle->area );//N° DE GABINETE
-                $sheet->setCellValue("I$row", ($detalle->enciende=="SI" ? "X":""));            
-                $sheet->setCellValue("J$row", ($detalle->enciende=="NO" ? "X":""));
-                $sheet->setCellValue("K$row", ($detalle->buen_estado=="SI" ? "X":""));
-                $sheet->setCellValue("L$row", ($detalle->buen_estado=="NO" ? "X":""));
-                $sheet->setCellValue("M$row", ($detalle->buena_iluminacion=="SI" ? "X":""));
-                $sheet->setCellValue("N$row", ($detalle->buena_iluminacion=="NO" ? "X":""));                
-                $sheet->setCellValue("O$row", ($detalle->buena_ubicacion=="SI" ? "X":""));
-                $sheet->setCellValue("P$row", ($detalle->buena_ubicacion=="NO" ? "X":""));
-                $sheet->setCellValue("Q$row", ($detalle->conectado=="SI" ? "X":""));
-                $sheet->setCellValue("R$row", ($detalle->conectado=="NO" ? "X":""));
-                $sheet->setCellValue("S$row", ($detalle->senalizado=="SI" ? "X":""));
-                $sheet->setCellValue("T$row", ($detalle->senalizado=="NO" ? "X":""));
-                $sheet->setCellValue("U$row", ($detalle->parte_reparar->name));
-
-
+                $sheet->setCellValue("A$row", $order.'');//ITEM
+                $sheet->setCellValue("B$row", $detalle->numero_extintor );
+                $sheet->setCellValue("C$row", $detalle->ubicacion);
                 $sheet->mergeCells("C$row:E$row");
-                // $sheet->setCellValue("C$row", $detalle->registro_fotografico);                       // Registro Fotográfico
-                // $sheet->setCellValue("E$row", $detalle->nivel_riesgo);                               // Acción a Tomar
+                $sheet->setCellValue("F$row", $detalle->tipo);
+                $sheet->mergeCells("F$row:H$row");
+                $sheet->setCellValue("I$row", $detalle->peso);
+                $sheet->mergeCells("I$row:K$row");
+                $sheet->setCellValue("L$row", $detalle->anio_fabricacion);
+                $sheet->mergeCells("L$row:N$row");                
+                $sheet->setCellValue("O$row", $detalle->serie);
+                $sheet->mergeCells("O$row:P$row");
+                $sheet->setCellValue("Q$row", $detalle->fecha_proxima_recarga);
+                $sheet->setCellValue("R$row", $detalle->fecha_prueba_hidrostati);
+                $sheet->setCellValue("S$row", $detalle->lugar_asignado);
+                $sheet->setCellValue("T$row", $detalle->facil_acceso);
+                $sheet->setCellValue("U$row", $detalle->senalizacion);
+                $sheet->setCellValue("V$row", $detalle->pictograma);
+                $sheet->setCellValue("W$row", $detalle->pasador);
+                $sheet->setCellValue("X$row", $detalle->precinto);
+                $sheet->setCellValue("Y$row", $detalle->colatin);
+                $sheet->setCellValue("Z$row", $detalle->manometro);
+                $sheet->setCellValue("AA$row", $detalle->presion_optima);
+                $sheet->setCellValue("AB$row", $detalle->cuerpo_estado);
+                $sheet->setCellValue("AC$row", $detalle->boquilla_tobera);
+                $sheet->setCellValue("AD$row", $detalle->manguera);
+                $sheet->setCellValue("AE$row", $detalle->manija_transporte);
+                $sheet->setCellValue("AF$row", $detalle->palanca);
+                $sheet->setCellValue("AG$row", $detalle->tarjeta_control);
+                $sheet->setCellValue("AH$row", $detalle->colgador);
+                $sheet->setCellValue("AI$row", $detalle->gabinete);
                 
-                 $sheet->setCellValue("F$row", $detalle->enrollada_correctamente);
-                //  $sheet->setCellValue("F$row", $detalle->registro_fotografico_enrollada_correctamente);
-                 $sheet->setCellValue("G$row", $detalle->acoples_estado);
-                //  $sheet->setCellValue("F$row", $detalle->registro_fotografico_acoples_estado);
-                 $sheet->setCellValue("H$row", $detalle->limpieza_manguera);
-                //  $sheet->setCellValue("F$row", $detalle->registro_fotografico_limpieza_manguera);
-                 $sheet->setCellValue("I$row", $detalle->empaques_estado);
-                //  $sheet->setCellValue("F$row", $detalle->registro_fotografico_empaques_estado);
-                 $sheet->setCellValue("J$row", $detalle->pintura_gabinete);
-                //  $sheet->setCellValue("F$row", $detalle->registro_fotografico_pintura_gabinete);
-                 $sheet->setCellValue("K$row", $detalle->limpieza_gabinete);
-                //  $sheet->setCellValue("F$row", $detalle->registro_fotografico_limpieza_gabinete);
-                 $sheet->setCellValue("L$row", $detalle->vidrio_estado);
-                //  $sheet->setCellValue("F$row", $detalle->registro_fotografico_vidrio_estado);
-                 $sheet->setCellValue("M$row", $detalle->senalizacion);
-                //  $sheet->setCellValue("F$row", $detalle->registro_fotografico_senalizacion);
-                 $sheet->setCellValue("N$row", $detalle->piton_obstruido);
-                //  $sheet->setCellValue("F$row", $detalle->registro_fotografico_piton_obstruido);
-                 $sheet->setCellValue("O$row", $detalle->piton_estado);
-                //  $sheet->setCellValue("F$row", $detalle->registro_fotografico_piton_estado);
-                 $sheet->setCellValue("P$row", $detalle->valvula_principal_estado);
-                //  $sheet->setCellValue("F$row", $detalle->registro_fotografico_valvula_principal_estado);
-                 $sheet->setCellValue("Q$row", $detalle->valvula_principal_abierta);
-                //  $sheet->setCellValue("F$row", $detalle->registro_fotografico_valvula_principal_abierta);
-                 $sheet->setCellValue("R$row", $detalle->manometro_estado);
-                //  $sheet->setCellValue("F$row", $detalle->registro_fotografico_manometro_estado);
-                 $sheet->setCellValue("S$row", $detalle->valvula_angular_estado);
-                //  $sheet->setCellValue("F$row", $detalle->registro_fotografico_valvula_angular_estado);
-                 $sheet->setCellValue("T$row", $detalle->observaciones);
-                 $order++;
+                $sheet->setCellValue("AJ$row", $detalle->observaciones);
+                $order++;
 
-                // $sheet->setCellValue("F$row", $detalle->acciones_tomar);                                // Acción a Tomar
-                // $sheet->setCellValue("G$row", $detalle->responsable->name);                             // Responsable
-                // $sheet->setCellValue("H$row", $detalle->cargo->name);                                   // Responsable
-                // $sheet->setCellValue("I$row", $detalle->estado);                                        // Estado
-                // $sheet->setCellValue("J$row", Carbon::parse($detalle->fecha_cierre)->format('d/m/Y'));  // Fecha de Cierre
-                    
-                // if ($detalle->registro_fotografico) {
-                //     $drawing = new Drawing();
-                //     $drawing->setName('Registro');
-                //     $drawing->setDescription('Registro');
-                //     $drawing->setPath($this->saveBase64Image($detalle->registro_fotografico));
-                //     $drawing->setCoordinates("C$row");
-                //     $drawing->setOffsetX(5);    // Mover un poquito a la derecha
-                //     $drawing->setOffsetY(5);    // Mover un poquito abajo
-                //     $drawing->setHeight(150);   // Ajusta el tamaño según sea necesario
-                //     $drawing->setWorksheet($sheet);
-                // }
-
-                // if ($detalle->levantamiento_ejecutado) {
-                //     $drawing = new Drawing();
-                //     $drawing->setName('Levantamiento');
-                //     $drawing->setDescription('Levantamiento');
-                //     $drawing->setPath($this->saveBase64Image($detalle->levantamiento_ejecutado->registro_fotografico));
-                //     $drawing->setCoordinates("K$row");
-                //     $drawing->setOffsetX(5);    // Mover un poquito a la derecha
-                //     $drawing->setOffsetY(5);    // Mover un poquito abajo
-                //     $drawing->setHeight(150);   // Ajusta el tamaño según sea necesario
-                //     $drawing->setWorksheet($sheet);
-                // }
                 $row++;
             }
             
             // Eliminar la fila 23 que se utilizó como referencia
-            $sheet->removeRow(14);
+            $sheet->removeRow(12);
 
         // Guardar el archivo Excel generado
         $filePath = storage_path('app/template_inspeccion_de_extintores.xlsx');

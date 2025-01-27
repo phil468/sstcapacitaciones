@@ -1,18 +1,19 @@
 <?php
-namespace App\Models\Inspecciones\Luces;
+namespace App\Models;
 
 use App\Models\Area;
+use App\Models\InspeccionAltura;
 use App\Models\Inspecciones\Luces\ParteLuzEmergencia as LucesParteLuzEmergencia;
 use App\Models\ParteLuzEmergencia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DetalleInspeccionLuz extends Model
+class DetalleInspeccionDuchasLavaojos extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'detalles_inspeccion_luces';
+    protected $table = 'detalles_inspeccion_duchas_lavaojos';
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -21,23 +22,22 @@ class DetalleInspeccionLuz extends Model
         'id',
         'inspeccion_id',
         'area_id',
-        'enciende',
-        'buen_estado',
-        'buena_iluminacion',
-        'buena_ubicacion',
-        'conectado',
-        'senalizado',
-        'parte_reparar'
+        'a',
+        'b',
+        'c',
+        'd',
+        'e',
+        'f',
+        'g',
+        'h',
+        'i',
+        'j',
+
     ];
 
     public function inspeccion()
     {
-        return $this->belongsTo(InspeccionLuzEmergencia::class, 'inspeccion_id');
-    }
-
-    public function partes()
-    {
-        return $this->belongsToMany(LucesParteLuzEmergencia::class, 'detalles_partes_reparar', 'detalle_id', 'parte_id');
+        return $this->belongsTo(InspeccionDuchasLavaojos::class, 'inspeccion_id');
     }
 
     public function area()
