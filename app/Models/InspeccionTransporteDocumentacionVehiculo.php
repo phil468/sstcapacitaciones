@@ -19,13 +19,14 @@ class InspeccionTransporteDocumentacionVehiculo extends Model
         'id',
         'inspeccion_id',
         'soat_vigente',
-        'soat_vencimiento',
+        'num_asientos_soat',
+        'fecha_vencimiento_soat',
         'revision_tecnica_vigente',
-        'revision_tecnica_vencimiento',
+        'fecha_vencimiento_revision_tecnica',
         'permiso_circulacion_vigente',
-        'permiso_circulacion_vencimiento',
+        'fecha_vencimiento_permiso_circulacion',
         'tarjeta_identificacion_vehicular',
-        'numero_asientos'
+        'num_asientos_tarjeta'
     ];
 
     public function inspeccion()

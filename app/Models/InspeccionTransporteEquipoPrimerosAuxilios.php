@@ -25,9 +25,9 @@ class InspeccionTransporteEquipoPrimerosAuxilios extends Model
         'aposito',
         'esparadrapo',
         'venda_elastica',
-        'curitas',
+        'bandas_adhesivas',
         'tijera',
-        'guantes',
+        'guantes_quirurgicos',
         'algodon'
     ];
 

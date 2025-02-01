@@ -20,7 +20,6 @@ class InspeccionTransporteFuncionamientoVehiculo extends Model
         'inspeccion_id',
         'luces_altas',
         'luces_bajas',
-        'luces_bajas',
         'luces_direccionales_delanteras',
         'luces_direccionales_posteriores',
         'luces_emergencia',

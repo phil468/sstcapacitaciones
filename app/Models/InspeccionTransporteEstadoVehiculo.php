@@ -21,7 +21,7 @@ class InspeccionTransporteEstadoVehiculo extends Model
         'parabrisas',
         'espejos_laterales',
         'espejo_central',
-        'ventanas_estado',
+        'ventanas_integras',
         'ventanas_operativas',
         'ventanas_cortinas',
         'neumaticos_delanteros',

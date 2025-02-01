@@ -19,9 +19,9 @@ class InspeccionTransporteDocumentacionConductor extends Model
         'id',
         'inspeccion_id',
         'dni_vigente',
-        'dni_vencimiento',
+        'fecha_vencimiento_dni',
         'brevete_validez',
-        'brevete_vencimiento',
+        'fecha_vencimiento_brevete',
         'brevete_categoria',
         'medidas_preventivas'
     ];

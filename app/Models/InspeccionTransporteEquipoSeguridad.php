@@ -25,7 +25,7 @@ class InspeccionTransporteEquipoSeguridad extends Model
         'extintor_pqs',
         'cable_baterias',
         'cadena_remolque',
-        'llave_rueda',
+        'llave_palanza_rueda',
         'llanta_repuesto',
         'gata_hidraulica',
         'ventanas_emergencia',

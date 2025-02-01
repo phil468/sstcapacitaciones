@@ -27,8 +27,7 @@ class InspeccionTransporteInformacionConductor extends Model
         'omnibus',
         'otros',
         'fecha',
-        'hora',
-        'otros'
+        'hora'
     ];
 
     public function inspeccion()
