@@ -98,6 +98,11 @@ Route::get('/personal/actualizarEstadoParaTodos', [App\Http\Controllers\Personal
 Route::get('/planilla/importar/{empresa}/{val}', [App\Http\Controllers\PlanillaController::class,'upsert'])->name('planilla.upsert');
 Route::get('/tipodepersonal/importar/{empresa}/{val}', [App\Http\Controllers\TipoDePersonalController::class,'upsert'])->name('tipodepersonal.upsert');
 Route::get('/tipodetrabajador/importar/{empresa}/{val}', [App\Http\Controllers\TipoDeTrabajadorController::class,'upsert'])->name('tipodetrabajador.upsert');
+Route::get('/procesar-excel', [App\Http\Controllers\PersonalController::class, 'procesarExcel'])->name('procesar.excel');
+
+Route::get('/report/audit-logins', [App\Http\Controllers\ReportController::class, 'auditLogins'])->name('report.audit_logins');
+Route::get('/report/specific-tables', [App\Http\Controllers\ReportController::class, 'specificTables'])->name('report.specific_tables');
+
 //Rutas de autenticación
 Auth::routes();
 

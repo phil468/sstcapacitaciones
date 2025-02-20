@@ -15,10 +15,56 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class PersonalController extends Controller
 {    
     public $token = null;
+
+    public function procesarExcel()
+    {
+        // Cargar el archivo Excel
+        $archivoExcel = "ASIGNADOS LAPTOPS.xlsx";
+        $spreadsheet = IOFactory::load($archivoExcel);
+        $hoja = $spreadsheet->getActiveSheet();
+
+        // Recorremos los DNIs en la columna F (desde la fila 2)
+        $filaInicial = 2;
+
+        while (true) {
+            $dni = $hoja->getCell("F$filaInicial")->getValue();
+            if ($filaInicial == 238) break; // Si ya no hay más DNIs, terminamos
+
+            $numero = trim($dni);
+            $message='';
+            $response2 = $this->obtenerResponse($numero);
+
+            if ($response2->successful()) {
+                $data = $response2->json();
+                if($filaInicial == 3){
+                    dd($data);
+                }
+
+                if (!empty($data) && is_array($data)) {
+                    $nombreCompleto = $data[0]['nombrecompleto'] ?? "No encontrado";
+                    $hoja->setCellValue("N$filaInicial", $nombreCompleto); // Escribir en la columna N
+                    echo "✅ DNI $dni: $nombreCompleto\n";
+                } else {
+                    echo "⚠️ DNI $dni: No encontrado\n";
+                }
+            } else {
+                echo "❌ Error en DNI $dni - Código HTTP: " . $response2->status() . "\n";
+                echo "Respuesta de la API: " . $response2->body() . "\n";
+            }
+
+            $filaInicial++;
+        }
+
+        // Guardar cambios en el Excel
+        $writer = IOFactory::createWriter($spreadsheet, "Xlsx");
+        $writer->save($archivoExcel);
+        echo "📂 Archivo actualizado correctamente.\n";
+    }
 
     public function obtenerResponse(string $numero) {
         // si numero == 0 entonces trae toda la información actual del personal 

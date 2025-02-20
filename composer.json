@@ -5,11 +5,9 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
-        "php": "^7.4",
+        "php": "^8.1",
         "barryvdh/laravel-dompdf": "^1.0",
         "filament/filament": "^2.0",
-        "flightsadmin/crudgenerator": "^0.0.4",
-        "flightsadmin/livewire-crud": "^1.0",
         "fruitcake/laravel-cors": "^3.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "itsgoingd/clockwork": "^5.1",

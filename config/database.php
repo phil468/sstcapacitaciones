@@ -62,6 +62,64 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
+        
+        
+    'mysql_54' => [
+        'driver' => 'mysql',
+        'host' => env('DB_HOST_54', '10.13.10.54'),
+        'port' => env('DB_PORT_54', '3306'),
+        'database' => '',
+        'username' => env('DB_USERNAME_54', 'rootremo'),
+        'password' => env('DB_PASSWORD_54', '$F0c4lus.'),
+        'unix_socket' => env('DB_SOCKET_54', ''),
+        'charset' => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
+        'prefix' => '',
+        'prefix_indexes' => true,
+        'strict' => false,
+        'engine' => null,
+        'options' => extension_loaded('pdo_mysql') ? array_filter([
+            PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+        ]) : [],
+    ],
+
+    'mysql_37' => [
+        'driver' => 'mysql',
+        'host' => env('DB_HOST_37', '127.0.0.1'),
+        'port' => env('DB_PORT_37', '3306'),
+        'database' => '',
+        'username' => env('DB_USERNAME_37', 'root'),
+        'password' => env('DB_PASSWORD_37', 'Inictel@2020@'),
+        'unix_socket' => env('DB_SOCKET_37', ''),
+        'charset' => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
+        'prefix' => '',
+        'prefix_indexes' => true,
+        'strict' => false,
+        'engine' => null,
+        'options' => extension_loaded('pdo_mysql') ? array_filter([
+            PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+        ]) : [],
+    ],
+
+    'mysql_51' => [
+        'driver' => 'mysql',
+        'host' => env('DB_HOST_51', '10.13.10.51'),
+        'port' => env('DB_PORT_51', '3306'),
+        'database' => '',
+        'username' => env('DB_USERNAME_51', 'adm_john'),
+        'password' => env('DB_PASSWORD_51', '&1127PwEJr'),
+        'unix_socket' => env('DB_SOCKET_51', ''),
+        'charset' => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
+        'prefix' => '',
+        'prefix_indexes' => true,
+        'strict' => false,
+        'engine' => null,
+        'options' => extension_loaded('pdo_mysql') ? array_filter([
+            PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+        ]) : [],
+    ],
 
         'pgsql' => [
             'driver' => 'pgsql',
