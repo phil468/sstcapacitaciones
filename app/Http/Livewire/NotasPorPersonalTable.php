@@ -46,10 +46,10 @@ class NotasPorPersonalTable extends LivewireDatatable
         return [
             Column::name('personal.name')->label('Personal'),
             Column::name('capacitacion.tema.name')->label('Capacitación'),
-            Column::callback(['capacitacion_id', 'personal_id'], function ($capacitacion_id, $personal_id) {
+            Column::callback('capacitacion_id,personal_id', function ($capacitacion_id, $personal_id) {
                 return $this->calcularAvance($capacitacion_id, $personal_id);
             },[],'Avance')->label('Avance'),
-            Column::callback(['capacitacion_id', 'personal_id'], function ($capacitacion_id, $personal_id) {
+            Column::callback('capacitacion_id, personal_id', function ($capacitacion_id, $personal_id) {
                 return $this->calcularNota($capacitacion_id, $personal_id);
             },[],'Nota')->label('Nota'),
             DateColumn::name('fecha_inicio')->format('d/m/Y h:i:s a')
@@ -61,7 +61,7 @@ class NotasPorPersonalTable extends LivewireDatatable
             // Column::callback(['fecha_inicio', 'fecha_fin'], function ($fecha_inicio, $fecha_fin) {
             //     return ($fecha_inicio ? ($fecha_inicio->format('d/m/Y h:i:s a').' - ') : '') . ($fecha_fin ? $fecha_fin->format('d/m/Y h:i:s a') : '');
             // },[],'Fechas')->label('Fechas'),
-            Column::callback(['fecha_inicio', 'fecha_fin'], function ($fecha_inicio, $fecha_fin) {
+            Column::callback('fecha_inicio, fecha_fin', function ($fecha_inicio, $fecha_fin) {
                 $now = now();
                 if ($fecha_inicio > $now) {
                     return 'Por iniciar';

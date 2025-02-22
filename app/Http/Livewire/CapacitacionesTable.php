@@ -121,7 +121,8 @@ class CapacitacionesTable extends LivewireDatatable
                 ->sortBy('id')
                 ->alignCenter(),
 
-            BooleanColumn::callback(['id', 'activo'], function ($id, $activo) {
+            BooleanColumn::callback('id, activo', function ($id, $activo) {
+            // BooleanColumn::callback(['id', 'activo'], function ($id, $activo) {
                     return view('livewire.custom-boolean', ['modelId' => $id, 'field' => 'activo', 'value' => $activo]);
                 })
                 ->label('Activo')
