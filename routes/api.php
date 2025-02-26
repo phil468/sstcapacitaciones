@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\ResultadoInspeccionController;
 use App\Http\Controllers\Api\AreaController;
 use App\Http\Controllers\Api\CargoController;
 use App\Http\Controllers\Api\ConfiguracionAlertaInspeccionController;
+use App\Http\Controllers\Api\EppController;
 use App\Http\Controllers\Api\GabineteController;
 use App\Http\Controllers\Api\InspeccionAlturaController;
 use App\Http\Controllers\Api\InspeccionCheckListController;
@@ -99,6 +100,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::apiResource('inspeccion-duchas-lavaojos', InspeccionDuchasLavaojosController::class);
 
     Route::apiResource('areas', AreaController::class);
+    Route::apiResource('epps', EppController::class);
     Route::apiResource('inspectores', InspectorController::class);
     Route::apiResource('personal', PersonalController::class);
     // Route::apiResource('inspeccion-luces-emergencia', InspeccionLuzEmergenciaController::class);

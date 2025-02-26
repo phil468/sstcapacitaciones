@@ -47,7 +47,8 @@ class DetalleInspeccionAltura extends Model
         'indicacion_de_carga_maxima',
         'seguro_de_cierre',
         'distorsion_del_gancho',
-        'poleas_en_buen_estado'
+        'poleas_en_buen_estado',
+        'codigo_de_arnes',
     ];
 
     public function inspeccion()

@@ -55,7 +55,8 @@ class InspeccionExport
             $sheet->setCellValue('D14', Carbon::parse($this->inspeccion->fecha_inspeccion)->format('d/m/Y'));
             $sheet->setCellValue('G14', $this->inspeccion->responsables_area()->pluck('name')->implode(', '));
             $sheet->setCellValue('J14', $this->inspeccion->responsables_inspeccion()->pluck('name')->implode(', '));            
-            $sheet->setCellValue('A17', $this->inspeccion->hora_inspeccion);
+            $sheet->setCellValue('A17', Carbon::parse($this->inspeccion->hora_inspeccion)->format('H:i'));
+            
 
             if($this->inspeccion->tipo_inspeccion == 'Otro'){
                 $sheet->setCellValue('I17', $this->inspeccion->tipo_inspeccion_otro);

@@ -56,7 +56,7 @@ class InspeccionTransporteExport
             $sheet->setCellValue('A83', 'OBSERVACIONES: '.$this->inspeccion->observaciones_2);
             $sheet->mergeCells('A83','R91');
             // $sheet->setCellValue('B11', ''.$this->inspeccion->lugar);
-            // $sheet->setCellValue('B12', ''.Carbon::parse($this->inspeccion->fecha_hora_inspeccion)->format('d/m/Y h:i a'));
+            // $sheet->setCellValue('B12', ''.Carbon::parse($this->inspeccion->fecha_hora_inspeccion)->format('d/m/Y H:i'));
 
             $row = 99; // Comienza a llenar desde la fila 35 (según tu plantilla)
             foreach ($this->inspeccion->responsables as $responsable) {
@@ -141,7 +141,7 @@ class InspeccionTransporteExport
             } else {
                 $sheet->setCellValue('O15', ''.$informacionConductor->otros);
             }
-            $sheet->setCellValue('D15', 'HORA: '.$informacionConductor->hora);
+            $sheet->setCellValue('D15', 'HORA: '. Carbon::parse($informacionConductor->hora)->format('H:i'));
             $sheet->setCellValue('A15', 'FECHA: '.$informacionConductor->fecha);
 
             if ($funcionamientoVehiculo) {

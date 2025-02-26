@@ -47,7 +47,7 @@ class InspeccionGabineteExport
         // Llenar datos en las celdas correspondientes
             // Ajustar las celdas de acuerdo al formato
             $sheet->setCellValue('O7', 'Lugar: '.$this->inspeccion->area->name ?? $this->inspeccion->lugar);
-            $sheet->setCellValue('A7', 'Fecha y Hora de la inspección: '.Carbon::parse($this->inspeccion->fecha_inspeccion)->format('d/m/Y').' '.Carbon::parse($this->inspeccion->hora_inspeccion)->format('h:i a'));
+            $sheet->setCellValue('A7', 'Fecha y Hora de la inspección: '.Carbon::parse($this->inspeccion->fecha_inspeccion)->format('d/m/Y').' '.Carbon::parse($this->inspeccion->hora_inspeccion)->format('H:i'));
             $sheet->setCellValue('A6', 'Inspector: '.$this->inspeccion->inspector->name);
             if ($this->inspeccion->firma) {
                 $drawing = new Drawing();

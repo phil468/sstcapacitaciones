@@ -56,7 +56,7 @@ class InspeccionCheckListExport
 
             $sheet->setCellValue('B10', ''.$this->inspeccion->area->name);
             $sheet->setCellValue('B11', ''.$this->inspeccion->lugar);
-            $sheet->setCellValue('B12', ''.Carbon::parse($this->inspeccion->fecha_hora_inspeccion)->format('d/m/Y h:i a'));
+            $sheet->setCellValue('B12', ''.Carbon::parse($this->inspeccion->fecha_hora_inspeccion)->format('d/m/Y H:i'));
             $sheet->setCellValue('H10', ''.$this->inspeccion->inspector->name);
             if ($this->inspeccion->firma) {
                 $drawing = new Drawing();

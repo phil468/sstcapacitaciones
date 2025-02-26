@@ -49,7 +49,7 @@ class InspeccionExtintoresExport
             
             
             $sheet->setCellValue('AF8', $this->inspeccion->area->name ?? $this->inspeccion->lugar);
-            $sheet->setCellValue('E8', Carbon::parse($this->inspeccion->fecha_inspeccion)->format('d/m/Y').' '.Carbon::parse($this->inspeccion->hora_inspeccion)->format('h:i a'));
+            $sheet->setCellValue('E8', Carbon::parse($this->inspeccion->fecha_inspeccion)->format('d/m/Y').' '.Carbon::parse($this->inspeccion->hora_inspeccion)->format('H:i'));
             $sheet->setCellValue('E7', $this->inspeccion->inspector->name);
             // $sheet->mergeCells('E7','AB7');
 

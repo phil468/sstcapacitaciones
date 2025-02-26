@@ -55,7 +55,7 @@ class InspeccionLucesExport
             $sheet->setCellValue('W9', $this->inspeccion->num_trabajadores);
 
             $sheet->setCellValue('Q11', 'Lugar: '.$this->inspeccion->area->name ?? $this->inspeccion->lugar);
-            $sheet->setCellValue('A11', 'Fecha y Hora de la inspección: '.Carbon::parse($this->inspeccion->fecha_hora_inspeccion)->format('d/m/Y h:i a'));
+            $sheet->setCellValue('A11', 'Fecha y Hora de la inspección: '.Carbon::parse($this->inspeccion->fecha_hora_inspeccion)->format('d/m/Y H:i'));
             $sheet->setCellValue('A10', 'Inspector: '.$this->inspeccion->inspector->name);
             if ($this->inspeccion->firma) {
                 $drawing = new Drawing();
