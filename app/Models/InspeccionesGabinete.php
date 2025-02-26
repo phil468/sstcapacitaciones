@@ -30,7 +30,7 @@ class InspeccionesGabinete extends Model
 
     public function detalles()
     {
-        return $this->hasMany(DetalleExtintor::class, 'inspeccion_id');
+        return $this->hasMany(DetalleInspeccionGabinete::class, 'inspeccion_id');
     }
 
     public function inspector()
