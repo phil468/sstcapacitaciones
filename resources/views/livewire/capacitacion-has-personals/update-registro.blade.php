@@ -12,9 +12,6 @@
                     @endif
                     </h5>
                 </div>
-                {{-- @if (session()->has('message'))
-                    <div wire:poll.4s class="btn btn-sm btn-success" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
-                @endif --}}
                 <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
                     <span wire:click="cancel()" aria-hidden="true">×</span>
                 </button>
@@ -140,7 +137,6 @@
 
                                 @if($editMasiva)
                                     <div class="form-check">
-                                        {{-- <input type="checkbox" class="form-check-input" wire:model="edit_fecha_inicio"> Editar Fecha Inicio --}}
                                     </div>
                                 @endif
                                 
@@ -155,14 +151,10 @@
                             
                                 @if($editMasiva)
                                     <div class="form-check">
-                                        {{-- <input type="checkbox" class="form-check-input" wire:model="edit_fecha_fin"> Editar Fecha Fin --}}
                                     </div>
                                 @endif
                             </div>
-
                             {{--campo intentos_de_evaluacion--}}
-
-
                         @endif
                         
                         @if (session()->has('errorEdicionMasiva'))
