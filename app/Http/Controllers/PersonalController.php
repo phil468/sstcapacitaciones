@@ -197,14 +197,14 @@ class PersonalController extends Controller
                         
                         if ($personal->isDirty()) {
                             // si el personal es selccionado no se actualiza ni se guarda
-                            if (!$personal->seleccionado) {
+                            // if (!$personal->seleccionado) {
                                 $personal->save();
                                 $actualizados[] = [
                                     'nombre' => $personal->name,
                                     'dni' => $personal->dni
                                 ];
                                 // $message = $message.'Se ingresaron/actualizaron los datos del trabajador '.$personal->name.'.\n';
-                            }
+                            // }
                         }
                     }
                 }
@@ -278,9 +278,9 @@ class PersonalController extends Controller
             $nuevoEstado = in_array($dni, $jsonDnis) ? 0 : 1;
             if ($registro->cesado != $nuevoEstado) {
                 $registro->cesado = $nuevoEstado;
-                if ($registro->cesado) {
-                    $registro->seleccionado = 0;
-                }
+                // if ($registro->cesado) {
+                //     $registro->seleccionado = 0;
+                // }
                 $registro->save();
                 $actualizados[] = [
                     'nombre' => $registro->name,
@@ -643,9 +643,9 @@ class PersonalController extends Controller
             // Validaciones específicas según el campo
             $rules = [];
             
-            if ($request->has('seleccionado')) {
-                $rules['seleccionado'] = 'boolean';
-            }
+            // if ($request->has('seleccionado')) {
+            //     $rules['seleccionado'] = 'boolean';
+            // }
             
             if ($request->has('correo_empresa')) {
                 $rules['correo_empresa'] = 'nullable|email';
@@ -704,7 +704,7 @@ class PersonalController extends Controller
             // Para actualizaciones parciales, solo actualizar campos específicos
             if ($isPartialUpdate) {
                 // Permitir solo ciertos campos para actualización directa
-                $allowedFields = ['seleccionado', 'correo_empresa', 'cargo_id', 'reporta_a'];
+                $allowedFields = ['correo_empresa', 'cargo_id', 'reporta_a'];
                 $dataToUpdate = array_intersect_key($request->all(), array_flip($allowedFields));
                 
                 foreach ($dataToUpdate as $field => $value) {
