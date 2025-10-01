@@ -26,4 +26,9 @@ class Cargo extends Model
     {
         return mb_strtoupper(trim($value));
     }
+
+    public function tipoDePuesto()
+    {
+        return $this->belongsTo(TipoDePuesto::class, 'tipo_de_puesto_id');
+    }
 }

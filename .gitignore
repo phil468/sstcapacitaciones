@@ -23,7 +23,7 @@ resources/views/emails/verification-code/error.blade.php
 resources/views/emails/verification-code/success.blade.php
 resources/views/emails/verification-code/verification.blade.php
 app/Http/Controllers/VerificationController.php
-# config/livewire.php
+config/livewire.php
 adm/livewire-tmp/9ajKhi4ZhEqNjv9XLXVwxq2S4MNyAh-metab2pvcy54bHN4-.xlsx
 public/video_sesiones
 ayuda
