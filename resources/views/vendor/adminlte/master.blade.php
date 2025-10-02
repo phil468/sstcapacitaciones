@@ -22,6 +22,9 @@
     {{-- Custom stylesheets (pre AdminLTE) --}}
     @yield('adminlte_css_pre')
 
+    <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/select2-bootstrap-5-theme.min.css') }}">
+
     {{-- Base Stylesheets --}}
     @if(!config('adminlte.enabled_laravel_mix'))
         <link rel="stylesheet" href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}">
@@ -147,6 +150,11 @@
     {{-- Base Scripts --}}
     @if(!config('adminlte.enabled_laravel_mix'))
         <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+        
+        <script src="{{ asset('js/csrf.js') }}"></script>
+        <script src="{{ asset('js/utils.js') }}"></script>
+        <script src="{{ asset('js/baseModel.js') }}"></script>
+
         <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('vendor/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
 
@@ -177,11 +185,42 @@
     {{-- "https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js" --}}
     ></script>
 
+    <script type="text/javascript" src="js/select2.full.min.js"></script>
+    <script type="text/javascript" src="js/luxon.min.js"></script>
+    {{-- <script nonce="{{ $nonce }}" type="text/javascript" src="js/orgchart.js"></script> --}}
+    {{-- <script nonce="{{ $nonce }}" type="text/javascript" src="js/d3-org-chart.js"></script> --}}
+    <script type="text/javascript" src="js/d3.v7.min.js"></script>
+    <script type="text/javascript" src="js/d3-org-chart@3.0.1"></script>
+    <script type="text/javascript" src="js/d3-flextree.js"></script>
+    
+    <script src="{{ asset('js/chart.js') }}"></script>
+    <script src="{{ asset('js/chartjs-plugin-datalabels@2.js') }}"></script>
+
     <!-- Include Choices JavaScript (latest) -->
     <script src=
     "{{ asset('js/choices.min.js')}}"
     {{-- "https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js" --}}
     ></script>
+
+    <!-- Tabulator -->
+    <link 
+    {{-- nonce="{{ $nonce }}"  --}}
+    href="dist/css/tabulator_bootstrap5.min.css" rel="stylesheet">
+    <script 
+    {{-- nonce="{{ $nonce }}"  --}}
+    type="text/javascript" src="dist/js/tabulator.min.js"></script>
+
+    <!-- SweetAlert -->
+    <script 
+    {{-- nonce="{{ $nonce }}"  --}}
+    type="text/javascript" src="dist/js/sweetalert2.all.min.js"></script>
+    <link 
+    {{-- nonce="{{ $nonce }}"  --}}
+    href="dist/css/sweetalert2.min.css" rel="stylesheet">
+    <script 
+    {{-- nonce="{{ $nonce }}"  --}}
+    type="text/javascript" src="js/xlsx.full.min.js"></script>
+
 </body>
 
 </html>

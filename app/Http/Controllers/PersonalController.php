@@ -704,8 +704,9 @@ class PersonalController extends Controller
             // Para actualizaciones parciales, solo actualizar campos específicos
             if ($isPartialUpdate) {
                 // Permitir solo ciertos campos para actualización directa
+                $data = $request->all(); // <--- añadir
                 $allowedFields = ['correo_empresa', 'cargo_id', 'reporta_a'];
-                $dataToUpdate = array_intersect_key($request->all(), array_flip($allowedFields));
+                $dataToUpdate = array_intersect_key($data, array_flip($allowedFields));
                 
                 foreach ($dataToUpdate as $field => $value) {
                     $personal->$field = $value;
@@ -772,6 +773,20 @@ class PersonalController extends Controller
                         }  else {
                             $name = ucfirst($personal->name); // Nombre capitalizado
                         }
+
+                        // puede darse el caso que el email ya exista en otro usuario
+                        $existingUser = User::where('email', $data['correo_empresa'])->first();
+                        if ($existingUser) {
+                            Log::warning("No se creó usuario para personal ID: {$personal->id} porque el email {$data['correo_empresa']} ya está en uso por otro usuario.");
+                            return response()->json([
+                                'success' => true, 
+                                'message' => 'Campo actualizado correctamente, pero no se creó usuario porque el correo ya está en uso',
+                                'updated_field' => array_keys($dataToUpdate)[0] ?? null,
+                                'cargo_updated' => $request->has('actualizar_cargo') && $request->actualizar_cargo,
+                                'personal' => $personal->fresh(['user'])
+                            ]);
+                        }
+                        // Crear nuevo usuario con contraseña aleatoria
                         
                         $user = new User();
                         $user->name = $name;

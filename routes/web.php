@@ -7,6 +7,7 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GeneraReporte;
+use App\Http\Controllers\PersonalController;
 use App\Models\Asignacione;
 use App\Models\EvaluadorHasEvaluado;
 use App\Models\User;
@@ -53,6 +54,7 @@ Route::get('/auth/callback', function () {
 
     //he agregado el atributo employeeNumber
 
+    // si el usuario no existe en la base de datos local, lo creamos con rol 'PERSONAL', clave autogenerada y personal_id nulo
     if (!$localUser) {
         // El usuario no existe, crea un nuevo usuario
         $localUser = User::create([
@@ -135,7 +137,75 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::view('/alertas','livewire.alertas.index')->name('alertas')->middleware(['can:ver-alertas']);
     Route::view('/alertas-enviadas','livewire.alerta-enviadas.index')->name('alertas-enviadas')->middleware(['can:ver-alertas']);
     Route::view('/notificaciones-enviadas','livewire.notificaciones-enviadas.index')->name('notificaciones-enviadas')->middleware(['can:ver-alertas']);
-    Route::view('/personal','livewire.personals.index')->name('personal')->middleware(['can:ver-personal']);
+    Route::view('/personal','livewire.personals.index')->name('personal')->middleware(['can:ver-personal']);    
+    Route::get('/personal-tabulator', [PersonalController::class, 'indexTabulator'])->name('personal.tabulator')->middleware(['can:ver-personal']);
+    Route::get('personal/historial-actualizaciones', 
+    [App\Http\Controllers\PersonalController::class, 
+    'historialActualizaciones']
+    )->name('personal.historial-actualizaciones');
+    
+    Route::get('/personal/data', [PersonalController::class, 'getData'])->name('personal.data')->middleware(['can:ver-personal']);
+    
+        
+    Route::get('personal/select2/empresa', [PersonalController::class, 'select2Empresa'])->name('api.personal.select2.empresa');
+    Route::get('personal/select2/gerencia', [PersonalController::class, 'select2Gerencia'])->name('api.personal.select2.gerencia');
+    Route::get('personal/select2/area', [PersonalController::class, 'select2Area'])->name('api.personal.select2.area');
+    Route::get('personal/select2/cargo', [PersonalController::class, 'select2Cargo'])->name('api.personal.select2.cargo');
+    Route::get('personal/select2/reporta', [PersonalController::class, 'select2Reporta'])->name('api.personal.select2.reporta');
+    Route::post('personal/marcar-seleccionados', [PersonalController::class, 'marcarSeleccionados'])->name('personal.marcar-seleccionados');
+
+    Route::post('campanias/exportar-todos-seleccionados', 
+    [CampaniaHasEvaluadoController::class, 'exportarTodosSeleccionados'])
+    ->name('campanias.exportarTodosSeleccionados');
+
+    Route::post('campanias/exportar-personal', 
+    [CampaniaHasEvaluadoController::class, 'exportarPersonalACampaniaActual'])
+    ->name('campanias.exportarPersonalACampaniaActual');
+        
+    Route::get('personal/select2/empresa', [PersonalController::class, 'select2Empresa'])->name('api.personal.select2.empresa');
+    Route::get('personal/select2/gerencia', [PersonalController::class, 'select2Gerencia'])->name('api.personal.select2.gerencia');
+    Route::get('personal/select2/area', [PersonalController::class, 'select2Area'])->name('api.personal.select2.area');
+    Route::get('personal/select2/cargo', [PersonalController::class, 'select2Cargo'])->name('api.personal.select2.cargo');
+    Route::get('personal/select2/reporta', [PersonalController::class, 'select2Reporta'])->name('api.personal.select2.reporta');
+
+    Route::get('organigrama', [App\Http\Controllers\OrgChartController::class, 'index'])->name('organigrama.index');
+
+    // Rutas para actualización de personal
+    Route::post('personal/actualizacion-general', 
+    [App\Http\Controllers\PersonalController::class, 
+    'actualizacionGeneralCompleta']
+    )->name('personal.actualizacion-general');
+
+    Route::post('personal/actualizacion-individual/{dni}', 
+    [App\Http\Controllers\PersonalController::class, 
+    'actualizacionIndividual']
+    )->name('personal.actualizacion-individual');
+
+    Route::post('personal/buscar-por-dni', 
+    [App\Http\Controllers\PersonalController::class, 
+    'buscarPersonalPorDNI']
+    )->name('personal.buscar-por-dni');
+
+    Route::get('personal/historial-actualizaciones', 
+    [App\Http\Controllers\PersonalController::class, 
+    'historialActualizaciones']
+    )->name('personal.historial-actualizaciones');
+
+    Route::post('/personal/sync-user-email/{id}', [PersonalController::class, 'syncUserEmail'])->name('campania_has_evaluados.syncUserEmail');
+    Route::post('/personal/create-user/{id}', [PersonalController::class, 'createUser'])->name('campania_has_evaluados.createUser');
+
+    Route::get('personal/area/{id}/path', [\App\Http\Controllers\PersonalController::class,'areaPath'])
+        ->name('personal.area.path');
+    
+    Route::prefix('personal')->group(function () {
+        // ...existing personal routes...
+        Route::post('import/validate',[PersonalController::class,'validateImport'])->name('personal.import.validate');
+        Route::get('import/template', [PersonalController::class,'downloadTemplate'])->name('personal.import.template');
+        Route::post('import', [PersonalController::class,'importExcel'])->name('personal.import');
+    });
+
+    Route::resource('personal', PersonalController::class)->middleware(['can:ver-personal']);
+
     Route::view('/areas','livewire.areas.index')->name('areas')->middleware(['can:ver-area']);
     Route::view('/capacitaciones','livewire.capacitaciones.index')->name('capacitaciones')->middleware(['can:ver-capacitacion']);
     Route::get('/capacitaciones/{id}', function ($id) {

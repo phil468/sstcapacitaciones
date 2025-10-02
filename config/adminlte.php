@@ -362,6 +362,14 @@ return [
         'classes' => 'rounded-xl',
         'submenu' => [
                 [
+                    'text' => 'Personal',
+                    // 'url'  => 'personal-table',
+                    'url'  => 'personal-tab',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-personal',
+                    'classes' => 'rounded-xl',
+                ],
+                [
                     'text' => 'Usuarios',
                     'url'  => 'users',
                     'icon' => 'fas fa-fw fa-users',

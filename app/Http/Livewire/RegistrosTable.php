@@ -43,26 +43,11 @@ class RegistrosTable extends LivewireDatatable
         $this->emitUp('edicionMasiva', $this->selected);
     }
 
-    // public function updatedSelected($value)
-    // {
-    //     $this->emitUp('selectedRegistroUpdated', $value);
-    // }
-    
-    // public function toggleSelectAll()
-    // {
-    //     if (count($this->selected) === $this->getQuery()->count()) {
-    //         $this->selected = [];
-    //     } else {
-    //         $this->selected = $this->checkboxQuery()->values()->toArray();
-    //     }
-    //     $this->forgetComputed();
-        
-    //     $this->emitUp('selectedRegistroUpdated', $this->selected);
-    // }
-
     public function builder()
     {
-        return CapacitacionHasPersonal::query()->where('capacitacion_id', $this->capacitacion_id);
+        return CapacitacionHasPersonal::query()
+            ->with(['personal.user']) // <-- eager load para evitar N+1
+            ->where('capacitacion_id', $this->capacitacion_id);
     }
 
     public function columns()
@@ -81,6 +66,69 @@ class RegistrosTable extends LivewireDatatable
             Column::name('personal.dni')->label('DNI')->sortable()->searchable(),
             Column::name('personal.name')->label('Nombre del Personal')->sortable()->searchable()
             ->defaultSort('ASC'),
+
+            Column::name('personal.correo_empresa')->label('Correo Empresa')->sortable()->searchable(),
+
+            // NUEVA COLUMNA: Usuario
+            Column::callback(['personal_id'], function ($personal_id) {
+                $p = \App\Models\Personal::with('user')->find($personal_id);
+                if(!$p) return '';
+                if($p->user){
+                    return $p->user->email;
+                }
+                return '<button type="button" class="btn btn-sm btn-outline-primary crear-usuario-btn" data-personal="'.$p->id.'">Crear Usuario</button>';
+            },[],'crear_usuario' )->label('Usuario')->excludeFromExport(),
+
+            // columna que muestra si tiene o no tiene usuario
+            Column::callback(['personal_id'], function ($personal_id) {
+                $p = \App\Models\Personal::with('user')->find($personal_id);
+                if(!$p) return '';
+                if($p->user){
+                    return '<span class="badge badge-success">Sí</span>';
+                }
+                return '<span class="badge badge-danger">No</span>';
+                // return '<button type="button" class="btn btn-sm btn-outline-primary crear-usuario-btn" data-personal="'.$p->id.'">Crear Usuario</button>';
+            },[],'usuario' )
+            ->label('Tiene Usuario')
+            ->filterable([
+                1 => 'Sí',
+                0 => 'No',
+            ])
+            ->excludeFromExport(),
+
+            // NUEVA COLUMNA: Advertencias
+            // Columna Advertencias
+            Column::callback(['personal_id'], function ($personal_id) {
+                $p = \App\Models\Personal::with('user')->select('id','correo_empresa')->find($personal_id);
+                if(!$p) return '';
+                if(!$p->user){
+                    return '<span class="text-warning" title="Sin usuario"><i class="fas fa-exclamation-triangle"></i> Sin usuario</span>';
+                }
+                if(!$p->correo_empresa){
+                    return '<span class="text-warning" title="Sin correo_empresa"><i class="fas fa-envelope-open-text"></i> Sin correo</span>';
+                }
+                if($p->correo_empresa && $p->user->email && strcasecmp($p->correo_empresa,$p->user->email)!==0){
+                    return '<span class="text-danger" title="Correo y usuario difieren"><i class="fas fa-exclamation-circle"></i> Correo y usuario difieren</span>';
+                }
+                return '';
+            },[],'Advertencia')->label('Advert.')
+         
+            ->excludeFromExport(),
+
+            // columna de cesados
+            Column::callback(['personal.cesado'], function ($cesado) {
+                $cesado = (int) ($cesado ?? 0); // trata null como 0 (Activo)
+                if ($cesado === 1) {
+                    return '<span class="badge badge-danger">Cesado</span>';
+                }
+                return '<span class="badge badge-success">Activo</span>';
+            }, [], 'personal.cesado')
+            ->label('Estado')
+            // ->filterable([
+            //     0 => 'Activo',
+            //     1 => 'Cesado'
+            // ])
+            ->excludeFromExport(),
             
             DateColumn::name('fecha_inicio')->format('d/m/Y h:i:s a')
             ->label('Fecha de inicio (Aula Virtual)')->searchable()->filterable()->sortable(),

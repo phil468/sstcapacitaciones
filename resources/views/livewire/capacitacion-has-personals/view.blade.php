@@ -92,7 +92,9 @@
 					@endif
 										
 					<div>
-						@livewire('registros-table', ['exportable' => false,'capacitacion_id' => $capacitacion_id])
+						
+    					@livewire('registros-table-wrapper', ['capacitacion_id' => $capacitacion_id])
+						{{-- @livewire('registros-table', ['exportable' => false,'capacitacion_id' => $capacitacion_id]) --}}
 					</div>
 						
 					@can('editar-capacitacion')
@@ -195,5 +197,13 @@
         }
 		});
 	</script>
+
+	<script>
+
+        const URL_UPDATE_PERSONAL = "{{ route('personal.update', ':id') }}";
+
+	</script>
+	
+	<script src="{{ asset('js/registros-table-user.js') }}"></script>
 	@endpush
 </div>

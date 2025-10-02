@@ -134,5 +134,9 @@ class Personal extends Model
     {
         $this->attributes['name'] = mb_strtoupper(trim($value));
     }
-    
+
+    public function superior()
+    {
+        return $this->hasOne('App\Models\Personal', 'id', 'reporta_a');
+    }
 }
