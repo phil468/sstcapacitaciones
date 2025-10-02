@@ -70,7 +70,7 @@ class RegistrosTable extends LivewireDatatable
             Column::name('personal.correo_empresa')->label('Correo Empresa')->sortable()->searchable(),
 
             // NUEVA COLUMNA: Usuario
-            Column::callback(['personal_id'], function ($personal_id) {
+            Column::callback('personal_id', function ($personal_id) {
                 $p = \App\Models\Personal::with('user')->find($personal_id);
                 if(!$p) return '';
                 if($p->user){
@@ -80,7 +80,7 @@ class RegistrosTable extends LivewireDatatable
             },[],'crear_usuario' )->label('Usuario')->excludeFromExport(),
 
             // columna que muestra si tiene o no tiene usuario
-            Column::callback(['personal_id'], function ($personal_id) {
+            Column::callback('personal_id', function ($personal_id) {
                 $p = \App\Models\Personal::with('user')->find($personal_id);
                 if(!$p) return '';
                 if($p->user){
@@ -88,7 +88,7 @@ class RegistrosTable extends LivewireDatatable
                 }
                 return '<span class="badge badge-danger">No</span>';
                 // return '<button type="button" class="btn btn-sm btn-outline-primary crear-usuario-btn" data-personal="'.$p->id.'">Crear Usuario</button>';
-            },[],'usuario' )
+            },[],'usuario')
             ->label('Tiene Usuario')
             ->filterable([
                 1 => 'Sí',
@@ -98,7 +98,7 @@ class RegistrosTable extends LivewireDatatable
 
             // NUEVA COLUMNA: Advertencias
             // Columna Advertencias
-            Column::callback(['personal_id'], function ($personal_id) {
+            Column::callback('personal_id', function ($personal_id) {
                 $p = \App\Models\Personal::with('user')->select('id','correo_empresa')->find($personal_id);
                 if(!$p) return '';
                 if(!$p->user){
@@ -116,7 +116,7 @@ class RegistrosTable extends LivewireDatatable
             ->excludeFromExport(),
 
             // columna de cesados
-            Column::callback(['personal.cesado'], function ($cesado) {
+            Column::callback('personal.cesado', function ($cesado) {
                 $cesado = (int) ($cesado ?? 0); // trata null como 0 (Activo)
                 if ($cesado === 1) {
                     return '<span class="badge badge-danger">Cesado</span>';
