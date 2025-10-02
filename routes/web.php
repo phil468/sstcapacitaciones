@@ -138,7 +138,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::view('/alertas-enviadas','livewire.alerta-enviadas.index')->name('alertas-enviadas')->middleware(['can:ver-alertas']);
     Route::view('/notificaciones-enviadas','livewire.notificaciones-enviadas.index')->name('notificaciones-enviadas')->middleware(['can:ver-alertas']);
     Route::view('/personal','livewire.personals.index')->name('personal')->middleware(['can:ver-personal']);    
-    Route::get('/personal-tabulator', [PersonalController::class, 'indexTabulator'])->name('personal.tabulator')->middleware(['can:ver-personal']);
+    Route::get('/personal-tab', [PersonalController::class, 'indexTabulator'])->name('personal.tabulator')->middleware(['can:ver-personal']);
     Route::get('personal/historial-actualizaciones', 
     [App\Http\Controllers\PersonalController::class, 
     'historialActualizaciones']
