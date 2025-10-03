@@ -64,6 +64,9 @@ class PersonalTable extends LivewireDatatable
         ->leftJoin('planillas', 'planillas.id', 'personal.planilla_id')
         ->leftJoin('tipo_de_trabajador', 'tipo_de_trabajador.id', 'personal.tipo_de_trabajador_id')
         ->leftJoin('tipo_de_personal', 'tipo_de_personal.id', 'personal.tipo_de_personal_id')
+        ->where('cesado', false)
+        //filtar por no cesados
+
         ;
     }
 
@@ -96,6 +99,20 @@ class PersonalTable extends LivewireDatatable
                     ->hideable()
                     ->label('nombre completo')
                     ->sortBy('name'),
+                
+            Column::callback('cesado', function ($cesado) {
+                $cesado = (int) ($cesado ?? 0); // trata null como 0 (Activo)
+                if ($cesado === 1) {
+                    return '<span class="badge badge-danger">Cesado</span>';
+                }
+                return '<span class="badge badge-success">Activo</span>';
+            }, [], 'personal.cesado')
+            ->label('Estado')
+            // ->filterable([
+            //     0 => 'Activo',
+            //     1 => 'Cesado'
+            // ])
+            ->excludeFromExport(),
 
                 BooleanColumn::name('estado')
                     ->filterable('estado')

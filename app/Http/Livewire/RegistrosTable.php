@@ -14,6 +14,8 @@ use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\DateColumn;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\NumberColumn;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\CapacitacionNotification;
 
 class RegistrosTable extends LivewireDatatable
 {
@@ -200,4 +202,69 @@ class RegistrosTable extends LivewireDatatable
             $this->emit('alert', ['type' => 'success', 'message' => 'Registro eliminado con éxito.']);
         }
     }
+
+    public function notificarIndividual($id)
+    {
+        $registro = CapacitacionHasPersonal::with([
+            'personal.user',
+            'capacitacion.estado'
+        ])->find($id);
+
+        if (!$registro) {
+            $this->emit('alert', ['type'=>'danger','message'=>'Registro no encontrado.']);
+            return;
+        }
+
+        $capacitacion = $registro->capacitacion;
+
+        if (!$capacitacion || !$capacitacion->activo || ($capacitacion->estado && strtolower($capacitacion->estado->name) === 'cancelado')) {
+            $this->emit('alert', ['type'=>'warning','message'=>'Capacitación inactiva o cancelada.']);
+            return;
+        }
+
+        // Validar ventana (si existen columnas fecha_inicio / fecha_fin en la tabla pivote)
+        if ($registro->fecha_inicio && $registro->fecha_fin) {
+            $now = now();
+            if (!($registro->fecha_inicio <= $now && $registro->fecha_fin >= $now)) {
+                $this->emit('alert', ['type'=>'info','message'=>'Fuera del rango de fechas para notificar.']);
+                return;
+            }
+        }
+
+        // Verificar si ya realizó evaluación (mismo criterio que notificar general)
+        $yaIngreso = SesionAccessLog::where('capacitacion_id', $capacitacion->id)
+            ->where('personal_id', $registro->personal_id)
+            ->whereNotNull('numero_de_evaluacion')
+            ->exists();
+
+        if ($yaIngreso) {
+            $this->emit('alert', ['type'=>'info','message'=>'El personal ya registró actividad (no se envía).']);
+            return;
+        }
+
+        if (!$registro->personal || !$registro->personal->user) {
+            $this->emit('alert', ['type'=>'danger','message'=>'El personal no tiene usuario asociado.']);
+            return;
+        }
+
+        try {
+            Notification::send($registro->personal->user, new CapacitacionNotification($capacitacion));
+
+            NotificacionesEnviada::create([
+                'capacitacion_id' => $capacitacion->id,
+                'personal_id'     => $registro->personal_id
+            ]);
+
+            $this->emit('alert', [
+                'type'=>'success',
+                'message'=>'Notificación enviada a '.$registro->personal->name
+            ]);
+        } catch (\Throwable $e) {
+            $this->emit('alert', [
+                'type'=>'danger',
+                'message'=>'Error al enviar notificación.'
+            ]);
+        }
+    }
+
 }
