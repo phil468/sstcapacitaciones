@@ -36,7 +36,8 @@ class NotasPorPersonalTable extends LivewireDatatable
          ->where('capacitacion_has_personal.deleted_at', null)
          ->where('capacitaciones.es_aula_virtual', true)
             ->join('capacitaciones', 'capacitacion_has_personal.capacitacion_id', '=', 'capacitaciones.id')
-            ->join('personal', 'capacitacion_has_personal.personal_id', '=', 'personal.id');
+            ->join('personal', 'capacitacion_has_personal.personal_id', '=', 'personal.id')
+            ->leftJoin('temas', 'capacitaciones.tema_id', '=', 'temas.id'); // <-- AGREGAR ESTE JOIN
     }
 
     public $model = CapacitacionHasPersonal::class;
