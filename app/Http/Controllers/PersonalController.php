@@ -869,32 +869,171 @@ class PersonalController extends Controller
         }
     }
 
-    public function actualizacionGeneralCompleta()
+    public function actualizacionGeneralCompleta(Request $request)
     {
-        // Primero actualizar la información de todos los empleados
-        $resultadoActualizacion = $this->actualizarPersonalNisira('0');
+        $lote = (int) $request->input('lote', 0);
+        $tamanoLote = (int) $request->input('tamano_lote', 100);
         
-        // Luego actualizar los estados (cesado)
-        $resultadoEstados = $this->actualizarEstadoParaTodos();
+        // Si es el primer lote (lote=0), traer todos los datos de la API una sola vez
+        if ($lote === 0) {
+            $response2 = $this->obtenerResponse('0');
+            
+            if (!$response2->successful()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error al consultar API Nisira'
+                ], 500);
+            }
+            
+            $data = $response2->json();
+            if (!$data) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se obtuvieron datos de la API'
+                ], 404);
+            }
+            
+            // Guardar en caché/sesión para los siguientes lotes (válido 30 min)
+            cache()->put('actualizacion_personal_data', $data, now()->addMinutes(30));
+            $total = count($data);
+        } else {
+            // Recuperar del caché
+            $data = cache()->get('actualizacion_personal_data');
+            if (!$data) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sesión expirada. Reinicie la actualización.'
+                ], 410);
+            }
+            $total = count($data);
+        }
         
-        // Registrar la actualización en el historial
-        $this->registrarActualizacion([
-            'tipo' => 'general',
-            'resultado_actualizacion' => $resultadoActualizacion,
-            'resultado_estados' => $resultadoEstados,
-            'ejecutado_por' => auth()->check() ? auth()->user()->id : null,
-            'ejecutado_por_nombre' => auth()->check() ? auth()->user()->name : 'Sistema',
-            'ejecutado_por_sistema' => auth()->check() ? false : true
-        ]);
+        // Procesar solo el lote actual
+        $inicio = $lote * $tamanoLote;
+        $fin = min($inicio + $tamanoLote, $total);
+        $chunk = array_slice($data, $inicio, $tamanoLote);
         
-        return [
+        $procesados = 0;
+        $errores = 0;
+        
+        foreach ($chunk as $row) {
+            try {
+                $this->actualizarOCrearPersonalDesdeAPI($row);
+                $procesados++;
+            } catch (\Exception $e) {
+                Log::error("Error procesando DNI {$row['NRODOCUMENTO']}: " . $e->getMessage());
+                $errores++;
+            }
+        }
+        
+        $hayMas = $fin < $total;
+        
+        // Si es el último lote, limpiar caché y registrar
+        if (!$hayMas) {
+            cache()->forget('actualizacion_personal_data');
+            $this->registrarActualizacion([
+                'tipo' => 'general',
+                'total_procesados' => $total,
+                'ejecutado_por' => auth()->check() ? auth()->user()->id : null,
+                'ejecutado_por_nombre' => auth()->check() ? auth()->user()->name : 'Sistema',
+            ]);
+        }
+        
+        return response()->json([
             'success' => true,
-            'message' => 'Actualización general completada',
-            'detalles' => [
-                'actualizacion' => $resultadoActualizacion,
-                'estados' => $resultadoEstados
-            ]
+            'procesados' => $procesados,
+            'errores' => $errores,
+            'total' => $total,
+            'hay_mas' => $hayMas,
+            'progreso' => round(($fin / $total) * 100, 1)
+        ]);
+    }
+    
+    // Método auxiliar para procesar un registro individual de la API
+    private function actualizarOCrearPersonalDesdeAPI($row)
+    {
+        // Extraer lógica del método actualizarPersonalNisira para un solo registro
+        $nrodocumento = trim($row['NRODOCUMENTO'] ?? '');
+        
+        if (empty($nrodocumento)) {
+            throw new \Exception('DNI vacío');
+        }
+        
+        $personal = Personal::where('dni', $nrodocumento)->first();
+        
+        $datosActualizados = [
+            'dni' => $nrodocumento,
+            'name' => trim($row['nombrecompleto'] ?? ''),
+            'nombres' => trim($row['NOMBRES'] ?? ''),
+            'apellido_paterno' => trim($row['A_PATERNO'] ?? ''),
+            'apellido_materno' => trim($row['A_MATERNO'] ?? ''),
+            'sexo' => trim($row['sexo'] ?? 'M'),
+            'celular_empresa' => trim($row['CELULAR'] ?? null),
+            'correo_empresa' => trim($row['EMAIL'] ?? null),
+            'fecha_ingreso' => !empty($row['FECHA_INGRESO']) ? Carbon::parse($row['FECHA_INGRESO']) : null,
+            'fecha_cese' => !empty($row['FECHA_CESE']) ? Carbon::parse($row['FECHA_CESE']) : null,
+            'estado' => true,
         ];
+        
+        // Empresa
+        if (!empty($row['empresa'])) {
+            $empresa = Empresa::firstOrCreate(
+                ['name' => trim($row['empresa'])],
+                ['estado' => true]
+            );
+            $datosActualizados['empresa_id'] = $empresa->id;
+        }
+        
+        // Planilla
+        if (!empty($row['planilla'])) {
+            $planilla = Planilla::firstOrCreate(
+                ['name' => trim($row['planilla'])],
+                ['idplanilla_nisira' => $row['IDPLANILLA'] ?? null, 'estado' => true]
+            );
+            $datosActualizados['planilla_id'] = $planilla->id;
+        }
+        
+        // Tipo trabajador
+        if (!empty($row['TIPOTRABAJADOR'])) {
+            $tipoTrabajador = TipoDeTrabajador::firstOrCreate(
+                ['name' => trim($row['TIPOTRABAJADOR'])],
+                ['estado' => true]
+            );
+            $datosActualizados['tipo_trabajador_id'] = $tipoTrabajador->id;
+        }
+        
+        // Tipo personal
+        if (!empty($row['tipopersonal'])) {
+            $tipoPersonal = TipoDePersonal::firstOrCreate(
+                ['name' => trim($row['tipopersonal'])],
+                ['estado' => true]
+            );
+            $datosActualizados['tipo_personal_id'] = $tipoPersonal->id;
+        }
+        
+        // Cargo
+        if (!empty($row['cargo'])) {
+            $cargo = Cargo::firstOrCreate(
+                ['name' => trim($row['cargo'])],
+                ['estado' => true]
+            );
+            $datosActualizados['cargo_id'] = $cargo->id;
+        }
+        
+        // Área (centro de costo)
+        if (!empty($row['CENTRO_COSTO'])) {
+            $area = Area::firstOrCreate(
+                ['name' => trim($row['CENTRO_COSTO'])],
+                ['estado' => true]
+            );
+            $datosActualizados['area_id'] = $area->id;
+        }
+        
+        if ($personal) {
+            $personal->update($datosActualizados);
+        } else {
+            Personal::create($datosActualizados);
+        }
     }
 
     // Método mejorado para actualizar por DNI individual

@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
     // Inicializar Select2 con AJAX
     function initSelect2(selector, url, extraData = {}, opts = {}) {
         $(selector).select2({
@@ -46,15 +46,15 @@ $(function() {
                 url: SELECT2_REPORTA_URL,
                 dataType: 'json',
                 delay: 250,
-                data: function(params) {
-                    let data = { 
+                data: function (params) {
+                    let data = {
                         q: params.term || '',  // Enviar cadena vacía si no hay término
-                        solo_activos: true 
+                        solo_activos: true
                     };
                     if (excludeId) data.exclude = excludeId;
                     return data;
                 },
-                processResults: function(data) {
+                processResults: function (data) {
                     return { results: data.results };
                 },
                 cache: true // Habilitar caché para mejor rendimiento
@@ -63,33 +63,33 @@ $(function() {
             allowClear: true,
             minimumInputLength: 2,  // Cambiar a 0 para permitir ver opciones sin escribir
             language: {
-                inputTooShort: function() {
+                inputTooShort: function () {
                     return "Escriba para buscar...";
                 },
-                noResults: function() {
+                noResults: function () {
                     return "No se encontraron resultados";
                 },
-                searching: function() {
+                searching: function () {
                     return "Buscando...";
                 }
             }
         });
-    
+
         // Cargar datos iniciales (primeros 20 registros)
         $.ajax({
             url: SELECT2_REPORTA_URL,
             dataType: 'json',
-            data: { 
-                q: '', 
+            data: {
+                q: '',
                 exclude: excludeId,
                 solo_activos: true,
                 limit: 20 // Solicitar primeros 20 registros
             },
-            success: function(data) {
+            success: function (data) {
                 // Agregar opciones iniciales
                 if (data.results && data.results.length > 0) {
                     var initialOptions = '';
-                    data.results.forEach(function(item) {
+                    data.results.forEach(function (item) {
                         initialOptions += '<option value="' + item.id + '">' + item.text + '</option>';
                     });
                     $('#personalReportaA').append(initialOptions);
@@ -109,7 +109,7 @@ $(function() {
         createButtonSelector: "#createButton",
         saveButtonSelector: "#savePersonalChanges",
         ajaxURL: PERSONAL_URL,
-        ajaxResponse: function(url, params, response) {
+        ajaxResponse: function (url, params, response) {
             // Tabulator espera un array, pero Laravel devuelve {data: [...]} si hay paginación
             return response.data.data || response;
         },
@@ -120,14 +120,14 @@ $(function() {
 
         // >>> AÑADIR: opciones Tabulator (dependiendo cómo BaseModel las mezcle; si usa p.e. 'tableOptions' cámbialo)
         tabulatorOptions: {
-            layout:"fitColumns",
-            selectable:true,
-            selectableRangeMode:"click",
+            layout: "fitColumns",
+            selectable: true,
+            selectableRangeMode: "click",
             // rowSelectionChanged:function(data){
             //     $('#exportSelectedExcelBtn').prop('disabled', data.length === 0);
             // },
             // (si necesitas height, persistence, etc.)
-            height:"650px",
+            height: "650px",
             // rowSelectionChanged: function(data){
             //     console.log("Filas seleccionadas:", data);
             //     $('#exportSelectedExcelBtn').prop('disabled', data.length === 0);
@@ -155,23 +155,23 @@ $(function() {
                 formatter: "rowSelection",
                 titleFormatter: "rowSelection",                 // checkbox en el header (seleccionar/deseleccionar visibles)
                 titleFormatterParams: { rowRange: "active" },   // solo filas filtradas actuales
-                cellClick: function(e, cell) {                  // togglear solo al click en la celda
+                cellClick: function (e, cell) {                  // togglear solo al click en la celda
                     cell.getRow().toggleSelect();
                     e.stopPropagation();
                 }
                 // no debe exportar esta columna
-                ,download: false
+                , download: false
 
             },
             { title: "ID", field: "id", width: 80 },
             {
                 title: "Acciones",
                 field: "actions",
-                formatter: function(cell) {
+                formatter: function (cell) {
                     const id = cell.getRow().getData().id;
                     const seleccionado = cell.getRow().getData().seleccionado;
                     const dni = cell.getRow().getData().dni;
-                    
+
                     let buttons = `
                         <button class="btn btn-sm btn-warning text-white edit-button" data-id="${id}">
                             <i class="fas fa-edit"></i>
@@ -183,7 +183,7 @@ $(function() {
                             <i class="fas fa-sync"></i>
                         </button>
                     `;
-                    
+
                     // Agregar botón de exportar a campaña solo si está seleccionado
                     if (seleccionado) {
                         buttons += `
@@ -192,7 +192,7 @@ $(function() {
                             </button>
                         `;
                     }
-                    
+
                     return buttons;
 
                 }
@@ -206,120 +206,127 @@ $(function() {
                 formatter: "tickCross",
                 editor: true, // Permite edición directa
                 headerFilter: "select",
-                headerFilterParams: { values: {"": "Todos", "1": "Sí", "0": "No"} },
-                accessorDownload:(v)=> v ? 'Sí':'No'
+                headerFilterParams: { values: { "": "Todos", "1": "Sí", "0": "No" } },
+                accessorDownload: (v) => v ? 'Sí' : 'No'
             },
             { title: "Nombre", field: "name", headerFilter: "input" },
-            { title: "Empresa", field: "empresa.name", headerFilter: "input" ,
-              accessorDownload:(v,row)=> row.empresa?.name || '' 
+            {
+                title: "Empresa", field: "empresa.name", headerFilter: "input",
+                accessorDownload: (v, row) => row.empresa?.name || ''
             },
-            { title: "Tipo personal", field: "tipo_personal.name", headerFilter: "input" ,
-              accessorDownload:(v,row)=> row.tipo_personal?.name || '' },
+            {
+                title: "Tipo personal", field: "tipo_personal.name", headerFilter: "input",
+                accessorDownload: (v, row) => row.tipo_personal?.name || ''
+            },
             // { title: "Gerencia", field: "gerencia.name", headerFilter: "input" },
-            { title: "Área", field: "area.name", headerFilter: "input" ,
-              accessorDownload:(v,row)=> row.area?.name || '' },
-            { 
-                title: "Cargo", 
-                field: "cargo.name", 
+            {
+                title: "Área", field: "area.name", headerFilter: "input",
+                accessorDownload: (v, row) => row.area?.name || ''
+            },
+            {
+                title: "Cargo",
+                field: "cargo.name",
                 headerFilter: "input",
                 editor: "list", // Usar editor tipo select,
-                accessorDownload:(v,row)=> row.cargo?.name || '' 
+                accessorDownload: (v, row) => row.cargo?.name || ''
             },
 
             {
-                title:"Reporta a",
-                field:"superior", // usa el objeto
-                formatter:(cell)=>{
+                title: "Reporta a",
+                field: "superior", // usa el objeto
+                formatter: (cell) => {
                     const s = cell.getValue();
-                    return s ? `${s.name} (${s.dni||''})` : '';
+                    return s ? `${s.name} (${s.dni || ''})` : '';
                 },
-                accessorDownload:(v,row)=>{
+                accessorDownload: (v, row) => {
                     const s = row.superior;
-                    return s ? `${s.name} - ${s.dni||''}` : '';
+                    return s ? `${s.name} - ${s.dni || ''}` : '';
                 },
-                headerFilter:"input"
+                headerFilter: "input"
             },
 
-            { title: "Ingreso", field: "fecha_ingreso",
-                formatter: function(cell) {
-                    return cell.getValue() 
-                    ? new Date(cell.getValue()).toLocaleDateString('es-PE', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit'
-                    })
-                    : '';
+            {
+                title: "Ingreso", field: "fecha_ingreso",
+                formatter: function (cell) {
+                    return cell.getValue()
+                        ? new Date(cell.getValue()).toLocaleDateString('es-PE', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        })
+                        : '';
                 },
-                accessorDownload:(v,row)=>{
-                    if(!row.fecha_ingreso) return '';
-                    const p = row.fecha_ingreso.substring(0,10).split('-');
+                accessorDownload: (v, row) => {
+                    if (!row.fecha_ingreso) return '';
+                    const p = row.fecha_ingreso.substring(0, 10).split('-');
                     return `${p[2]}/${p[1]}/${p[0]}`;
                 },
                 // filtro por rangos de fechas
                 headerFilter: "date",
-                headerFilterFunc: function(headerValue, rowValue) {
+                headerFilterFunc: function (headerValue, rowValue) {
                     if (!headerValue) return true; // Si no hay filtro, mostrar todo
 
                     // Extrae solo la parte de la fecha (YYYY-MM-DD)
                     const filterDate = headerValue.slice(0, 10);
                     const rowDate = rowValue ? rowValue.slice(0, 10) : '';
-                    return filterDate === rowDate;                   
+                    return filterDate === rowDate;
                 }
             },
             {
-                title: "Cese", 
-                field: "cesado", 
+                title: "Cese",
+                field: "cesado",
                 formatter: "tickCross",
-                accessorDownload:(v)=> v ? 'Sí':'No' 
+                accessorDownload: (v) => v ? 'Sí' : 'No'
             },
-            { 
-                title: "Estado", 
-                field: "estado", 
-                formatter: "tickCross", 
-                headerFilter: "select", 
-                headerFilterParams: { values: {"": "Todos", "true": "Activo", "false": "Inactivo"} },
-                accessorDownload:(v)=> v ? 'Activo':'Inactivo' 
+            {
+                title: "Estado",
+                field: "estado",
+                formatter: "tickCross",
+                headerFilter: "select",
+                headerFilterParams: { values: { "": "Todos", "true": "Activo", "false": "Inactivo" } },
+                accessorDownload: (v) => v ? 'Activo' : 'Inactivo'
             },
-            { 
+            {
                 title: "Fecha Cese", field: "fecha_cese",
-                formatter: function(cell) {
-                    return cell.getValue() 
-                    ? new Date(cell.getValue()).toLocaleDateString('es-PE', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit'
-                    })
-                    : '';
+                formatter: function (cell) {
+                    return cell.getValue()
+                        ? new Date(cell.getValue()).toLocaleDateString('es-PE', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        })
+                        : '';
                 },
-                accessorDownload:(v,row)=>{
-                    if(!row.fecha_cese) return '';
-                    const p = row.fecha_cese.substring(0,10).split('-');
+                accessorDownload: (v, row) => {
+                    if (!row.fecha_cese) return '';
+                    const p = row.fecha_cese.substring(0, 10).split('-');
                     return `${p[2]}/${p[1]}/${p[0]}`;
                 }
             },
-            { title: "Sexo", field: "sexo", 
-                formatter: function(cell) {
+            {
+                title: "Sexo", field: "sexo",
+                formatter: function (cell) {
                     const value = cell.getValue();
                     if (value === 'M') return '<span class="badge bg-info">Masculino</span>';
                     if (value === 'F') return '<span class="badge bg-danger">Femenino</span>';
                     return '<span class="badge bg-secondary">No especificado</span>';
-                } ,
-              accessorDownload:(v)=>{
-                if(v==='M') return 'Masculino';
-                if(v==='F') return 'Femenino';
-                return 'No especificado';
-              }
+                },
+                accessorDownload: (v) => {
+                    if (v === 'M') return 'Masculino';
+                    if (v === 'F') return 'Femenino';
+                    return 'No especificado';
+                }
             },
-            { 
-                title: "Correo Empresa", 
-                field: "correo_empresa", 
+            {
+                title: "Correo Empresa",
+                field: "correo_empresa",
                 headerFilter: "input",
-                accessorDownload:(v)=> v || '' ,
-                formatter: function(cell) {
+                accessorDownload: (v) => v || '',
+                formatter: function (cell) {
                     const value = cell.getValue() || '';
                     const row = cell.getRow();
                     const data = row.getData();
-                    
+
                     // Si el personal no tiene user_id o user relacionado, solo mostrar el valor
                     if (!data.user || !data.user.email) {
                         return `<div class="d-flex align-items-center">
@@ -329,9 +336,9 @@ $(function() {
                                 </button>
                                 </div>`;
                     }
-                    
+
                     const userEmail = data.user.email;
-                    
+
                     // Comprobar si el correo_empresa es diferente al email del usuario
                     if (value.toLowerCase() !== userEmail.toLowerCase() && userEmail) {
                         return `<div class="d-flex align-items-center">
@@ -350,7 +357,7 @@ $(function() {
                                 </button>
                                 </div>`;
                     }
-                    
+
                     return `<div class="d-flex align-items-center">
                             <span class="me-2">${value}</span>
                             <button class="btn btn-sm btn-link p-0 edit-correo-button" data-id="${data.id}" title="Editar correo">
@@ -359,22 +366,28 @@ $(function() {
                             </div>`;
                 }
             },
-            { title: "Planilla", field: "planilla.name", headerFilter: "input",
-              accessorDownload:(v,row)=> row.planilla?.name || ''  },
-            { title: "Id Planilla Nisira", field: "planilla.idplanilla_nisira", headerFilter: "input" ,
-              accessorDownload:(v,row)=> row.planilla?.idplanilla_nisira || '' },
-            { title:  "Tipo trabajador", field: "tipo_trabajador.name", headerFilter: "input" ,
-              accessorDownload:(v,row)=> row.tipo_trabajador?.name || '' },
+            {
+                title: "Planilla", field: "planilla.name", headerFilter: "input",
+                accessorDownload: (v, row) => row.planilla?.name || ''
+            },
+            {
+                title: "Id Planilla Nisira", field: "planilla.idplanilla_nisira", headerFilter: "input",
+                accessorDownload: (v, row) => row.planilla?.idplanilla_nisira || ''
+            },
+            {
+                title: "Tipo trabajador", field: "tipo_trabajador.name", headerFilter: "input",
+                accessorDownload: (v, row) => row.tipo_trabajador?.name || ''
+            },
         ],
 
-        beforeOpenModal: function(data) {
+        beforeOpenModal: function (data) {
 
             // Limpiar selects
             $('#personalEmpresaId, #personalAreaId, #personalCargoId, #personalReportaA')
                 .val(null).trigger('change');
 
             if (data && data.id) {
-                setTimeout(()=> fillPersonalForm(data), 150);
+                setTimeout(() => fillPersonalForm(data), 150);
             } else {
                 $('#personalForm')[0].reset();
             }
@@ -395,25 +408,25 @@ $(function() {
     }
 
     // Evento al seleccionar / limpiar área
-    $('#personalAreaId').on('select2:select', function(e){
+    $('#personalAreaId').on('select2:select', function (e) {
         loadAreaPath(e.params.data.id);
     });
 
-    $('#personalAreaId').on('select2:clear', function(){
+    $('#personalAreaId').on('select2:clear', function () {
         $('#personalAreaPath').text('');
     });
 
-    personalModel.init();    
+    personalModel.init();
 
-    
+
     // Quitar (o dejar) la definición previa en tabulatorOptions; esta es la que funcionará:
     const tablaPersonal = personalModel.table || Tabulator.findTable('#personal-table')?.[0];
 
-    if(tablaPersonal){
+    if (tablaPersonal) {
         // Remueve posible listener previo para evitar duplicados
         tablaPersonal.off('rowSelectionChanged');
 
-        tablaPersonal.on('rowSelectionChanged', function(data, rows){
+        tablaPersonal.on('rowSelectionChanged', function (data, rows) {
             // data = array de objetos seleccionados
             $('#exportSelectedExcelBtn').prop('disabled', data.length === 0);
             $('#selectedCount').text(data.length);
@@ -425,11 +438,11 @@ $(function() {
     }
 
     // Export visible (filtros + orden actuales)
-    function exportVisibleToXLSX(){
+    function exportVisibleToXLSX() {
         const t = Tabulator.findTable('#personal-table')?.[0];
-        if(!t){ Swal.fire('Error','Tabla no lista','error'); return; }
+        if (!t) { Swal.fire('Error', 'Tabla no lista', 'error'); return; }
         const filename = `personal_${luxon.DateTime.now().toFormat('yyyyLLdd_HHmmss')}.xlsx`;
-        t.download('xlsx', filename, {sheetName:'Personal'});
+        t.download('xlsx', filename, { sheetName: 'Personal' });
     }
 
     // Export solo filas seleccionadas
@@ -457,21 +470,21 @@ $(function() {
     //     temp.download('xlsx', filename, {sheetName:'Seleccion'});
     // }
 
-    function exportSelectedToXLSX(){
+    function exportSelectedToXLSX() {
         const t = Tabulator.findTable('#personal-table')?.[0];
-        if(!t){
-            Swal.fire({icon:'error',title:'Error',text:'Tabla no lista'});
+        if (!t) {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Tabla no lista' });
             return;
         }
         const selCount = t.getSelectedData().length;
-        if(!selCount){
-            Swal.fire({icon:'warning',title:'Sin selección',text:'Seleccione filas.'});
+        if (!selCount) {
+            Swal.fire({ icon: 'warning', title: 'Sin selección', text: 'Seleccione filas.' });
             return;
         }
         const filename = `personal_seleccion_${luxon.DateTime.now().toFormat('yyyyLLdd_HHmmss')}.xlsx`;
         t.download('xlsx', filename, {
-            sheetName:'Seleccion',
-            rowRange:'selected' // <<< SOLO filas seleccionadas
+            sheetName: 'Seleccion',
+            rowRange: 'selected' // <<< SOLO filas seleccionadas
         });
     }
 
@@ -482,7 +495,7 @@ $(function() {
 
     let importValidOK = false;
 
-    function resetImportState(){
+    function resetImportState() {
         importValidOK = false;
         $('#submitImportPersonalBtn').prop('disabled', true);
         $('#validateImportPersonalBtn').prop('disabled', false);
@@ -490,31 +503,31 @@ $(function() {
     }
 
     // Al abrir modal limpiar estado
-    $(document).on('show.bs.modal', '#importPersonalModal', function(){
+    $(document).on('show.bs.modal', '#importPersonalModal', function () {
         resetImportState();
         const form = document.getElementById('importPersonalForm');
-        if(form){
+        if (form) {
             form.reset();
         }
     });
 
     // Cambiar archivo -> reset
-    $(document).on('change', '#importPersonalForm input[name="archivo"]', function(){
+    $(document).on('change', '#importPersonalForm input[name="archivo"]', function () {
         resetImportState();
     });
 
     // Modal Import: descargar plantilla
-    $('#downloadTemplateBtn').on('click', ()=> {
+    $('#downloadTemplateBtn').on('click', () => {
         window.location = ROUTE_PERSONAL_TEMPLATE;
     });
 
     /* ---- VALIDAR (dry run) ---- */
-    $('#validateImportPersonalBtn').on('click', function(){
+    $('#validateImportPersonalBtn').on('click', function () {
         const form = document.getElementById('importPersonalForm');
-        if(!form) return;
+        if (!form) return;
 
         const fileInput = form.querySelector('input[name="archivo"]');
-        if(!fileInput || !fileInput.files.length){
+        if (!fileInput || !fileInput.files.length) {
             $('#importPersonalResultado').html('<span class="text-danger">Seleccione un archivo.</span>');
             return;
         }
@@ -530,7 +543,7 @@ $(function() {
             data: fd,
             processData: false,
             contentType: false,
-            success: function(resp){
+            success: function (resp) {
                 importValidOK = resp.success;
                 $('#validateImportPersonalBtn').prop('disabled', false);
                 $('#submitImportPersonalBtn').prop('disabled', !importValidOK);
@@ -539,23 +552,23 @@ $(function() {
                     Validación OK. Se crearían ${resp.sim_insertados} y actualizarían ${resp.sim_actualizados} registros.
                 </div>`;
 
-                if(resp.areas_por_crear?.length){
+                if (resp.areas_por_crear?.length) {
                     html += `<div><strong>Áreas nuevas:</strong> ${resp.areas_por_crear.join(', ')}</div>`;
                 }
-                if(resp.cargos_por_crear?.length){
+                if (resp.cargos_por_crear?.length) {
                     html += `<div><strong>Cargos nuevos:</strong> ${resp.cargos_por_crear.join(', ')}</div>`;
                 }
                 $('#importPersonalResultado').html(html);
             },
-            error: function(xhr){
+            error: function (xhr) {
                 $('#validateImportPersonalBtn').prop('disabled', false);
                 let html = '';
-                if(xhr.status === 422){
+                if (xhr.status === 422) {
                     const j = xhr.responseJSON || {};
-                    const errs = (j.errores||[]).map(e=>`<li>${e}</li>`).join('');
+                    const errs = (j.errores || []).map(e => `<li>${e}</li>`).join('');
                     html = `<div class="text-warning">Validación con incidencias:
                             <ul class="mb-1">${errs}</ul>
-                            <div>Se crearían ${j.sim_insertados||0} y actualizarían ${j.sim_actualizados||0} (no se importó).</div>
+                            <div>Se crearían ${j.sim_insertados || 0} y actualizarían ${j.sim_actualizados || 0} (no se importó).</div>
                             </div>`;
                 } else {
                     html = '<span class="text-danger">Error en la validación.</span>';
@@ -566,14 +579,14 @@ $(function() {
     });
 
     // Importar archivo
-    $('#submitImportPersonalBtn').on('click', function(){
-        if(!importValidOK){
+    $('#submitImportPersonalBtn').on('click', function () {
+        if (!importValidOK) {
             $('#importPersonalResultado').append('<div class="text-danger">Primero valide el archivo.</div>');
             return;
         }
 
         const form = document.getElementById('importPersonalForm');
-        if(!form) return;
+        if (!form) return;
         const fd = new FormData(form);
 
         $('#submitImportPersonalBtn').prop('disabled', true);
@@ -585,9 +598,9 @@ $(function() {
             data: fd,
             processData: false,
             contentType: false,
-            success: function(resp){
+            success: function (resp) {
                 $('#submitImportPersonalBtn').prop('disabled', false);
-                if(resp.success){
+                if (resp.success) {
                     $('#importPersonalResultado').append(
                         `<div class="text-success mt-1">Importación exitosa. Insertados: ${resp.insertados}, Actualizados: ${resp.actualizados}</div>`
                     );
@@ -600,15 +613,15 @@ $(function() {
                     );
                 }
             },
-            error: function(xhr){
+            error: function (xhr) {
                 $('#submitImportPersonalBtn').prop('disabled', false);
-                if(xhr.status === 422){
+                if (xhr.status === 422) {
                     const j = xhr.responseJSON || {};
-                    const errs = (j.errores||[]).map(e=>`<li>${e}</li>`).join('');
+                    const errs = (j.errores || []).map(e => `<li>${e}</li>`).join('');
                     $('#importPersonalResultado').append(
                         `<div class="text-warning mt-1">Importación con incidencias:
                             <ul class="mb-1">${errs}</ul>
-                            <div>Insertados: ${j.insertados||0}, Actualizados: ${j.actualizados||0}</div>
+                            <div>Insertados: ${j.insertados || 0}, Actualizados: ${j.actualizados || 0}</div>
                         </div>`
                     );
                 } else {
@@ -619,10 +632,10 @@ $(function() {
     });
 
     // Detectar cuando un celda ha sido editada directamente en la tabla
-    personalModel.table.on("cellEdited", function(cell) {
+    personalModel.table.on("cellEdited", function (cell) {
         // Implementar debounce para evitar múltiples solicitudes
         clearTimeout(window.updateCellTimeout);
-    
+
         window.updateCellTimeout = setTimeout(() => {
 
             const row = cell.getRow();
@@ -630,16 +643,16 @@ $(function() {
             const id = data.id;
             const field = cell.getField();
             const value = cell.getValue();
-            
+
             // Solo para el campo 'seleccionado'
             // if (field === 'seleccionado') {
             // Mostrar indicador de carga en la celda
             row.getElement().style.backgroundColor = "#f3f9ff";
-        
+
             // Determinar el campo y preparar los datos de forma más eficiente
             const updateData = {};
             let needsFullRowUpdate = false;
-            
+
             switch (field) {
                 case 'seleccionado':
                     updateData.seleccionado = value ? 1 : 0;
@@ -665,7 +678,7 @@ $(function() {
             // Enviar actualización al servidor con indicador visual mejorado
             const cellElement = cell.getElement();
             cellElement.classList.add('updating-cell');
-            
+
             // Enviar actualización al servidor
             $.ajax({
                 url: PERSONAL_UPDATE_URL.replace(':id', id),
@@ -674,7 +687,7 @@ $(function() {
                 // headers: {
                 //     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 // },
-                success: function(response) {
+                success: function (response) {
                     // Éxito: restaurar color de fondo
                     row.getElement().style.backgroundColor = "";
                     cellElement.classList.remove('updating-cell');
@@ -689,7 +702,7 @@ $(function() {
                     } else if (needsFullRowUpdate) {
                         // Para campos que requieren actualización completa
                         row.getElement().classList.add('row-updating');
-                        personalModel.table.updateRow(id, function() {
+                        personalModel.table.updateRow(id, function () {
                             return $.ajax({
                                 url: PERSONAL_SHOW_URL.replace(':id', id),
                                 method: 'GET'
@@ -708,13 +721,13 @@ $(function() {
                         text: 'Campo actualizado correctamente',
                         toast: true
                     });
-                    
+
                     // actualizar la tabla
                     // este cambio de selccionado, tiene que actualizar la columna acciones también
-                    
+
 
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     // Error: revertir el cambio
                     cell.restoreOldValue();
                     row.getElement().style.backgroundColor = "";
@@ -727,17 +740,17 @@ $(function() {
                     });
                     // // toastr.error('Error al actualizar el campo');
                     // console.error('Error:', xhr);                    
-                
+
                     // toastr.error('No se pudo actualizar el campo');
                     console.error('Error:', xhr);
                 }
             });
-        // }
+            // }
         }, 300); // Debounce de 300ms para evitar múltiples solicitudes
     });
 
     // Botón para marcar seleccionados según criterios específicos
-    $("#marcarSeleccionadosBtn").on("click", function() {
+    $("#marcarSeleccionadosBtn").on("click", function () {
         Swal.fire({
             title: '¿Marcar personal seleccionado?',
             text: 'Esto marcará como seleccionado a todo el personal activo con planilla tipo E y fecha de ingreso válida según las fechas de corte',
@@ -764,7 +777,7 @@ $(function() {
                             // headers: {
                             //     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             // },
-                            success: function(response) {
+                            success: function (response) {
                                 Swal.fire({
                                     title: 'Proceso completado',
                                     text: response.message,
@@ -774,7 +787,7 @@ $(function() {
                                     personalModel.table.setData();
                                 });
                             },
-                            error: function(xhr) {
+                            error: function (xhr) {
                                 Swal.fire({
                                     title: 'Error',
                                     text: xhr.responseJSON?.message || 'Ha ocurrido un error al procesar la solicitud',
@@ -789,7 +802,7 @@ $(function() {
     });
 
     // Botón para exportar TODOS los registros marcados como seleccionados a la campaña actual
-    $("#exportarTodosSeleccionadosCampania").on("click", function() {
+    $("#exportarTodosSeleccionadosCampania").on("click", function () {
         Swal.fire({
             title: '¿Exportar todos los seleccionados?',
             text: 'Se enviarán a la campaña actual TODOS los registros marcados como seleccionados en la base de datos',
@@ -809,7 +822,7 @@ $(function() {
                     allowEscapeKey: false,
                     didOpen: () => {
                         Swal.showLoading();
-                        
+
                         // Realizar la petición AJAX
                         $.ajax({
                             url: EXPORTAR_TODOS_SELECCIONADOS_URL,
@@ -817,14 +830,14 @@ $(function() {
                             // headers: {
                             //     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             // },
-                            success: function(response) {
+                            success: function (response) {
                                 Swal.fire({
                                     title: 'Proceso completado',
                                     text: response.message,
                                     icon: 'success'
                                 });
                             },
-                            error: function(xhr) {
+                            error: function (xhr) {
                                 Swal.fire({
                                     title: 'Error',
                                     text: xhr.responseJSON?.message || 'Ha ocurrido un error al procesar la solicitud',
@@ -839,9 +852,9 @@ $(function() {
     });
 
     // Delegación de eventos para los botones de exportar individual (ya que se generan dinámicamente)
-    $(document).on("click", ".export-to-campaign-button", function() {
+    $(document).on("click", ".export-to-campaign-button", function () {
         const id = $(this).data("id");
-        
+
         Swal.fire({
             title: '¿Exportar este registro?',
             text: 'Se enviará a la campaña actual',
@@ -870,14 +883,14 @@ $(function() {
                                 ids: [id],
                                 // _token: $('meta[name="csrf-token"]').attr('content')
                             },
-                            success: function(response) {
+                            success: function (response) {
                                 Swal.fire({
                                     title: 'Proceso completado',
                                     text: response.message,
                                     icon: 'success'
                                 });
                             },
-                            error: function(xhr) {
+                            error: function (xhr) {
                                 Swal.fire({
                                     title: 'Error',
                                     text: xhr.responseJSON?.message || 'Ha ocurrido un error al procesar la solicitud',
@@ -891,43 +904,125 @@ $(function() {
         });
     });
 
-    // Botón de actualización general
-    $(document).on("click", '#actualizacionGeneralBtn', function() {
-        if (confirm('¿Estás seguro de realizar la actualización general del personal? Este proceso puede tardar varios minutos.')) {
-            showLoading('Actualizando personal...');
-            
+    // Botón de actualización general (por lotes con progreso)
+    $(document).on("click", '#actualizacionGeneralBtn', function () {
+        Swal.fire({
+            title: '¿Actualización general del personal?',
+            text: 'Este proceso puede tardar varios minutos. Se procesarán ~7300 registros en lotes.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, iniciar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                procesarActualizacionPorLotes();
+            }
+        });
+    });
+
+    function procesarActualizacionPorLotes() {
+        let loteActual = 0;
+        let totalProcesados = 0;
+        let errores = 0;
+        const tamanoLote = 100; // procesar de 100 en 100
+        let tiempoInicio = Date.now();
+
+        function procesarSiguienteLote() {
             $.ajax({
                 url: ACTUALIZACION_GENERAL_URL,
                 type: 'POST',
-                success: function(data) {
-                    hideLoading();
+                data: {
+                    lote: loteActual,
+                    tamano_lote: tamanoLote
+                },
+                timeout: 120000, // 2 minutos por lote
+                success: function (data) {
                     if (data.success) {
-                        showAlert('success', 'Actualización general completada exitosamente');
-                        // Recargar la tabla
-                        personalModel.table.setData();
+                        totalProcesados += data.procesados || 0;
+                        errores += data.errores || 0;
+
+                        // Si hay más registros, continuar
+                        if (data.hay_mas) {
+                            loteActual++;
+                            const progreso = Math.round((totalProcesados / (data.total || 7300)) * 100);
+
+                            Swal.update({
+                                title: 'Procesando...',
+                                html: `
+                                    <div class="progress mb-3" style="height: 25px;">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                             role="progressbar" 
+                                             style="width: ${progreso}%">${progreso}%</div>
+                                    </div>
+                                    <p>Procesados: ${totalProcesados} / ${data.total || 7300}</p>
+                                    <p>Errores: ${errores}</p>
+                                    <small>Lote ${loteActual} de ${Math.ceil((data.total || 7300) / tamanoLote)}</small>
+                                `
+                            });
+
+                            // Pequeña pausa para no saturar el servidor
+                            setTimeout(procesarSiguienteLote, 500);
+                        } else {
+                            // Completado
+                            const tiempoTotal = Math.round((Date.now() - tiempoInicio) / 1000);
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Actualización completada',
+                                html: `
+                                    <p><strong>Total procesados:</strong> ${totalProcesados}</p>
+                                    <p><strong>Errores:</strong> ${errores}</p>
+                                    <p><strong>Tiempo:</strong> ${tiempoTotal}s</p>
+                                `
+                            }).then(() => {
+                                personalModel.table.setData();
+                            });
+                        }
                     } else {
-                        showAlert('error', 'Error en la actualización general: ' + data.message);
+                        Swal.fire('Error', data.message || 'Error procesando lote', 'error');
                     }
                 },
-                error: function(xhr) {
-                    hideLoading();
-                    showAlert('error', 'Error en la actualización: ' + xhr.responseText);
+                error: function (xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error en lote ' + loteActual,
+                        text: xhr.status === 504
+                            ? 'Timeout del servidor. Reintente con lotes más pequeños.'
+                            : 'Error: ' + (xhr.responseJSON?.message || xhr.statusText),
+                        showCancelButton: true,
+                        confirmButtonText: 'Reintentar este lote',
+                        cancelButtonText: 'Cancelar'
+                    }).then((retry) => {
+                        if (retry.isConfirmed) {
+                            procesarSiguienteLote();
+                        }
+                    });
                 }
             });
         }
-    });
-    
+
+        // Iniciar con modal de progreso
+        Swal.fire({
+            title: 'Iniciando actualización...',
+            html: '<div class="spinner-border text-primary" role="status"></div>',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                procesarSiguienteLote();
+            }
+        });
+    }
+
     // Delegación de eventos para botones de actualización individual
-    $(document).on("click", '.btn-update-individual', function() {
+    $(document).on("click", '.btn-update-individual', function () {
         const dni = $(this).data('dni');
-        
+
         if (confirm(`¿Estás seguro de actualizar la información de la persona con DNI ${dni}?`)) {
             showLoading(`Actualizando datos del DNI ${dni}...`);
-            
+
             $.ajax({
                 url: ACTUALIZACION_INDIVIDUAL_URL.replace(':dni', dni),
                 type: 'POST',
-                success: function(data) {
+                success: function (data) {
                     hideLoading();
                     if (data.success) {
                         showAlert('success', data.message);
@@ -937,16 +1032,16 @@ $(function() {
                         showAlert('error', 'Error: ' + data.message);
                     }
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     hideLoading();
                     showAlert('error', 'Error en la actualización: ' + xhr.responseText);
                 }
             });
         }
     });
-    
+
     // Evento para buscar personal por DNI al perder el foco
-    $('#personalDni').on('blur', function() {
+    $('#personalDni').on('blur', function () {
         const dni = $(this).val().trim();
         if (dni.length === 8 && /^\d+$/.test(dni)) {
             showLoading('Buscando personal...');
@@ -954,7 +1049,7 @@ $(function() {
                 url: BUSCAR_POR_DNI_URL,
                 type: 'POST',
                 data: { dni },
-                success: function(data) {
+                success: function (data) {
                     hideLoading();
                     if (data.success) {
                         fillPersonalForm(data.personal);
@@ -965,14 +1060,14 @@ $(function() {
                         showAlert('warning', data.message);
                     }
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     hideLoading();
                     showAlert('error', 'Error al buscar: ' + xhr.responseText);
                 }
             });
         }
     });
-    
+
     // Función para llenar el formulario con los datos del personal
     function fillPersonalForm(personal) {
         $('#personalId').val(personal.id || '');
@@ -986,12 +1081,12 @@ $(function() {
         $('#personalSeleccionado').val(personal.seleccionado ? '1' : '0');
 
         if (personal.fecha_ingreso) {
-            $('#personalFechaIngreso').val(personal.fecha_ingreso.substring(0,10));
+            $('#personalFechaIngreso').val(personal.fecha_ingreso.substring(0, 10));
         } else {
             $('#personalFechaIngreso').val('');
         }
         if (personal.fecha_cese) {
-            $('#personalFechaCese').val(personal.fecha_cese.substring(0,10));
+            $('#personalFechaCese').val(personal.fecha_cese.substring(0, 10));
         } else {
             $('#personalFechaCese').val('');
         }
@@ -999,7 +1094,7 @@ $(function() {
         $('#personalCorreoEmpresa').val(personal.correo_empresa || '');
 
         if (personal.empresa_id) setSelect2Value('personalEmpresaId', personal.empresa_id, personal.empresa?.name || '');
-        if (personal.area_id)    setSelect2Value('personalAreaId', personal.area_id, personal.area?.name || '');
+        if (personal.area_id) setSelect2Value('personalAreaId', personal.area_id, personal.area?.name || '');
 
         if (personal.area_id) {
             setSelect2Value('personalAreaId', personal.area_id, personal.area?.name || '');
@@ -1009,7 +1104,7 @@ $(function() {
             $('#personalAreaPath').text('');
         }
 
-        if (personal.cargo_id)   setSelect2Value('personalCargoId', personal.cargo_id, personal.cargo?.name || '');
+        if (personal.cargo_id) setSelect2Value('personalCargoId', personal.cargo_id, personal.cargo?.name || '');
 
         if (personal.reporta_a && personal.superior) {
             setSelect2Value('personalReportaA', personal.reporta_a, personal.superior.name);
@@ -1017,18 +1112,18 @@ $(function() {
             setSelect2Value('personalReportaA', null, null);
         }
     }
-    
+
     // Función para establecer valores en controles Select2
     function setSelect2Value(elementId, id, text) {
         const select = $(`#${elementId}`);
-        
+
         select.empty();
         // Limpiar selecciones anteriores
         // select.val(null).trigger('change');
-        
+
         // Esperar un momento para asegurar que Select2 esté completamente inicializado
         setTimeout(() => {
-            
+
             if (id && text) {
                 // Agrega la opción seleccionada manualmente
                 const newOption = new Option(text, id, true, true);
@@ -1052,14 +1147,14 @@ $(function() {
             //         select.append(newOption);
             //     }
             // }
-            
+
             // // Establecer el valor
             // select.val(id).trigger('change');
-            
+
             console.log(`Valor establecido para ${elementId}: ${id} - ${text}`);
         }, 200);
     }
-    
+
     // Funciones auxiliares para mostrar/ocultar cargando y alertas
     function showLoading(message) {
         // Implementa tu lógica para mostrar un indicador de carga
@@ -1071,11 +1166,11 @@ $(function() {
             }
         });
     }
-    
+
     function hideLoading() {
         Swal.close();
     }
-    
+
     function showAlert(type, message) {
         Swal.fire({
             icon: type,
@@ -1087,12 +1182,12 @@ $(function() {
     }
 
     // Delegación de eventos para el botón de actualizar correo_empresa
-    $(document).on("click", ".update-correo-empresa", function(e) {
+    $(document).on("click", ".update-correo-empresa", function (e) {
         e.stopPropagation(); // Evitar que se propague al editor de celda
-        
+
         const userEmail = $(this).data('user-email');
         const personalId = $(this).data('personal-id');
-        
+
         if (!userEmail || !personalId) {
             // toastr.error('Datos insuficientes para realizar la actualización');
             //swall en formato toast
@@ -1104,7 +1199,7 @@ $(function() {
             });
             return;
         }
-        
+
         // Confirmar la actualización
         Swal.fire({
             title: '¿Actualizar correo empresarial?',
@@ -1118,7 +1213,7 @@ $(function() {
                 // Mostrar indicador de carga
                 const row = personalModel.table.getRow(personalId);
                 row.getElement().style.backgroundColor = "#f3f9ff";
-                
+
                 // Realizar la actualización
                 $.ajax({
                     url: PERSONAL_UPDATE_URL.replace(':id', personalId),
@@ -1127,10 +1222,10 @@ $(function() {
                         correo_empresa: userEmail,
                         update_from_user: true
                     },
-                    success: function(response) {
+                    success: function (response) {
                         // Actualizar la fila completa para reflejar el cambio
                         row.getElement().classList.add('row-updating');
-                        personalModel.table.updateRow(personalId, function() {
+                        personalModel.table.updateRow(personalId, function () {
                             return $.ajax({
                                 url: PERSONAL_SHOW_URL.replace(':id', personalId),
                                 method: 'GET'
@@ -1147,11 +1242,11 @@ $(function() {
                                 timer: 3000,
                                 showConfirmButton: false
                             });
-                            
+
                             // toastr.success('Correo empresarial actualizado correctamente');
                         });
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         row.getElement().style.backgroundColor = "";
 
                         Swal.fire({
@@ -1159,7 +1254,7 @@ $(function() {
                             title: 'Error al actualizar',
                             text: 'No se pudo actualizar el correo empresarial. Intente nuevamente.',
                             toast: true,
-                            position: 'top-end',                            
+                            position: 'top-end',
                         });
 
                         // toastr.error('Error al actualizar el correo empresarial');
@@ -1176,12 +1271,12 @@ $(function() {
     });
 
     // Delegación de eventos para el botón de editar correo
-    $(document).on("click", ".edit-correo-button", function(e) {
+    $(document).on("click", ".edit-correo-button", function (e) {
         e.stopPropagation();
         const id = $(this).data('id');
         const row = personalModel.table.getRow(id);
         const currentValue = row.getData().correo_empresa || '';
-        
+
         Swal.fire({
             title: 'Editar correo empresarial',
             input: 'email',
@@ -1202,7 +1297,7 @@ $(function() {
                     url: PERSONAL_UPDATE_URL.replace(':id', id),
                     method: 'PUT',
                     data: { correo_empresa: result.value },
-                    success: function(response) {
+                    success: function (response) {
                         // Actualizar la fila en la tabla TTabulator 6.3
                         // encontar la fila que el campo id sea id
                         row.update(response.personal).then(() => {
@@ -1218,7 +1313,7 @@ $(function() {
                         });
 
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',

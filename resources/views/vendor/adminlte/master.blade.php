@@ -54,7 +54,7 @@
         @endif
     @endif
       
-    <script src="{{ asset('js/alpine.min.js') }}" defer></script>
+    {{-- <script src="{{ asset('js/alpine.min.js') }}" defer></script> --}}
 
     {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css"> --}}
     
@@ -174,6 +174,9 @@
             <livewire:scripts />
         @endif
     @endif
+
+    {{-- Alpine JS - DEBE cargarse DESPUÉS de Livewire --}}
+    <script src="{{ asset('js/alpine.min.js') }}" defer></script>
 
     <script src=
     "{{ asset('js/bootstrap4-toggle.min.js')}}"
