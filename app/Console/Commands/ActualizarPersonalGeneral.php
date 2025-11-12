@@ -15,7 +15,7 @@ class ActualizarPersonalGeneral extends Command
         $this->info(now()->toDateTimeString() . ' Iniciando actualización general de personal...');
         
         $controller = new PersonalController();
-        $resultado = $controller->actualizacionGeneralCompleta();
+        $resultado = $controller->actualizacionGeneralSincrona();
         
         if (isset($resultado['success']) && $resultado['success']) {
             $this->info('Actualización general completada exitosamente.');

@@ -869,6 +869,9 @@ class PersonalController extends Controller
         }
     }
 
+    /**
+     * Actualización general por lotes (para interfaz web con progreso)
+     */
     public function actualizacionGeneralCompleta(Request $request)
     {
         $lote = (int) $request->input('lote', 0);
@@ -928,14 +931,24 @@ class PersonalController extends Controller
         
         $hayMas = $fin < $total;
         
-        // Si es el último lote, limpiar caché y registrar
+        // Si es el último lote, limpiar caché, actualizar estados y registrar
         if (!$hayMas) {
             cache()->forget('actualizacion_personal_data');
+            
+            // Actualizar estados (cesado)
+            $resultadoEstados = $this->actualizarEstadoParaTodos();
+            
+            // Registrar con estructura compatible con historial
             $this->registrarActualizacion([
                 'tipo' => 'general',
-                'total_procesados' => $total,
+                'resultado_actualizacion' => [
+                    'res' => true,
+                    'message' => "Procesados: $total registros (Web - Lotes)"
+                ],
+                'resultado_estados' => $resultadoEstados,
                 'ejecutado_por' => auth()->check() ? auth()->user()->id : null,
                 'ejecutado_por_nombre' => auth()->check() ? auth()->user()->name : 'Sistema',
+                'ejecutado_por_sistema' => false
             ]);
         }
         
@@ -947,6 +960,37 @@ class PersonalController extends Controller
             'hay_mas' => $hayMas,
             'progreso' => round(($fin / $total) * 100, 1)
         ]);
+    }
+
+    /**
+     * Actualización general síncrona (para command/cron)
+     */
+    public function actualizacionGeneralSincrona()
+    {
+        // Primero actualizar la información de todos los empleados
+        $resultadoActualizacion = $this->actualizarPersonalNisira('0');
+        
+        // Luego actualizar los estados (cesado)
+        $resultadoEstados = $this->actualizarEstadoParaTodos();
+        
+        // Registrar la actualización en el historial
+        $this->registrarActualizacion([
+            'tipo' => 'general',
+            'resultado_actualizacion' => $resultadoActualizacion,
+            'resultado_estados' => $resultadoEstados,
+            'ejecutado_por' => auth()->check() ? auth()->user()->id : null,
+            'ejecutado_por_nombre' => auth()->check() ? auth()->user()->name : 'Sistema',
+            'ejecutado_por_sistema' => !auth()->check()
+        ]);
+        
+        return [
+            'success' => true,
+            'message' => 'Actualización general completada',
+            'detalles' => [
+                'actualizacion' => $resultadoActualizacion,
+                'estados' => $resultadoEstados
+            ]
+        ];
     }
     
     // Método auxiliar para procesar un registro individual de la API
