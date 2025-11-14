@@ -895,7 +895,7 @@ $(function() {
     $(document).on("click", '#actualizacionGeneralBtn', function() {
         Swal.fire({
             title: '¿Actualización general del personal?',
-            text: 'Este proceso puede tardar varios minutos. Se procesarán ~7300 registros en lotes.',
+            text: 'Este proceso puede tardar varios minutos.',
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Sí, iniciar',
@@ -1283,7 +1283,7 @@ $(function() {
                 $.ajax({
                     url: PERSONAL_UPDATE_URL.replace(':id', id),
                     method: 'PUT',
-                    data: { correo_empresa: result.value },
+                    data: { correo_empresa: result.value, actualizar_user: true },
                     success: function(response) {
                         // Actualizar la fila en la tabla TTabulator 6.3
                         // encontar la fila que el campo id sea id

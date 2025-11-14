@@ -744,39 +744,49 @@ class PersonalController extends Controller
                     // dd(isset($data['correo_empresa']) && isset($data['actualizar_user']) && $data['actualizar_user']);
 
                 if (isset($data['correo_empresa']) && isset($data['actualizar_user']) && $data['actualizar_user']) {
-                    // dd(isset($data['correo_empresa']), isset($data['actualizar_user']) , $data['actualizar_user']);
+                    // Recargar personal con relación user para evitar null
+                    $personal = $personal->fresh(['user']);
+                    
+                    // Verificar que el personal existe después del fresh
+                    if (!$personal) {
+                        Log::error("Personal no encontrado después de fresh() para ID: {$id}");
+                        return response()->json([
+                            'success' => false, 
+                            'message' => 'Error al actualizar: registro no encontrado'
+                        ], 404);
+                    }
+                    
                     // Si el personal tiene un usuario asociado, actualizarle el email
                     if ($personal->user) {
-                // dd($personal->user);
-
-                        $personal->user->email = $data['correo_empresa'];
-                        $personal->user->save();
+                        $user = $personal->user;
+                        $oldEmail = $user->email;
+                        $user->email = $data['correo_empresa'];
+                        $user->save();
+                        
+                        Log::info("Email de usuario actualizado de {$oldEmail} a {$data['correo_empresa']} para personal ID: {$personal->id}");
                     } 
                     // Si no tiene usuario pero tiene correo, crear el usuario
-                    else if ($data['correo_empresa']) {                       
-                // dd($request->all());
-            
-                        $name = "";
-                        if (strpos($personal->correo_empresa, '@vanguardfresh.pe') !== false) {
-                            $parteLocal = explode('@', $personal->correo_empresa)[0];
-                            
-                            // Verificar si la parte local tiene formato nombre.apellido
-                            if (strpos($parteLocal, '.') !== false) {
-                                $partes = explode('.', $parteLocal);
-
-                                $Nombre = ucfirst($partes[0]); // Primer parte es el nombre
-                                $Apellido = ucfirst(strtolower($personal->apellido_paterno)); // Apellido capitalizado
-                                $name = $Nombre . ' ' . $Apellido; // Concatenar nombre y apellido
-                            } else {
-                                $name = ucfirst($personal->name); // Nombre capitalizado
-                            }
-                        }  else {
-                            $name = ucfirst($personal->name); // Nombre capitalizado
-                        }
-
+                    else if ($data['correo_empresa']) {
                         // puede darse el caso que el email ya exista en otro usuario
                         $existingUser = User::where('email', $data['correo_empresa'])->first();
                         if ($existingUser) {
+                            // dd('existe usuario con ese email');
+
+                            // si uusario no tiene personal_id, asignarlo
+                            if (!$existingUser->personal_id) {
+                                $existingUser->personal_id = $personal->id;
+                                // dd($existingUser);
+                                $existingUser->save();
+                                Log::info("Se asignó usuario existente ID: {$existingUser->id} al personal ID: {$personal->id} porque el email {$data['correo_empresa']} ya estaba en uso.");
+                                return response()->json([
+                                    'success' => true, 
+                                    'message' => 'Campo actualizado correctamente, se asignó usuario existente al personal porque el correo ya estaba registrado para un usuario.',
+                                    'updated_field' => array_keys($dataToUpdate)[0] ?? null,
+                                    'cargo_updated' => $request->has('actualizar_cargo') && $request->actualizar_cargo,
+                                    'personal' => $personal->fresh(['user'])
+                                ]);
+                            }
+
                             Log::warning("No se creó usuario para personal ID: {$personal->id} porque el email {$data['correo_empresa']} ya está en uso por otro usuario.");
                             return response()->json([
                                 'success' => true, 
@@ -785,21 +795,39 @@ class PersonalController extends Controller
                                 'cargo_updated' => $request->has('actualizar_cargo') && $request->actualizar_cargo,
                                 'personal' => $personal->fresh(['user'])
                             ]);
-                        }
-                        // Crear nuevo usuario con contraseña aleatoria
-                        
-                        $user = new User();
-                        $user->name = $name;
-                        $user->email = $data['correo_empresa'];
-                        $user->password = Hash::make(Str::random(10));
-                        $user->personal_id = $personal->id;
-                        $user->estado = true;
-                        $user->save();
-    
-                        // Asignar rol "Personal" al usuario
-                        $rolPersonal = Role::where('name', 'Personal')->first();
-                        if ($rolPersonal) {
-                            $user->roles()->attach($rolPersonal->id);
+                        } else {
+                            
+                            $name = "";
+                            if (strpos($data['correo_empresa'], '@vanguardfresh.pe') !== false) {
+                                $parteLocal = explode('@', $data['correo_empresa'])[0];
+                                
+                                // Verificar si la parte local tiene formato nombre.apellido
+                                if (strpos($parteLocal, '.') !== false) {
+                                    $partes = explode('.', $parteLocal);
+                                    $Nombre = ucfirst($partes[0]);
+                                    $Apellido = ucfirst(strtolower($personal->apellido_paterno ?? ''));
+                                    $name = $Nombre . ' ' . $Apellido;
+                                } else {
+                                    $name = ucfirst($personal->name);
+                                }
+                            } else {
+                                $name = ucfirst($personal->name);
+                            }
+                            // Crear nuevo usuario con contraseña aleatoria
+                            
+                            $user = new User();
+                            $user->name = $name;
+                            $user->email = $data['correo_empresa'];
+                            $user->password = Hash::make(Str::random(10));
+                            $user->personal_id = $personal->id;
+                            $user->estado = true;
+                            $user->save();
+        
+                            // Asignar rol "Personal" al usuario
+                            $rolPersonal = Role::where('name', 'Personal')->first();
+                            if ($rolPersonal) {
+                                $user->roles()->attach($rolPersonal->id);
+                            }
                         }
                     }
                 }
