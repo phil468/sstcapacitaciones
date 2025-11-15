@@ -779,8 +779,11 @@ class PersonalController extends Controller
                                 // Asignar rol "Personal" al usuario
                                 $rolPersonal = Role::where('name', 'Personal')->first();
                                 if ($rolPersonal) {
-                                    $existingUser->roles()->attach($rolPersonal->id);
-                                }                                
+                                    // tener cuidado de no duplicar roles
+                                    if (!$existingUser->roles()->where('name', 'Personal')->exists()) {
+                                        $existingUser->roles()->attach($rolPersonal->id);
+                                    }
+                                }
 
                                 Log::info("Se asignó usuario existente ID: {$existingUser->id} al personal ID: {$personal->id} porque el email {$data['correo_empresa']} ya estaba en uso.");
                                 return response()->json([

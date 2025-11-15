@@ -95,11 +95,18 @@ class User extends Authenticatable implements JWTSubject
     // agregarlo como campo
     public function getRoleAttribute()
     {
+        //tener cuidado porque puede que no tenga rol asignado
+        if ($this->roles()->count() == 0) {
+            return null;
+        }
         return $this->roles()->first()->name;
     }
 
     public function getRoleIdAttribute()
     {
+        if ($this->roles()->count() == 0) {
+            return null;
+        }
         return $this->roles()->first()->id;
     }
     
