@@ -66,10 +66,19 @@ class RegistrosTable extends LivewireDatatable
             
             // Column::name('id')->label('ID'),
             Column::name('personal.dni')->label('DNI')->sortable()->searchable(),
-            Column::name('personal.name')->label('Nombre del Personal')->sortable()->searchable()
+            Column::name('personal.name')
+            ->label('Nombre del Personal')
+            ->sortable()
+            ->searchable()
+            ->filterable()
             ->defaultSort('ASC'),
 
-            Column::name('personal.correo_empresa')->label('Correo Empresa')->sortable()->searchable(),
+            Column::name('personal.correo_empresa')
+            ->label('Correo Empresa')
+            ->sortable()
+            ->searchable()
+            ->filterable(),
+
 
             // NUEVA COLUMNA: Usuario
             Column::callback('personal_id', function ($personal_id) {
@@ -79,7 +88,9 @@ class RegistrosTable extends LivewireDatatable
                     return $p->user->email;
                 }
                 return '<button type="button" class="btn btn-sm btn-outline-primary crear-usuario-btn" data-personal="'.$p->id.'">Crear Usuario</button>';
-            },[],'crear_usuario' )->label('Usuario')->excludeFromExport(),
+            },[],'crear_usuario' )
+            ->label('Usuario')
+            ->excludeFromExport(),
 
             // columna que muestra si tiene o no tiene usuario
             Column::callback('personal_id', function ($personal_id) {
@@ -89,13 +100,12 @@ class RegistrosTable extends LivewireDatatable
                     return '<span class="badge badge-success">Sí</span>';
                 }
                 return '<span class="badge badge-danger">No</span>';
-                // return '<button type="button" class="btn btn-sm btn-outline-primary crear-usuario-btn" data-personal="'.$p->id.'">Crear Usuario</button>';
             },[],'usuario')
             ->label('Tiene Usuario')
             ->filterable([
-                1 => 'Sí',
+                // 1 => 'Sí',
                 0 => 'No',
-            ])
+            ], 'conUsuario')
             ->excludeFromExport(),
 
             // NUEVA COLUMNA: Advertencias

@@ -149,5 +149,22 @@ class CapacitacionHasPersonal extends Model
         return $this->obtenerNota();
     }
 
+    /**
+     * Scope para filtrar por personal con/sin usuario
+     * @param $query
+     * @param int $tieneUsuario (1 = tiene usuario, 0 = no tiene usuario)
+     */
+    public function scopeConUsuario($query, $tieneUsuario)
+    {
+        if ($tieneUsuario == 1) {
+            // Filtrar solo personal que TIENE usuario
+            return $query->whereHas('personal.user');
+        } else {
+            // Filtrar solo personal que NO TIENE usuario
+            return $query->whereHas('personal', function ($q) {
+                $q->doesntHave('user');
+            });
+        }
+    }
 
 }
