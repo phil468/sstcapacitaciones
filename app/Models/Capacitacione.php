@@ -45,10 +45,17 @@ class Capacitacione extends Model
         'fecha_inicio',
         'fecha_fin',
         'identificador_unico',
+        'visible',
     ];
 
     // dates
-    protected $dates = ['fecha_inicio','fecha_fin'];
+    // protected $dates = ['fecha_inicio','fecha_fin'];
+    protected $casts = [
+        'fecha_inicio' => 'datetime',
+        'fecha_fin' => 'datetime',
+    ];
+     // boot function from Laravel
+    
 	
     protected static function boot()
     {
@@ -151,5 +158,3 @@ class Capacitacione extends Model
     }
 
 }
-
-

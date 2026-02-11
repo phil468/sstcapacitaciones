@@ -79,7 +79,9 @@ class Capacitaciones extends Component
 
 	$cantidad_de_preguntas_a_mostrar_general,
 	$nota_minima_aprobatoria_general,
-	$intentos_de_evaluacion_general;
+	$intentos_de_evaluacion_general,
+	
+	$visible;
 		
     public $updateMode = false;
 	
@@ -115,6 +117,7 @@ class Capacitaciones extends Component
 		'cargo_expositor_id' => 'required_if:expositor_externo,0|exclude_unless:expositor_externo,0|exists:cargos,id',
 		
 		'nombre_expositor_externo' => 'required_if:expositor_externo,1|exclude_unless:expositor_externo,1',
+		'visible' => 'required|boolean',
     ];
 
     protected $validationAttributes = [
@@ -146,6 +149,7 @@ class Capacitaciones extends Component
 		'expositor_id' => 'expositor',
 		'cargo_expositor_id' => 'cargo expositor',
 		'nombre_expositor_externo' => 'nombre expositor externo',
+		'visible' => 'visible',
     ];
 
     protected $messages = [
@@ -384,6 +388,7 @@ class Capacitaciones extends Component
 		$this->fecha_inicio = null;
 		$this->fecha_fin = null;
 		$this->identificador_unico = null;
+		$this->visible = true;
     }
 
 	// public function create() 
@@ -482,7 +487,8 @@ class Capacitaciones extends Component
 			'es_onboarding' => $this-> es_onboarding,
 			'fecha_inicio' => $this-> fecha_inicio,
 			'fecha_fin' => $this-> fecha_fin,
-			'identificador_unico' => $this-> identificador_unico
+			'identificador_unico' => $this-> identificador_unico,
+			'visible' => $this-> visible
 
         ]);
 
@@ -533,6 +539,7 @@ class Capacitaciones extends Component
 			$this->fecha_inicio = $record->fecha_inicio ? $record->fecha_inicio->format('Y-m-d\TH:i') : null;
 			$this->fecha_fin = $record->fecha_fin ? $record->fecha_fin->format('Y-m-d\TH:i') : null;
 			$this->identificador_unico = $record->identificador_unico;
+			$this->visible = $record->visible;
 
 		} else {
 			$this->resetValidation();
@@ -547,6 +554,7 @@ class Capacitaciones extends Component
 			$this->status_id = 1;
 
 			$this->es_onboarding =  false;
+			$this->visible = true;
 		}
 		
 		$this->listarSelects();
@@ -643,7 +651,8 @@ class Capacitaciones extends Component
 				'intentos_de_evaluacion' => $this->intentos_de_evaluacion,
 				'fecha_inicio' => $this->fecha_inicio,
 				'fecha_fin' => $this->fecha_fin,
-				'identificador_unico' => $this->identificador_unico
+				'identificador_unico' => $this->identificador_unico,
+				'visible' => $this->visible
 
             ]);
 			

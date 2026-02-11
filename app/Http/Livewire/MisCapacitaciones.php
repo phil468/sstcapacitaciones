@@ -56,6 +56,7 @@ class MisCapacitaciones extends Component
         CapacitacionHasPersonal::where('personal_id', auth()->user()->personal_id)
         ->whereHas('capacitacion', function ($query) {
             $query->where('es_aula_virtual', true)
+            ->where('visible', true)
             ->whereHas('sesiones') // Filtra capacitaciones que tienen al menos una sesión
             ->whereHas('preguntas', function ($query) {
                 $query->havingRaw('COUNT(*) >= capacitaciones.cantidad_de_preguntas_a_mostrar');
