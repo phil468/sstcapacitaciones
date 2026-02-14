@@ -21,6 +21,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PersonalTemplateExport;
+use App\Imports\PersonalFlexibleImport;
 
 class PersonalController extends Controller
 {    
@@ -255,7 +258,7 @@ class PersonalController extends Controller
         $message = '';
         // $message = 'Se actualizaron los estados de los trabajadores.<br>';
         // Recorre todos los registros de tu modelo
-        $modelo = Personal::all(); // Reemplaza 'TuModelo' por el nombre de tu modelo
+        $modelo = Personal::all()->where('empresa_id',1); // Reemplaza 'TuModelo' por el nombre de tu modelo
         $jsonData = ($this->obtenerResponse(0)->json()); // Obtiene el JSON de la API
         // json_decode($jsonData, true); // Convierte el JSON a un array asociativo
     
@@ -1053,8 +1056,9 @@ class PersonalController extends Controller
             'fecha_ingreso' => !empty($row['FECHA_INGRESO']) ? Carbon::parse($row['FECHA_INGRESO']) : null,
             'fecha_cese' => !empty($row['FECHA_CESE']) ? Carbon::parse($row['FECHA_CESE']) : null,
             'estado' => true,
+            'empresa'
         ];
-        
+
         // Empresa
         if (!empty($row['empresa'])) {
             $empresa = Empresa::firstOrCreate(
@@ -1067,7 +1071,7 @@ class PersonalController extends Controller
         // Planilla
         if (!empty($row['planilla'])) {
             $planilla = Planilla::firstOrCreate(
-                ['name' => trim($row['planilla'])],
+                ['name' => trim($row['planilla']), 'empresa_id' => $empresa->id ?? null],
                 ['idplanilla_nisira' => $row['IDPLANILLA'] ?? null, 'estado' => true]
             );
             $datosActualizados['planilla_id'] = $planilla->id;
@@ -1076,7 +1080,7 @@ class PersonalController extends Controller
         // Tipo trabajador
         if (!empty($row['TIPOTRABAJADOR'])) {
             $tipoTrabajador = TipoDeTrabajador::firstOrCreate(
-                ['name' => trim($row['TIPOTRABAJADOR'])],
+                ['name' => trim($row['TIPOTRABAJADOR']), 'empresa_id' => $empresa->id ?? null],
                 ['estado' => true]
             );
             $datosActualizados['tipo_trabajador_id'] = $tipoTrabajador->id;
@@ -1085,7 +1089,7 @@ class PersonalController extends Controller
         // Tipo personal
         if (!empty($row['tipopersonal'])) {
             $tipoPersonal = TipoDePersonal::firstOrCreate(
-                ['name' => trim($row['tipopersonal'])],
+                ['name' => trim($row['tipopersonal']), 'empresa_id' => $empresa->id ?? null],
                 ['estado' => true]
             );
             $datosActualizados['tipo_personal_id'] = $tipoPersonal->id;
@@ -1094,7 +1098,7 @@ class PersonalController extends Controller
         // Cargo
         if (!empty($row['cargo'])) {
             $cargo = Cargo::firstOrCreate(
-                ['name' => trim($row['cargo'])],
+                ['name' => trim($row['cargo']), 'empresa_id' => $empresa->id ?? null],
                 ['estado' => true]
             );
             $datosActualizados['cargo_id'] = $cargo->id;
@@ -1103,7 +1107,7 @@ class PersonalController extends Controller
         // Área (centro de costo)
         if (!empty($row['CENTRO_COSTO'])) {
             $area = Area::firstOrCreate(
-                ['name' => trim($row['CENTRO_COSTO'])],
+                ['name' => trim($row['CENTRO_COSTO']), 'empresa_id' => $empresa->id ?? null],
                 ['estado' => true]
             );
             $datosActualizados['area_id'] = $area->id;
@@ -1341,6 +1345,68 @@ class PersonalController extends Controller
                 'message' => 'Error al crear el usuario: ' . $e->getMessage()
             ], 500);
         }
+    }
+    
+    public function downloadTemplate()
+    {
+        return Excel::download(new PersonalTemplateExport(), 'plantilla_import_personal.xlsx');
+    }
+
+    public function validateImport(Request $request)
+    {
+        $request->validate([
+            'archivo'=>'required|file|mimes:xlsx,xls'
+        ]);
+
+        $import = new PersonalFlexibleImport(true); // dryRun
+        try{
+            Excel::import($import, $request->file('archivo'));
+        }catch(\Throwable $e){
+            \Log::error('Error validando import personal: '.$e->getMessage());
+            return response()->json(['success'=>false,'message'=>'Archivo inválido'],500);
+        }
+
+        return response()->json([
+            'success'=> empty($import->getErrores()),
+            'errores'=> $import->getErrores(),
+            'sim_insertados'=>$import->getSimInsertados(),
+            'sim_actualizados'=>$import->getSimActualizados(),
+            'areas_por_crear'=>$import->getAreasPorCrear(),
+            'cargos_por_crear'=>$import->getCargosPorCrear(),
+            'message'=> empty($import->getErrores()) ? 'Validación OK' : 'Validación con incidencias'
+        ], empty($import->getErrores()) ? 200 : 422);
+    }
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'archivo'=>'required|file|mimes:xlsx,xls'
+        ]);
+
+        $import = new PersonalFlexibleImport(false); // ejecución real
+        try{
+            Excel::import($import, $request->file('archivo'));
+        }catch(\Throwable $e){
+            \Log::error('Error import personal flexible: '.$e->getMessage());
+            return response()->json(['success'=>false,'message'=>'Error procesando archivo'],500);
+        }
+
+        if($import->tieneErrores()){
+            return response()->json([
+                'success'=>false,
+                'message'=>'Importación con incidencias',
+                'errores'=>$import->getErrores(),
+                'insertados'=>$import->getInsertados(),
+                'actualizados'=>$import->getActualizados(),
+            ],422);
+        }
+
+        return response()->json([
+            'success'=>true,
+            'message'=>'Importación exitosa',
+            'insertados'=>$import->getInsertados(),
+            'actualizados'=>$import->getActualizados(),
+        ]);
     }
 
 }

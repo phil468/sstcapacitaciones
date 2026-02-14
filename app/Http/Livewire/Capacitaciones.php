@@ -432,27 +432,6 @@ class Capacitaciones extends Component
 
 		$this->validate($rules);
 
-        // $this->validate([
-		// 	'empresa_id' => 'required',
-		// 	'capacitaciones_tipo_id' => 'required',
-		// 	'tema_id' => 'required',
-		// 	'sede_id' => 'required',
-		// 	'expositor_id' => 'required_if:expositor_externo,0',
-		// 	'cargo_expositor_id' => 'required_if:expositor_externo,0',
-		// 	// 'expositor_id' => 'required',
-		// 	// 'cargo_expositor_id' => 'required',
-		// 	'registrador_id' => 'required',
-		// 	'cargo_registrador_id' => 'required',
-		// 	// 'fecha_registro' => 'required',
-		// 	'status_id' => 'required',
-		// 	'cantidad_de_sesiones' =>  'required',
-		// 	'nombre_expositor_externo' => 'required_if:expositor_externo,1',
-		// ],[
-		// 	'nombre_expositor_externo.required_if' => 'El campo nombre expositor externo es obligatorio cuando el expositor es externo.',
-		// 	'expositor_id.required_if' => 'El campo expositor es obligatorio cuando el expositor es interno.',
-		// 	'cargo_expositor_id.required_if' => 'El campo cargo expositor es obligatorio cuando el expositor es interno.',
-		// ]);
-
 		if ($this->expositor_externo == 1) {
 			$this->expositor_id = null;
 			$this->cargo_expositor_id = null;
@@ -592,27 +571,6 @@ class Capacitaciones extends Component
 		$rules['identificador_unico'] = 'required|unique:capacitaciones,identificador_unico,'.$this->selected_id;
 
 		$this->validate($rules);
-
-        // $this->validate([
-		// 	'empresa_id' => 'required',
-		// 	'capacitaciones_tipo_id' => 'required',
-		// 	'tema_id' => 'required',
-		// 	'sede_id' => 'required',
-		// 	'expositor_id' => 'required_if:expositor_externo,0',
-		// 	'cargo_expositor_id' => 'required_if:expositor_externo,0',
-		// 	// 'expositor_id' => 'required',
-		// 	// 'cargo_expositor_id' => 'required',
-		// 	'registrador_id' => 'required',
-		// 	'cargo_registrador_id' => 'required',
-		// 	// 'fecha_registro' => 'required',
-		// 	'status_id' => 'required',
-		// 	'cantidad_de_sesiones' =>  'required',
-		// 	'nombre_expositor_externo' => 'required_if:expositor_externo,1',
-		// ],[
-		// 	'nombre_expositor_externo.required_if' => 'El campo nombre expositor externo es obligatorio cuando el expositor es externo.',
-		// 	'expositor_id.required_if' => 'El campo expositor es obligatorio cuando el expositor es interno.',
-		// 	'cargo_expositor_id.required_if' => 'El campo cargo expositor es obligatorio cuando el expositor es interno.',
-		// ]);
 
 		if ($this->expositor_externo == 1) {
 			$this->expositor_id = null;

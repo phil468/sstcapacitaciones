@@ -125,8 +125,12 @@
                     </div>
                     <div class="form-group">
                         <label for="visible">Visible</label>
-                        <input wire:model="visible" type="checkbox" class="form-control" id="visible"
-                            value="1">
+                        <div class="form-check">
+                            <input wire:model="visible" type="checkbox" class="form-check-input" id="visible">
+                            <label class="form-check-label" for="visible">
+                                Marcar como visible
+                            </label>
+                        </div>
                         @error('visible')
                             <span class="error text-danger">{{ $message }}</span>
                         @enderror
