@@ -175,6 +175,8 @@ class PersonalFlexibleImport implements ToCollection
                     if ($cargo && !$this->dryRun) $update['cargo_id'] = $cargo->id;
                     if ($planilla && !$this->dryRun) $update['planilla_id'] = $planilla->id;
                     if ($superior && !$this->dryRun) $update['reporta_a'] = $superior->id;
+                    // Al importar, asegurar que el personal no quede cesado
+                    if (!$this->dryRun) $update['cesado'] = 0;
 
                     if (!empty($update)) {
                         if ($this->dryRun) {
@@ -204,24 +206,24 @@ class PersonalFlexibleImport implements ToCollection
                         }
                     }
                 } else {
-                    if ($this->dryRun) {
-                        $this->simInsertados++;
-                    } else {
-                        $create = [
-                            'dni'=>$dni,
-                            'name'=>$dni,
-                            'nombres'=>'',
-                            'apellido_paterno'=>'',
-                            'apellido_materno'=>'',
-                            'estado'=>1,
-                            'seleccionado'=>0,
-                            'apellido_paterno' => $apellidoPaterno,
-                            'planilla_id' => $planilla->id ?? null,
-                            'apellido_materno' => $apellidoMaterno,
-                            'nombres' => $nombres,
-                            'name' => $nombresCompletos ?? ($nombres ? ($apellidoPaterno.' '.$apellidoMaterno.' '.$nombres) : $dni),
-                        
-                        ];
+                        if ($this->dryRun) {
+                            $this->simInsertados++;
+                        } else {
+                            $create = [
+                                'dni'=>$dni,
+                                'name'=>$dni,
+                                'nombres'=>'',
+                                'apellido_paterno'=>'',
+                                'apellido_materno'=>'',
+                                'estado'=>1,
+                                'seleccionado'=>0,
+                                'apellido_paterno' => $apellidoPaterno,
+                                'planilla_id' => $planilla->id ?? null,
+                                'apellido_materno' => $apellidoMaterno,
+                                'nombres' => $nombres,
+                                'name' => $nombresCompletos ?? ($nombres ? ($apellidoPaterno.' '.$apellidoMaterno.' '.$nombres) : $dni),
+                                'cesado' => 0,
+                            ];
                         if ($empresaId) $create['empresa_id'] = $empresaId;
                         if ($correoEmpresa) $create['correo_empresa']=$correoEmpresa;
                         if ($area) $create['area_id']=$area->id;
