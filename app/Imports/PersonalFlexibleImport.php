@@ -5,8 +5,13 @@ namespace App\Imports;
 use App\Models\Area;
 use App\Models\Cargo;
 use App\Models\Personal;
+use App\Models\Planilla;
+use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToCollection;
+ 
 
 class PersonalFlexibleImport implements ToCollection
 {
@@ -25,6 +30,8 @@ class PersonalFlexibleImport implements ToCollection
         'DNI'             => ['DNI'],
         'AREA'            => ['AREA'],
         'PUESTO'          => ['PUESTO','CARGO'],
+        'IDPLANILLA'      => ['IDPLANILLA','ID_PLANILLA','ID_PLANILLA_NISIRA','IDPLANILLA_NISIRA'],
+        'PLANILLA'        => ['PLANILLA','NOMBRE_PLANILLA','PLANILLA_NOMBRE'],
         'EMPRESA'         => ['EMPRESA','IDEMPRESA','ID_EMPRESA','EMPRESA_ID'],
         'TIPO_DE_PUESTO'  => ['TIPO DE PUESTO','TIPO_PUESTO','TIPO PUESTO'],
         'DNI_SUPERIOR'    => ['DNI SUPERIOR','DNI_SUPERIOR','SUPERIOR DNI'],
@@ -85,6 +92,9 @@ class PersonalFlexibleImport implements ToCollection
 
                 $area = null;
                 $empresaId = null;
+                $planilla = null;
+                $idPlanillaValor = $this->clean($this->getCell($rowArray,'IDPLANILLA'));
+                $planillaNombre = $this->clean($this->getCell($rowArray,'PLANILLA'));
                 if ($empresaValor) {
                     if (is_numeric($empresaValor)) {
                         $empresa = \App\Models\Empresa::where('id', (int)$empresaValor)->first();
@@ -126,6 +136,31 @@ class PersonalFlexibleImport implements ToCollection
                     }
                 }
 
+                // Planilla: buscar por id nisira o por nombre, distinguida por empresa
+                if ($idPlanillaValor || $planillaNombre) {
+                    $planillaQuery = Planilla::query();
+                    if ($idPlanillaValor) {
+                        $planillaQuery->where('idplanilla_nisira', $idPlanillaValor);
+                    }
+                    if ($planillaNombre) {
+                        $planillaQuery->orWhere('name', $planillaNombre);
+                    }
+                    if ($empresaId) {
+                        $planillaQuery->where(function($q) use ($empresaId){ $q->where('empresa_id', $empresaId); });
+                    }
+                    $planilla = $planillaQuery->first();
+                    if (!$planilla) {
+                        if ($this->dryRun) {
+                            // simulate
+                        } else {
+                            $pData = ['name' => $planillaNombre ?: ($idPlanillaValor ?: 'PLANILLA')];
+                            if ($idPlanillaValor) $pData['idplanilla_nisira'] = $idPlanillaValor;
+                            if ($empresaId) $pData['empresa_id'] = $empresaId;
+                            $planilla = Planilla::create($pData);
+                        }
+                    }
+                }
+
                 $superior = null;
                 if ($dniSuperior && preg_match('/^\d{8}$/',$dniSuperior)) {
                     $superior = Personal::where('dni',$dniSuperior)->first();
@@ -138,6 +173,7 @@ class PersonalFlexibleImport implements ToCollection
                     if ($area && !$this->dryRun) $update['area_id'] = $area->id;
                     elseif ($areaNombre && !$area && $this->dryRun) { /* ya registrado en areasPorCrear */ }
                     if ($cargo && !$this->dryRun) $update['cargo_id'] = $cargo->id;
+                    if ($planilla && !$this->dryRun) $update['planilla_id'] = $planilla->id;
                     if ($superior && !$this->dryRun) $update['reporta_a'] = $superior->id;
 
                     if (!empty($update)) {
@@ -146,6 +182,25 @@ class PersonalFlexibleImport implements ToCollection
                         } else {
                             $personal->update($update);
                             $this->actualizados++;
+                            // Si hay correo, linkear/crear usuario
+                            if ($correoEmpresa) {
+                                $user = User::where('email', $correoEmpresa)->first();
+                                if ($user) {
+                                    $user->personal_id = $personal->id;
+                                    $user->save();
+                                } else {
+                                    $pass = Str::random(12);
+                                    $user = User::create([
+                                        //name es nombres + apellido paterno
+                                        'name' => $nombres . ' ' . $apellidoPaterno,
+                                        'email' => $correoEmpresa,
+                                        'password' => Hash::make($pass),
+                                        'personal_id' => $personal->id,
+                                        'estado' => 1,
+                                    ]);
+                                    try { $user->assignRole('PERSONAL'); } catch (\Throwable $e) { /* ignore role assign errors */ }
+                                }
+                            }
                         }
                     }
                 } else {
@@ -161,16 +216,37 @@ class PersonalFlexibleImport implements ToCollection
                             'estado'=>1,
                             'seleccionado'=>0,
                             'apellido_paterno' => $apellidoPaterno,
+                            'planilla_id' => $planilla->id ?? null,
                             'apellido_materno' => $apellidoMaterno,
                             'nombres' => $nombres,
-                            'name' => $nombresCompletos ?: $dni,
+                            'name' => $nombresCompletos ?? ($nombres ? ($apellidoPaterno.' '.$apellidoMaterno.' '.$nombres) : $dni),
+                        
                         ];
                         if ($empresaId) $create['empresa_id'] = $empresaId;
                         if ($correoEmpresa) $create['correo_empresa']=$correoEmpresa;
                         if ($area) $create['area_id']=$area->id;
                         if ($cargo) $create['cargo_id']=$cargo->id;
                         if ($superior) $create['reporta_a']=$superior->id;
-                        Personal::create($create);
+                        $personal = Personal::create($create);
+                            // Si hay correo, crear o linkear usuario
+                            if ($correoEmpresa) {
+                                $user = User::where('email', $correoEmpresa)->first();
+                                if ($user) {
+                                    $user->personal_id = $personal->id;
+                                    $user->save();
+                                } else {
+                                    $pass = Str::random(12);
+                                    $user = User::create([
+                                        'name' => $nombresCompletos ?: ($nombres ?: $personal->name),
+                                        'email' => $correoEmpresa,
+                                        'password' => Hash::make($pass),
+                                        'personal_id' => $personal->id,
+                                        'estado' => 1,
+                                    ]);
+                                    try { $user->assignRole('PERSONAL'); } catch (\Throwable $e) { }
+                                }
+                            }
+
                         $this->insertados++;
                     }
                 }
