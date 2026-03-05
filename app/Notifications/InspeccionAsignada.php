@@ -72,7 +72,7 @@ class InspeccionAsignada extends Notification
                     ->line('Objetivo: ' . $this->inspeccion->objetivo)
                     ->action('Ver Inspección', $url . '/' . 'inspecciones/' . $this->urlTipoInspeccion)
 
-                    ->line('Gracias por usar nuestra aplicación!');
+                    ->line('Gracias por usar nuestra aplicación.');
     }
 
     /**

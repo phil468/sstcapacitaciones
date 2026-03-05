@@ -112,6 +112,11 @@ class CapacitacionHasPersonal extends Model
         return $this->hasMany(Sesione::class,'capacitacion_has_personal_id','id');
     }
 
+    public function alertasEnviadas()
+    {
+        return $this->hasMany(AlertaEnviada::class,'capacitacion_has_personal_id','id');
+    }
+
     // Nuevo método para obtener la nota de la última prueba finalizada
     public function obtenerNota()
     {

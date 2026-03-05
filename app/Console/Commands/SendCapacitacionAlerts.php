@@ -23,66 +23,72 @@ class SendCapacitacionAlerts extends Command
     {
         $now = Carbon::now();
         $alertas = Alerta::where('estado', 1)->get();
+        $enviados = 0;
 
         foreach ($alertas as $alerta) {
             $dias = $alerta->dias;
             $campo = $alerta->campo;
             $condicion = $alerta->condicion;
 
-            $capacitaciones = CapacitacionHasPersonal::where(function ($query) use ($now, $dias, $campo, $condicion) {
-                if ($condicion == 'antes') {
-                    $query->whereDate($campo, '=', $now->copy()->addDays($dias));
-                } elseif ($condicion == 'despues') {
-                    $query->whereDate($campo, '=', $now->copy()->subDays($dias));
-                }
-            })->get();
+            // Solo procesar condiciones válidas
+            if (!in_array($condicion, ['antes', 'despues'])) {
+                $this->warn("Alerta #{$alerta->id}: condición '{$condicion}' no válida, se omite.");
+                continue;
+            }
 
-            foreach ($capacitaciones as $capacitacion) {
-                // Verificar si ya se envió una alerta hoy
-                
-                $alertaEnviada = AlertaEnviada::where('capacitacion_has_personal_id', $capacitacion->id)
-                    ->whereDate('fecha_envio', $now->toDateString())
-                    ->first();
-                
-                    if ($alertaEnviada) {
-                        continue; // Ya se envió una alerta hoy, saltar
-                    }
+            $query = CapacitacionHasPersonal::query();
 
-                $personal = $capacitacion->personal;
-                $capacitacionModel = $capacitacion;
+            if ($condicion == 'antes') {
+                $query->whereDate($campo, '=', $now->copy()->addDays($dias));
+            } else {
+                $query->whereDate($campo, '=', $now->copy()->subDays($dias));
+            }
 
-                $sesionAccessLogs = SesionAccessLog::where('capacitacion_id', $capacitacion->capacitacion_id)
-                    ->where('personal_id', $capacitacion->personal_id)
-                    ->get();
+            // Excluir los que ya tienen alerta enviada hoy
+            $query->whereDoesntHave('alertasEnviadas', function ($q) use ($now) {
+                $q->whereDate('fecha_envio', $now->toDateString());
+            });
 
-                $pendientes = [];
-                $enDesarrollo = [];
+            // Eager load para evitar N+1 queries
+            $query->with(['personal.user', 'capacitacion.tema']);
 
-                if ($now->between($capacitacion->fecha_inicio, $capacitacion->fecha_fin)) {
-                    if ($sesionAccessLogs->isEmpty()) {
-                        $pendientes[] = $capacitacionModel;
-                    } else {
-                        $ultimoRegistro = $sesionAccessLogs->last();
-                        if ($ultimoRegistro->numero_de_evaluacion < $capacitacion->intentos_de_evaluacion) {
-                            $enDesarrollo[] = $capacitacionModel;
+            $query->chunk(200, function ($capacitaciones) use ($now, &$enviados) {
+                foreach ($capacitaciones as $capacitacion) {
+                    $personal = $capacitacion->personal;
+                    if (!$personal) continue;
+
+                    $sesionAccessLogs = SesionAccessLog::where('capacitacion_id', $capacitacion->capacitacion_id)
+                        ->where('personal_id', $capacitacion->personal_id)
+                        ->get();
+
+                    $pendientes = [];
+                    $enDesarrollo = [];
+
+                    if ($now->between($capacitacion->fecha_inicio, $capacitacion->fecha_fin)) {
+                        if ($sesionAccessLogs->isEmpty()) {
+                            $pendientes[] = $capacitacion;
+                        } else {
+                            $ultimoRegistro = $sesionAccessLogs->last();
+                            if ($ultimoRegistro->numero_de_evaluacion < $capacitacion->intentos_de_evaluacion) {
+                                $enDesarrollo[] = $capacitacion;
+                            }
                         }
                     }
-                }
 
-                if (!empty($pendientes) || !empty($enDesarrollo)) {
-                    $this->sendAlertEmail($personal, $pendientes, $enDesarrollo);
-                
-                    // Registrar la alerta enviada
-                    AlertaEnviada::create([
-                        'capacitacion_has_personal_id' => $capacitacion->id,
-                        'fecha_envio' => $now->toDateString(),
-                    ]);
+                    if (!empty($pendientes) || !empty($enDesarrollo)) {
+                        $this->sendAlertEmail($personal, $pendientes, $enDesarrollo);
 
+                        AlertaEnviada::create([
+                            'capacitacion_has_personal_id' => $capacitacion->id,
+                            'fecha_envio' => $now->toDateString(),
+                        ]);
+                        $enviados++;
+                    }
                 }
-            }
+            });
         }
 
-        $this->info('Capacitacion alerts sent successfully.');
+        $this->info("Capacitacion alerts sent successfully. Enviados: $enviados");
     }
 
     protected function sendAlertEmail($personal, $pendientes, $enDesarrollo)

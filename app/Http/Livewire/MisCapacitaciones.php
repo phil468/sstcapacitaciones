@@ -64,6 +64,8 @@ class MisCapacitaciones extends Component
         })
         ->get();
 
+        // dd($this->misCapacitaciones);
+
         $this->nuevas_preguntas_aleatorias_por_examen = ConfiguracionGeneral::getValorByName('nuevas_preguntas_aleatorias_por_examen')??'SI';
 
         $this->asignacion($this->asignacion_id??0);

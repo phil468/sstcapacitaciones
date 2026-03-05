@@ -16,6 +16,7 @@ use Livewire\Livewire;
 use GuzzleHttp\Client;
 use App\Http\Livewire\UploadVideo;
 use App\Http\Livewire\VideoPlayer;
+use Carbon\Carbon;
 
 
 
@@ -337,7 +338,46 @@ Route::get('/web/capacitaciones/{tipo_user}/{user_id}', [App\Http\Controllers\Ap
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+// Ruta de vista previa de email (solo para testing local)
+Route::get('/preview-email', function () {
+    $pendientes = [];
+    $enDesarrollo = [];
+
+    for ($i = 1; $i <= 2; $i++) {
+        $cap = new \stdClass();
+        $capacitacion = new \stdClass();
+        $tema = new \stdClass();
+        $tema->name = "Capacitación de ejemplo #$i";
+        $capacitacion->tema = $tema;
+        $capacitacion->descripcion = "Descripción de la capacitación de ejemplo #$i. Contenido breve para mostrar en la plantilla de correo.";
+        $capacitacion->responsable = 'Responsable Ejemplo';
+
+        $cap->capacitacion = $capacitacion;
+        $cap->fecha_inicio = Carbon::now()->subDays(2 + $i);
+        $cap->fecha_fin = Carbon::now()->addDays(5 + $i);
+
+        $pendientes[] = $cap;
+    }
+
+    for ($i = 1; $i <= 2; $i++) {
+        $cap = new \stdClass();
+        $capacitacion = new \stdClass();
+        $tema = new \stdClass();
+        $tema->name = "Curso activo #$i";
+        $capacitacion->tema = $tema;
+        $capacitacion->responsable = 'Equipo de Formación';
+
+        $cap->capacitacion = $capacitacion;
+        $cap->fecha_inicio = Carbon::now()->subDays($i);
+        $cap->fecha_fin = Carbon::now()->addDays(10 - $i);
+
+        $enDesarrollo[] = $cap;
+    }
+
+    $link = url('/');
+    return view('emails.capacitacion_alerts', compact('pendientes','enDesarrollo','link'));
+});
+
 // Route::get('/validar-codigo', [App\Http\Controllers\VerificationController::class, 'verifyCode'])->name('verification.verify');
 
 // Route::get('/enviar-correo', [App\Http\Controllers\VerificationController::class, 'enviarCorreo']);
-

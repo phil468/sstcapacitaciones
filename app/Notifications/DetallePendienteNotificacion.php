@@ -81,7 +81,7 @@ class DetallePendienteNotificacion extends Notification
                     ->line('Fecha de Ejecución: ' . $this->detalle->fecha_ejecucion)
                     ->line('Debe subsanar la observación en el plazo de corrección: ' . $this->detalle->fecha_ejecucion)
                     ->action('Ver Inspección', $url . '/' . 'inspecciones/' . ($this->urlTipoInspeccion??'')."/".'levantamiento/'.$this->detalle->uuid)
-                    ->line('¡Gracias por usar nuestra aplicación!')->priority(1);
+                    ->line('¡Gracias por usar nuestra aplicación.')->priority(1);
             }
         }
         
@@ -112,7 +112,7 @@ class DetallePendienteNotificacion extends Notification
                         // ->line('Fecha de Ejecución: ' . $this->detalle->fecha_ejecucion)
                         // ->line('Debe subsanar la observación en el plazo de corrección: ' .  $this->detalle->fecha_ejecucion)
                         // ->action('Ver Inspección', $url . '/' . 'inspecciones/' . $this->urlTipoInspeccion??'')
-                        ->line('Gracias por usar nuestra aplicación!')->priority(1);
+                        ->line('Gracias por usar nuestra aplicación.')->priority(1);
                 } elseif ($this->detalle->levantamiento->levantado == 0) {
                     return (new MailMessage)
                         ->subject('Observación Rechazada')
@@ -133,7 +133,7 @@ class DetallePendienteNotificacion extends Notification
                         ->line('Fecha de Ejecución: ' . $this->detalle->fecha_ejecucion)
                         ->line('Debe subsanar la observación en el plazo de corrección: ' .  $this->detalle->fecha_ejecucion)
                         ->action('Ver Inspección', $url . '/' . 'inspecciones/' . ($this->urlTipoInspeccion??'')."/".'levantamiento/'.$this->detalle->uuid)
-                        ->line('Gracias por usar nuestra aplicación!')->priority(1);
+                        ->line('Gracias por usar nuestra aplicación.')->priority(1);
                 }
             }
         }        
