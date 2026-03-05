@@ -25,21 +25,25 @@ class Kernel extends ConsoleKernel
         // Verificar si se obtuvo una hora válida
         if ($horaEnvioAlerta) {
             // Log::info("Programando envío de alertas de capacitación a las {$horaEnvioAlerta}.");
-            $schedule->command('alerts:send-capacitacion')->dailyAt($horaEnvioAlerta);
+            $schedule->command('alerts:send-capacitacion')->dailyAt($horaEnvioAlerta)
+    ->withoutOverlapping(30);
         } else {
             // Si no se obtiene una hora válida, usar una hora por defecto
             // Log::info("Programando envío de alertas de capacitación a las 06:00 (hora por defecto).");
-            $schedule->command('alerts:send-capacitacion')->dailyAt('06:00');
+            $schedule->command('alerts:send-capacitacion')->dailyAt('06:00')
+    ->withoutOverlapping(30);
         }
         
         // Obtener la hora de envío de alerta desde la configuración
         $horaEnvioAlertaInspecciones = ConfiguracionGeneralInspecciones::getValorByName('hora_de_envio_de_alerta');
         // Verificar si se obtuvo una hora válida
         if ($horaEnvioAlertaInspecciones) {
-            $schedule->command('alerts:send-sst')->dailyAt($horaEnvioAlertaInspecciones);
+            $schedule->command('alerts:send-sst')->dailyAt($horaEnvioAlertaInspecciones)
+    ->withoutOverlapping(30);
         } else {
             // Si no se obtiene una hora válida, usar una hora por defecto
-            $schedule->command('alerts:send-sst')->dailyAt('06:00');
+            $schedule->command('alerts:send-sst')->dailyAt('06:00')
+    ->withoutOverlapping(30);
         }
         
         $schedule->command('personal:actualizar-general')
