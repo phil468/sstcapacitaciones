@@ -75,7 +75,7 @@ class PersonalController extends Controller
 
         return $response2  = Http::withHeaders([
             'Authorization' => 'Bearer '.$this->token->access_token,
-        ])->get(config('app.url_api').'api/manager/capacitaciones/personal/'.$numero);
+        ])->get(config('app.url_api').'api/manager/capacitaciones/personalV2/'.$numero);
 
     }
 
