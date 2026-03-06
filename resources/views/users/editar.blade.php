@@ -60,9 +60,14 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="personal_id" class="form-label">Personal: {{ $user->personal->name }}</label>
-                        <select id="personal_id" name="personal_id" class="form-control select2-ajax" style="width: 100%;"
-                            data-selected="{{ $user->personal_id }}"></select>
+                        <label for="personal_id" class="form-label">Personal:</label>
+                        <select id="personal_id" name="personal_id" class="form-control select2-ajax" style="width: 100%;">
+                            @if($user->personal_id && $user->personal)
+                                <option value="{{ $user->personal_id }}" selected>{{ $user->personal->name }} ({{ $user->personal->dni }})</option>
+                            @endif
+                        </select>
+                        @error('personal_id')<div class="alert alert-danger">{{ $message }}</div>@enderror
+                    </div>
 
                         {{-- <div class="mb-3">
 						<label>Registrador</label>
@@ -116,59 +121,34 @@
 
     @section('css')
         <link rel="stylesheet" href="/css/admin_custom.css">
-        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        {{-- <link  href="{{ asset('css/select2.min.css') }}" rel="stylesheet" /> --}}
+    	<link rel="stylesheet" href="{{ asset('css/select2-bootstrap-5-theme.min.css') }}">
     @stop
 
     @section('js')
+        {{-- <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+    	<script type="text/javascript" src="js/select2.full.min.js"></script> --}}
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script>
             $(document).ready(function() {
-                const selectedId = $('#personal_id').data('selected');
-
                 $('#personal_id').select2({
                     placeholder: 'Buscar personal por nombre o DNI...',
+					
                     ajax: {
                         url: '{{ route('api.personal.select2.personal') }}',
                         dataType: 'json',
                         delay: 250,
                         data: function(params) {
-                            return {
-                                q: params.term
-                            };
+                            return { q: params.term };
                         },
                         processResults: function(data) {
-                            return {
-                                results: data.results
-                            };
+                            return { results: data.results };
                         },
                         cache: true
                     },
                     minimumInputLength: 1,
-                    allowClear: true,
-                    initSelection: function(element, callback) {
-                        // Cargar el valor seleccionado si existe
-                        if (selectedId) {
-                            $.ajax({
-                                url: '{{ route('api.personal.select2.personal') }}',
-                                data: {
-                                    q: ''
-                                },
-                                dataType: 'json',
-                                success: function(data) {
-                                    const selected = data.results.find(r => r.id == selectedId);
-                                    if (selected) {
-                                        callback(selected);
-                                    }
-                                }
-                            });
-                        }
-                    }
+                    allowClear: true
                 });
-
-                // Si hay un valor seleccionado, establecerlo
-                if (selectedId) {
-                    $('#personal_id').val(selectedId).trigger('change');
-                }
             });
         </script>
     @stop

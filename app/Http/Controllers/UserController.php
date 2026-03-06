@@ -183,8 +183,15 @@ class UserController extends Controller
             'roles' => 'required',
             'personal_id' => 'required'
         ]);
-        // dd($request->all());
+        
+        $user = User::find($id);
         $input = $request->all();
+        
+        // Si personal_id viene vacío, mantener el anterior
+        if(empty($input['personal_id'])){
+            $input['personal_id'] = $user->personal_id;
+        }
+        
         if(!empty($input['password'])){ 
             $input['password'] = Hash::make($input['password']);
         }else{
@@ -199,7 +206,6 @@ class UserController extends Controller
             $input['registrador'] = 0;
         }    
 
-        $user = User::find($id);
         $user->update($input);
         DB::table('model_has_roles')->where('model_id',$id)->delete();
     

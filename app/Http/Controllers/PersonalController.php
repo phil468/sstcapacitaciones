@@ -479,6 +479,17 @@ class PersonalController extends Controller
         return response()->json(['results' => $results]);
     }
 
+    public function select2PersonalById($id) {
+        $personal = Personal::find($id);
+        if (!$personal) {
+            return response()->json(null, 404);
+        }
+        return response()->json([
+            'id' => $personal->id,
+            'text' => $personal->name . ' (' . $personal->dni . ')'
+        ]);
+    }
+
     // CRUD REST (index, store, update, destroy, show)
     public function index(Request $request) {
         // Devuelve la vista principal
