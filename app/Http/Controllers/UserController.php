@@ -61,8 +61,6 @@ class UserController extends Controller
      */
     public function create()
     {
-        $personal = Personal::orderBy('name')->pluck('name','id')->all();
-        
         $roles = Role::pluck('name','name')->all();
 
         if(!auth()->user()->hasRole('Administrador')) {
@@ -83,7 +81,7 @@ class UserController extends Controller
             });
         }
 
-        return view('users.crear',compact('roles','personal'));
+        return view('users.crear',compact('roles'));
     }
 
     /**
@@ -129,10 +127,9 @@ class UserController extends Controller
     {
         $user = User::find($id);
         $roles = Role::pluck('name','name')->all();
-        $personal = Personal::orderBy('name')->pluck('name','id')->all();
         $userRole = $user->roles->pluck('name','name')->all();
     
-        return view('users.show',compact('user','roles','userRole','personal'));
+        return view('users.show',compact('user','roles','userRole'));
     }
 
     /**
@@ -165,10 +162,9 @@ class UserController extends Controller
             });
         }
 
-        $personal = Personal::orderBy('name')->pluck('name','id')->all();
         $userRole = $user->roles->pluck('name','name')->all();
     
-        return view('users.editar',compact('user','roles','userRole','personal'));
+        return view('users.editar',compact('user','roles','userRole'));
     }
 
     /**

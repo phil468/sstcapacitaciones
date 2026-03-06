@@ -153,6 +153,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::get('personal/select2/area', [PersonalController::class, 'select2Area'])->name('api.personal.select2.area');
     Route::get('personal/select2/cargo', [PersonalController::class, 'select2Cargo'])->name('api.personal.select2.cargo');
     Route::get('personal/select2/reporta', [PersonalController::class, 'select2Reporta'])->name('api.personal.select2.reporta');
+    Route::get('personal/select2/personal', [PersonalController::class, 'select2Personal'])->name('api.personal.select2.personal');
     Route::post('personal/marcar-seleccionados', [PersonalController::class, 'marcarSeleccionados'])->name('personal.marcar-seleccionados');
 
     Route::post('campanias/exportar-todos-seleccionados', 

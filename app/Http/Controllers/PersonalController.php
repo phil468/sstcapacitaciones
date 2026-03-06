@@ -258,7 +258,7 @@ class PersonalController extends Controller
         $message = '';
         // $message = 'Se actualizaron los estados de los trabajadores.<br>';
         // Recorre todos los registros de tu modelo
-        $modelo = Personal::all()->where('empresa_id',1); // Reemplaza 'TuModelo' por el nombre de tu modelo
+        $modelo = Personal::all(); // Reemplaza 'TuModelo' por el nombre de tu modelo
         $jsonData = ($this->obtenerResponse(0)->json()); // Obtiene el JSON de la API
         // json_decode($jsonData, true); // Convierte el JSON a un array asociativo
     
@@ -459,6 +459,23 @@ class PersonalController extends Controller
         $query = Personal::where('name', 'like', "%$q%");
         if ($exclude) $query->where('id', '!=', $exclude);
         $results = $query->select('id', 'name as text')->limit(20)->get();
+        return response()->json(['results' => $results]);
+    }
+
+    public function select2Personal(Request $request) {
+        $q = $request->q ?? '';
+        $results = Personal::where('name', 'like', "%$q%")
+            ->orWhere('dni', 'like', "%$q%")
+            ->select('id', 'name', 'dni')
+            ->orderBy('name')
+            ->limit(20)
+            ->get()
+            ->map(function($item) {
+                return [
+                    'id' => $item->id,
+                    'text' => $item->name . ' (' . $item->dni . ')'
+                ];
+            });
         return response()->json(['results' => $results]);
     }
 
