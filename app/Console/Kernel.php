@@ -34,17 +34,17 @@ class Kernel extends ConsoleKernel
     ->withoutOverlapping(30);
         }
         
-        // Obtener la hora de envío de alerta desde la configuración
-        $horaEnvioAlertaInspecciones = ConfiguracionGeneralInspecciones::getValorByName('hora_de_envio_de_alerta');
-        // Verificar si se obtuvo una hora válida
-        if ($horaEnvioAlertaInspecciones) {
-            $schedule->command('alerts:send-sst')->dailyAt($horaEnvioAlertaInspecciones)
-    ->withoutOverlapping(30);
-        } else {
-            // Si no se obtiene una hora válida, usar una hora por defecto
-            $schedule->command('alerts:send-sst')->dailyAt('06:00')
-    ->withoutOverlapping(30);
-        }
+    //     // Obtener la hora de envío de alerta desde la configuración
+    //     $horaEnvioAlertaInspecciones = ConfiguracionGeneralInspecciones::getValorByName('hora_de_envio_de_alerta');
+    //     // Verificar si se obtuvo una hora válida
+    //     if ($horaEnvioAlertaInspecciones) {
+    //         $schedule->command('alerts:send-sst')->dailyAt($horaEnvioAlertaInspecciones)
+    // ->withoutOverlapping(30);
+    //     } else {
+    //         // Si no se obtiene una hora válida, usar una hora por defecto
+    //         $schedule->command('alerts:send-sst')->dailyAt('06:00')
+    // ->withoutOverlapping(30);
+    //     }
         
         $schedule->command('personal:actualizar-general')
         // la hora diaria de actualizacion se obtiene de un campo en el .env sino será por defecto a las 09:00
